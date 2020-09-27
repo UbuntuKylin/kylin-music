@@ -1,0 +1,22 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kylin-music
+Upstream-Contact: Kylin Development Team <liujialin@kylinos.cn>
+				  Kylin Development Team <fengyongfan@kylinos.cn>
+Source: https://launchpad.dev/kylin-music
+
+Files: *
+Copyright: Kylin Ltd
+License: GPL-3
+
+License: GPL-3
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 3 as
+ published by the Free Software Foundation.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian/Ubuntu systems, the full text of the GPL v3 can be found in
+ `/usr/share/common-licenses/GPL-3'

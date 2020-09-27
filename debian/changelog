@@ -1,0 +1,6 @@
+kylin-music (1.0.1) unstable; urgency=medium
+
+  * Initial release.
+  * Finish basic music playback function. 
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sun, 27 Sep 2020 11:06:06 +0800
