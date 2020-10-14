@@ -33,7 +33,7 @@ MainWid::MainWid(QWidget *parent)
     //    rightlayout->addWidget(myChangeListWid,Qt::AlignTop);
     rightlayout->addWidget(mySideBar->rightChangeWid,Qt::AlignTop);
 
-    hSlider = new QSlider(this);
+    hSlider = new Slider(this);
     hSlider->setOrientation(Qt::Horizontal);
     hSlider->setStyleSheet("QSlider::groove:horizontal{height: 2px;background:#FF4848;}\
                            QSlider::add-page:horizontal{background:#ECEEF5;}\
@@ -66,9 +66,12 @@ MainWid::MainWid(QWidget *parent)
 
     this->setCentralWidget(mainWidget);
 
-    model=new QSqlTableModel(this);
+    model = new QSqlTableModel(this);
     model->setTable("LocalMusic");
     model->select();
+    model_1 = new QSqlTableModel(this);
+    model_1->setTable("FavoriteMusic");
+    model_1->select();
     connect(myPlaySongArea->playBtn,SIGNAL(clicked(bool)),this,SLOT(play_Song()));   //播放歌曲
     connect(mySideBar->myMusicListWid->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(on_listWidget_doubleClicked(QListWidgetItem*)));
     connect(mySideBar->musicListChangeWid[0]->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(on_listWidget1_doubleClicked(QListWidgetItem*)));
@@ -248,7 +251,8 @@ void MainWid::play_Song()
 
 void MainWid::contextMenuEvent(QContextMenuEvent *event)     //歌曲列表右键菜单
 {
-    QMenu *Menu = new QMenu(this);
+    qDebug() << "666666666";
+    Menu = new QMenu(this);
     Action1 = new QAction(this);
     Action2 = new QAction(this);
     Action3 = new QAction(this);
@@ -257,6 +261,7 @@ void MainWid::contextMenuEvent(QContextMenuEvent *event)     //歌曲列表右�
     //    Action6 = new QAction(this);
     Action7 = new QAction(this);
     //    Action1->setIcon(QIcon(":/image/image/bofang1.png"));
+
     Action1->setText(play_pause);
     //    Action2->setIcon(QIcon(":/image/image/like_outline_32px_1170275_easyicon.net.png"));
     Action2->setText("下一首");
@@ -292,6 +297,26 @@ void MainWid::contextMenuEvent(QContextMenuEvent *event)     //歌曲列表右�
     //    delete Action6;
     delete Action7;
 }
+
+//void MainWid::contextMenuEvent(QContextMenuEvent *)
+//{
+//    if(mySideBar->myMusicListWid->musicInfoWidget->hasFocus())
+//    {
+//        Menu->move(cursor().pos());
+//        Menu->show();
+//    }
+//}
+
+//bool MainWid::IsPointInWidget(QPoint &point)
+//{
+//    if(point.x() >= mySideBar->myMusicListWid->musicInfoWidget->x()&&point.x() <= (mySideBar->myMusicListWid->musicInfoWidget->x()+mySideBar->myMusicListWid->musicInfoWidget->width())
+//       &&
+//       point.y() >= mySideBar->myMusicListWid->musicInfoWidget->y()&&point.y() <= (mySideBar->myMusicListWid->musicInfoWidget->y()+mySideBar->myMusicListWid->musicInfoWidget->height()))
+//    {
+//        return true;
+//    }
+//    return false;
+//}
 
 // 播放暂停功能
 void MainWid::Action1_slot()
@@ -397,7 +422,7 @@ void MainWid::Action3_slot()
 
             for (QString& songPlaylist:sqlFilenameList)
             {
-                if(changewid->getMp3FileName(path).remove(QString(".mp3")) == songPlaylist)
+                if(changewid->getMp3FileName(path).split(".").first() == songPlaylist)
                 {
                     qDebug()<<"歌曲已存在";
                     songExists = true;
@@ -407,15 +432,16 @@ void MainWid::Action3_slot()
         }
 
         changewid->PlayList->addMedia(QUrl::fromLocalFile(path));
-        QString Name = path.split("/").last().remove(QString(".mp3"));            //截取歌曲文件的歌曲名
+        QString Name = path.split("/").last();            //截取歌曲文件的歌曲名
+        QString favriteName = Name.split(".").first();
         QListWidgetItem *listItem = new QListWidgetItem(changewid->musicInfoWidget);
-        listItem->setText(QString("%1").arg(Name));
+        listItem->setText(QString("%1").arg(favriteName));
         changewid->musicInfoWidget->addItem(listItem);
 
         QSqlQuery query;
-        query.exec(QString("insert into FavoriteMusic values (%1,'%2','%3',%4)").arg(qrand()%1000000).arg(Name).arg(path).arg(0));
+        query.exec(QString("insert into FavoriteMusic values (%1,'%2','%3',%4)").arg(qrand()%1000000).arg(favriteName).arg(path).arg(0));
 
-        changewid->sqlFilenameList.append(Name);
+        changewid->sqlFilenameList.append(favriteName);
         changewid->count += 1;
         changewid->songNumberLabel->setText("共"+QString::number(changewid->count)+"首");
         qDebug() << changewid->sqlFilenameList;
@@ -537,22 +563,23 @@ void MainWid::Action4_slot()
 void MainWid::Action7_slot()
 {
     if (mySideBar->currentSelectList == 0) {
-        int row=mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
-        QString temp=mySideBar->myMusicListWid->musicInfoWidget->currentIndex().data().toString();
-        QString MusicName=temp.split(" - ").last();
-        QString Author=temp.remove(" - "+MusicName);
-        QString Album = mySideBar->myMusicListWid->Music->metaData(QMediaMetaData::AlbumTitle).toString();
-        QString FileName=model->data(model->index(row,2)).toString();
-        QString type = FileName.split(".").last();
-        QString size = mySideBar->myMusicListWid->Music->metaData(QMediaMetaData::Size).toString();
-        qDebug()<<mySideBar->myMusicListWid->Music->metaData(QMediaMetaData::Size).toString();
-        QString time=myPlaySongArea->bottomLeftLabel->text().split("/").last();
         model->setTable("LocalMusic");
         model->select();
-        QStringList list;
-        list << MusicName << Author << Album
-             << type << time
-             << FileName;
+        int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
+        QString temp = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().data().toString();
+        QString MusicName = temp.split(" - ").last();
+        QString Author = temp.remove(" - "+MusicName);
+        QString Album = mySideBar->myMusicListWid->Music->metaData(QMediaMetaData::AlbumTitle).toString();
+        QString FileName = model->data(model->index(row,2)).toString();
+        QString type = FileName.split(".").last();
+        QString size = mySideBar->myMusicListWid->Music->metaData(QMediaMetaData::Size).toString();
+        qDebug() << mySideBar->myMusicListWid->Music->metaData(QMediaMetaData::Size).toString();
+        QString time=myPlaySongArea->bottomLeftLabel->text().split("/").last();
+
+//        QStringList list;
+//        list << MusicName << Author << Album
+//             << type << time
+//             << FileName;
 
         //        for(int i = 0;i < list.length();++i)
         //        {
@@ -567,22 +594,22 @@ void MainWid::Action7_slot()
                                               "文件位置: %7 \n").arg(MusicName).arg(Author).arg(Album).arg(type).arg(size).arg(time).arg(FileName));
     }
     else if (mySideBar->currentSelectList == 1) {
-        int row=mySideBar->musicListChangeWid[0]->musicInfoWidget->currentIndex().row();
-        QString temp=mySideBar->musicListChangeWid[0]->musicInfoWidget->currentIndex().data().toString();
-        QString MusicName=temp.split(" - ").last();
-        QString Author=temp.remove(" - "+MusicName);
+        model_1->setTable("FavoriteMusic");
+        model_1->select();
+        int row = mySideBar->musicListChangeWid[0]->musicInfoWidget->currentIndex().row();
+        QString temp = mySideBar->musicListChangeWid[0]->musicInfoWidget->currentIndex().data().toString();
+        QString MusicName = temp.split(" - ").last();
+        QString Author = temp.remove(" - "+MusicName);
         QString Album = mySideBar->musicListChangeWid[0]->Music->metaData(QMediaMetaData::AlbumTitle).toString();
-        QString FileName=model->data(model->index(row,2)).toString();
+        QString FileName = model_1->data(model_1->index(row,2)).toString();
         QString type = FileName.split(".").last();
         QString size = mySideBar->musicListChangeWid[0]->Music->metaData(QMediaMetaData::Size).toString();
-        qDebug()<<mySideBar->musicListChangeWid[0]->Music->metaData(QMediaMetaData::Size).toString();
-        QString time=myPlaySongArea->bottomLeftLabel->text().split("/").last();
-        model->setTable("LocalMusic");
-        model->select();
-        QStringList list;
-        list << MusicName << Author << Album
-             << type << time
-             << FileName;
+        QString time = myPlaySongArea->bottomLeftLabel->text().split("/").last();
+
+//        QStringList list;
+//        list << MusicName << Author << Album
+//             << type << time
+//             << FileName;
 
         //        for(int i = 0;i < list.length();++i)
         //        {

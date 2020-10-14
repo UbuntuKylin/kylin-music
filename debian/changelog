@@ -1,6 +1,16 @@
-kylin-music (1.0.1) unstable; urgency=medium
+kylin-music (1.0.3) unstable; urgency=medium
+
+  * 修复禅道bug:20454 双击或者右击.ape,.mp3,ogg,wav,wma,.spx等格式音频文件，都无法打开。
+
+  * 修复禅道bug:20402 鼠标右键未定位，查看歌曲文件位置时，界面错乱。
+
+  * 修复禅道bug:20393 鼠标悬停在播放进度条上，滑动滚轮有界面动效但无跳转播放位置的功能。
+
+ -- liujialin <liujialin@kylinos.cn>  Thu, 8 Oct 2020 17:06:06 +0800
+
+kylin-music (1.0.1) v101; urgency=medium
 
   * Initial release.
   * Finish basic music playback function. 
 
- -- fengyongfan <fengyongfan@kylinos.cn>  Sun, 27 Sep 2020 11:06:06 +0800
+ -- liujialin <liujialin@kylinos.cn>  Sun, 27 Sep 2020 11:06:06 +0800

@@ -1,7 +1,7 @@
 Source: kylin-music
 Section: utils
 Priority: optional
-Maintainer: fengyongfan <fengyongfan@kylinos.cn>
+Maintainer: liujialin <liujialin@kylinos.cn>
 Build-Depends: debhelper,
 			qtbase5-dev,
             qt5-qmake,

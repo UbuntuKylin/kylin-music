@@ -12,14 +12,16 @@ TARGET = kylin-music
 
 target.path = /usr/bin
 target.source += $$TARGET
+
 icon.path = /usr/share/pixmaps
 icon.files = img/kylin-music.png
+
 desktop.path = /usr/share/applications/
 desktop.files = kylin-music.desktop
+#appdesktop.path = /usr/share/applications/
+#appdesktop.files += kylin-music.desktop
 
-INSTALLS += target \
-    icon \
-    desktop
+INSTALLS += target icon desktop
 
 
 # The following define makes your compiler emit warnings if you use
@@ -39,7 +41,8 @@ SOURCES += \
     mainwid.cpp \
     playsongarea.cpp \
     sidebar.cpp \
-    titlebar.cpp
+    titlebar.cpp \
+    slider.cpp
 
 HEADERS += \
     changelistwid.h \
@@ -47,7 +50,8 @@ HEADERS += \
     playsongarea.h \
     sidebar.h \
     titlebar.h \
-    connection.h
+    connection.h \
+    slider.h
 
 # Default rules for deployment.
 # qnx: target.path = /tmp/$${TARGET}/bin

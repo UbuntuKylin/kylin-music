@@ -277,6 +277,27 @@ void MusicListWid::initMusicListWid()
             PlayList->addMedia(QUrl::fromLocalFile(FileName));
         }
     }
+//    query.exec("select * from FavoriteMusic");
+
+//    while(query.next())
+//    {
+//        QString Name=query.value(1).toString();
+//        QString FileName=query.value(2).toString();
+//        QString mp3Name=getMp3FileName(Name);
+
+//        sqlFilenameList.append(mp3Name);
+
+//        if(Name!=""&&FileName!="")
+//        {
+//            QListWidgetItem *item1=new QListWidgetItem;
+////            item1->setIcon(QIcon(":/image/image/Music_32px_1144946_easyicon.net.png"));
+////            item1->setSizeHint(QSize(700,40));
+//            item1->setText(mp3Name);
+//            musicInfoWidget->addItem(item1);
+//            PlayList->addMedia(QUrl::fromLocalFile(FileName));
+//        }
+//    }
+
     count = sqlFilenameList.size();
     songNumberLabel->setText("共"+QString::number(count)+"首");
     qDebug()<<"sqlFilenameList.size() :"<<sqlFilenameList.size();
@@ -289,7 +310,7 @@ void MusicListWid::on_top_addSongBtn_slot()
     QSqlQuery query;
     query.exec("select * from LocalMusic");
     //    QFileInfo info;
-    QStringList songFiles = QFileDialog::getOpenFileNames(this, "打开文件","Music","music(*.mp3)");  //歌曲文件
+    QStringList songFiles = QFileDialog::getOpenFileNames(this, "打开文件","Music","music(*.mp3 *.ogg *.wav *.wma *.spx *.ape *.flac)");  //歌曲文件
     if(!songFiles.isEmpty())
     {
         QProgressDialog *progressdialog=new QProgressDialog(this);
@@ -321,7 +342,7 @@ void MusicListWid::on_top_addSongBtn_slot()
                 qDebug() << "sqlFilenameList" << sqlFilenameList;
                 for (QString& songPlaylist:sqlFilenameList)
                 {
-                    if(getMp3FileName(path).remove(QString(".mp3")) == songPlaylist)
+                    if(getMp3FileName(path) == songPlaylist)
                     {
                         qDebug()<<"歌曲已存在";
                         songExists = true;
@@ -335,14 +356,15 @@ void MusicListWid::on_top_addSongBtn_slot()
             }
             qDebug() << "sqlFilenameList" << sqlFilenameList;
             PlayList->addMedia(QUrl::fromLocalFile(path));
-            QString Name = path.split("/").last().remove(QString(".mp3"));            //截取歌曲文件的歌曲名
+            QString Name = path.split("/").last();            //截取歌曲文件的歌曲名
+            QString musicName = Name.split(".").first();
             QListWidgetItem *listItem = new QListWidgetItem(musicInfoWidget);
-            listItem->setText(QString("%1").arg(Name));
+            listItem->setText(QString("%1").arg(musicName));
             musicInfoWidget->addItem(listItem);
-            query.exec(QString("insert into LocalMusic values (%1,'%2','%3',%4)").arg(qrand()%1000000).arg(Name).arg(path).arg(0));
+            query.exec(QString("insert into LocalMusic values (%1,'%2','%3',%4)").arg(qrand()%1000000).arg(musicName).arg(path).arg(0));
             qDebug()<<query.exec("select * from LocalMusic");
 
-            sqlFilenameList.append(Name);
+            sqlFilenameList.append(musicName);
 
             qDebug() << "sqlFilenameList" << sqlFilenameList;
             count += 1;
@@ -350,7 +372,7 @@ void MusicListWid::on_top_addSongBtn_slot()
         }
     }
     Music->setPlaylist(PlayList);
-//    Music->play();
+    Music->play();
 }
 
 QString MusicListWid::getMp3FileName(QString sqlName)
@@ -360,6 +382,7 @@ QString MusicListWid::getMp3FileName(QString sqlName)
     int length=sqlList.length();
 
     QString songname=sqlList.value(length-1);
-    return songname;
+    QString rmTypeName = songname.split(".").first();
+    return rmTypeName;
 }
 
