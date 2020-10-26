@@ -10,6 +10,13 @@ CONFIG += c++11
 
 TARGET = kylin-music
 
+LIBS += /usr/lib/libtag.so
+LIBS += /usr/lib/libtag_c.so
+
+INCLUDEPATH += /usr/include/taglib
+
+INCLUDEPATH += ./taglib
+
 target.path = /usr/bin
 target.source += $$TARGET
 icon.path = /usr/share/pixmaps
@@ -37,22 +44,55 @@ SOURCES += \
     changelistwid.cpp \
     main.cpp \
     mainwid.cpp \
+    miniwidget.cpp \
+    nowplaylist.cpp \
     playsongarea.cpp \
     sidebar.cpp \
-    titlebar.cpp
+    songitem.cpp \
+    titlebar.cpp \
+    slider.cpp
 
 HEADERS += \
     changelistwid.h \
     mainwid.h \
+    miniwidget.h \
+    nowplaylist.h \
     playsongarea.h \
     sidebar.h \
+    songitem.h \
     titlebar.h \
-    connection.h
-
-# Default rules for deployment.
-# qnx: target.path = /tmp/$${TARGET}/bin
-# else: unix:!android: target.path = /opt/$${TARGET}/bin
-# !isEmpty(target.path): INSTALLS += target
+    connection.h \
+    slider.h
 
 RESOURCES += \
     res.qrc
+
+#LIBS += -L$$PWD/taglib/lib/amd64/ -ltag
+#LIBS += -L$$PWD/taglib/lib/amd64/ -ltag_c
+
+#INCLUDEPATH += $$PWD/taglib/lib/amd64
+#DEPENDPATH += $$PWD/taglib/lib/amd64
+
+#LIBS += -L$$PWD/taglib/lib/arm64/ -ltag
+#LIBS += -L$$PWD/taglib/lib/arm64/ -ltag_c
+
+#INCLUDEPATH += $$PWD/taglib/lib/arm64
+#DEPENDPATH += $$PWD/taglib/lib/arm64
+
+#LIBS += -L$$PWD/taglib/lib/armhf/ -ltag
+#LIBS += -L$$PWD/taglib/lib/armhf/ -ltag_c
+
+#INCLUDEPATH += $$PWD/taglib/lib/armhf
+#DEPENDPATH += $$PWD/taglib/lib/armhf
+
+#LIBS += -L$$PWD/taglib/lib/i386/ -ltag
+#LIBS += -L$$PWD/taglib/lib/i386/ -ltag_c
+
+#INCLUDEPATH += $$PWD/taglib/lib/i386
+#DEPENDPATH += $$PWD/taglib/lib/i386
+
+#LIBS += -L$$PWD/taglib/lib/mips64el/ -ltag
+#LIBS += -L$$PWD/taglib/lib/mips64el/ -ltag_c
+
+#INCLUDEPATH += $$PWD/taglib/lib/mips64el
+#DEPENDPATH += $$PWD/taglib/lib/mips64el

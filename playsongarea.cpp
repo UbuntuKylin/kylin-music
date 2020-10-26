@@ -2,6 +2,7 @@
 
 PlaySongArea::PlaySongArea(QWidget *parent) : QWidget(parent)
 {
+
     setFixedHeight(68);
 
     setStyleSheet("QWidget{Background-color:#FFFFFF;}");
@@ -44,31 +45,6 @@ void PlaySongArea::initWidget()
 
 
 
-//    startTimeLabel = new QLabel("00:00");
-//    startTimeLabel->setFixedSize(37,15);
-
-//    playTimeSlider = new QSlider;
-//    playTimeSlider->setOrientation(Qt::Horizontal);
-//    playTimeSlider->setFixedHeight(14);
-//    playTimeSlider->setRange(0,200);
-//    playTimeSlider->setSingleStep(1);
-//    playTimeSlider->setStyleSheet("QSlider::groove:horizontal{height: 4px;background: rgb(102,183,255);}\
-//                                   QSlider::add-page:horizontal{background:#c2c2c4;}\
-//                                   QSlider::handle:horizontal{width: 14px;background: url(:/images/BottomPlay/curTimeHandle.png);margin: -5 0 -5 0;}");
-
-//    playTimeSlider->installEventFilter(this);
-
-//    endTimeLabel = new QLabel("00:00");
-//    endTimeLabel->setFixedSize(37,15);
-
-//    m_controlFrame = new QWidget;
-//    m_controlFrame->setStyleSheet("border:none");
-//    m_hControlLayout = new QHBoxLayout(m_controlFrame);
-//    m_hControlLayout->setSpacing(10);
-//    m_hControlLayout->setMargin(10);
-//    m_hControlLayout->addWidget(startTimeLabel,Qt::AlignVCenter);
-//    m_hControlLayout->addWidget(playTimeSlider,Qt::AlignVCenter);
-//    m_hControlLayout->addWidget(endTimeLabel,Qt::AlignVCenter);
 
 
 
@@ -111,11 +87,6 @@ void PlaySongArea::initWidget()
     playModeBtn->setToolTip(" 顺序播放 ");
 
 
-//    lyricBtn = new QPushButton;
-//    lyricBtn->setFixedSize(16,16);
-//    lyricBtn->setCursor(Qt::PointingHandCursor);
-//    lyricBtn->setToolTip(" 打开歌词 ");
-//    lyricBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/default/lyric.png)}");
 
     listBtn = new QPushButton;   //历史播放列表
     listBtn->setFixedSize(16,16);
@@ -125,41 +96,56 @@ void PlaySongArea::initWidget()
 
 
 
+    QWidget *bottomLeftWid = new QWidget(this);
 
     bottomLeftLabel = new QLabel(this);
+    bottomLeftLabel->setFixedHeight(18);
+    bottomLeftLabel->setStyleSheet("font-size:13px;color:#8F9399;");
     bottomLeftLabel->setAttribute(Qt::WA_TranslucentBackground);
 
+    coverPhotoLabel = new QLabel(this);
+    coverPhotoLabel->setFixedSize(40,40);
+//    coverPhotoLabel->setAttribute(Qt::WA_TranslucentBackground);
+    coverPhotoLabel->setStyleSheet("background:transparent;border-image:url(:/img/fengmian.png);");
+
+
+    QHBoxLayout *bottomLeftLayout = new QHBoxLayout(this);
     QVBoxLayout *timeAndNameLayout = new QVBoxLayout(this);
+
     songNameofNowPlaying = new QLabel(this);
     QWidget *timeAndNameWidget = new QWidget(this);
+    timeAndNameWidget->setFixedHeight(40);
 
-
-    songNameofNowPlaying->setText("正在播放：" + MusicName);
-
+    songNameofNowPlaying->setFixedHeight(20);
 
 
 
     songNameofNowPlaying->setStyleSheet("width:56px;height:14px;font-size:14px;color:#303133;line-height:14px;");
 
-    songNameofNowPlaying->hide();
-    timeAndNameLayout->addWidget(songNameofNowPlaying);
-    timeAndNameLayout->addWidget(bottomLeftLabel);
+//    songNameofNowPlaying->hide();
+    timeAndNameLayout->addWidget(songNameofNowPlaying,0,Qt::AlignTop);
+    timeAndNameLayout->addWidget(bottomLeftLabel,Qt::AlignTop);
 
     timeAndNameLayout->setMargin(0);
     timeAndNameLayout->setSpacing(5);
 
     timeAndNameWidget->setLayout(timeAndNameLayout);
 
+    bottomLeftLayout->addWidget(coverPhotoLabel);
+    bottomLeftLayout->addWidget(timeAndNameWidget);
+
+
+    bottomLeftWid->setLayout(bottomLeftLayout);
 
 
 
-    h_mainLayout->addWidget(timeAndNameWidget,0,Qt::AlignLeft);
+
+    h_mainLayout->addWidget(bottomLeftWid,0,Qt::AlignTop);
     h_mainLayout->addWidget(lastBtn,Qt::AlignCenter);
     h_mainLayout->addSpacing(10);
     h_mainLayout->addWidget(playBtn,Qt::AlignCenter);
     h_mainLayout->addSpacing(10);
     h_mainLayout->addWidget(nextBtn,Qt::AlignCenter);
-//    h_mainLayout->addWidget(m_controlFrame,Qt::AlignVCenter);
 
     h_mainLayout->addWidget(volumeBtn,0,Qt::AlignRight);
 //    h_mainLayout->addWidget(volumeSlider,Qt::AlignVCenter);

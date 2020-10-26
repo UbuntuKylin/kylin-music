@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     {
         return 1;
     }
+    a.setWindowIcon(QIcon(":/img/kylin-music.png"));
     MainWid w;
     w.show();
     return a.exec();

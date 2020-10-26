@@ -18,11 +18,19 @@
 #include <QTime>
 #include <QMessageBox>
 #include <QMediaMetaData>
+#include <QContextMenuEvent>
 
 #include "titlebar.h"
 #include "sidebar.h"
 #include "changelistwid.h"
 #include "playsongarea.h"
+#include "slider.h"
+#include "miniwidget.h"
+
+#include <taglib/mpegfile.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/attachedpictureframe.h>
+
 
 class MainWid : public QMainWindow
 {
@@ -31,16 +39,21 @@ class MainWid : public QMainWindow
 public:
     MainWid(QWidget *parent = nullptr);
     ~MainWid();
-    QString getMp3FileName(QString sqlName);
+//    QString getMp3FileName(QString sqlName);
     void updatalistwidget(int value);//更新listWidget
 
     void updateSongPlaying();
+
+    void slot_showMiniWidget();   //迷你模式
+    void slot_closeMiniWidget();
+    void slot_recoverNormalWidget();
 
 
 public slots:
 //    void playSong(bool);
     void play_Song();   //播放和暂停
     void contextMenuEvent(QContextMenuEvent *event);  //歌曲列表右键菜单
+//    void contextMenuEvent(QContextMenuEvent *);
     void Action1_slot();    //右键播放
     void Action2_slot();    //右键下一首
     void Action3_slot();    //右键添加到我喜欢
@@ -58,10 +71,11 @@ public slots:
     void slideMove(int position);
     void slideRelease();
 
-    void PlayModeChanged();
+    void PlayModeChanged();    //播放模式
+
 private:
 
-    QString play_pause="播放";
+    QString play_pause = "播放";
     QWidget *mainWidget;
 
     TitleBar *myTitleBar;
@@ -70,7 +84,9 @@ private:
     PlaySongArea *myPlaySongArea;
 
     QSqlTableModel *model;
+    QSqlTableModel *model_1;
 
+    QMenu *Menu;
     QAction *Action1;
     QAction *Action2;
     QAction *Action3;
@@ -79,8 +95,11 @@ private:
 //    QAction *Action6;
     QAction *Action7;
 
-    QSlider *hSlider;
+//    QSlider *hSlider;
+    Slider *hSlider;
     int moved = 0;
+
+   miniWidget *m_MiniWidget;
 
 
 };

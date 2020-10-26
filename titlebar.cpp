@@ -3,6 +3,7 @@
 
 #include "titlebar.h"
 
+
 TitleBar::TitleBar(QWidget *parent) : QFrame(parent)
 {
     setMouseTracking(true);
@@ -34,6 +35,7 @@ void TitleBar::onClicked()
         {
             pWindow->close();
         }
+
     }
 }
 

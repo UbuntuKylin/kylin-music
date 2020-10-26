@@ -1,0 +1,4 @@
+#ifndef NOWPLAYLIST_H
+#define NOWPLAYLIST_H
+
+#endif // NOWPLAYLIST_H

@@ -235,7 +235,7 @@ void SideBar::initTopWidget()
     musicListChangeWid[0]->musicInfoWidget->clear();
     musicListChangeWid[0]->PlayList->clear();
     musicListChangeWid[0]->Music->setPlaylist(musicListChangeWid[0]->PlayList);
-    musicListChangeWid[0]->sqlFilenameList.clear();
+//    musicListChangeWid[0]->sqlFilenameList.clear();
 
     QSqlQuery query;
     query.exec("select * from FavoriteMusic");  //本地音乐列表数据
@@ -244,29 +244,29 @@ void SideBar::initTopWidget()
     {
         QString Name = query.value(1).toString();
         QString FileName = query.value(2).toString();
-        QString mp3Name = musicListChangeWid[0]->getMp3FileName(Name);
+//        QString mp3Name = musicListChangeWid[0]->getMp3FileName(Name);
 
-        musicListChangeWid[0]->sqlFilenameList.append(mp3Name);
+//        musicListChangeWid[0]->sqlFilenameList.append(mp3Name);
 
         if (Name != "" && FileName != "")
         {
             QListWidgetItem *item1 = new QListWidgetItem;
 //            item1->setIcon(QIcon(":/image/image/Music_32px_1144946_easyicon.net.png"));
 //            item1->setSizeHint(QSize(700,40));
-            item1->setText(mp3Name);
+//            item1->setText(mp3Name);
             musicListChangeWid[0]->musicInfoWidget->addItem(item1);
             musicListChangeWid[0]->PlayList->addMedia(QUrl::fromLocalFile(FileName));
         }
     }
-    musicListChangeWid[0]->count = musicListChangeWid[0]->sqlFilenameList.size();
+//    musicListChangeWid[0]->count = musicListChangeWid[0]->allmusic.size();
     musicListChangeWid[0]->songNumberLabel->setText("共"+QString::number(musicListChangeWid[0]->count)+"首");
-    qDebug()<<"sqlFilenameList.size() :"<<musicListChangeWid[0]->sqlFilenameList.size();
+//    qDebug()<<"sqlFilenameList.size() :"<<musicListChangeWid[0]->sqlFilenameList.size();
     musicListChangeWid[0]->Music->setPlaylist(musicListChangeWid[0]->PlayList);
     rightChangeWid->addWidget(musicListChangeWid[0]);
 
 //    connect(songListWidget,SIGNAL(currentRowChanged(int)),this,SLOT(AlterPage(int)));
 //    connect(songListWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(AlterPage(QListWidgetItem*)));
-    connect(favoriteMusicBtn,SIGNAL(clicked(bool)),this,SLOT(AlterthisPage()));
+//    connect(favoriteMusicBtn,SIGNAL(clicked(bool)),this,SLOT(AlterthisPage()));
 
     connect(addSongListBtn, SIGNAL(clicked(bool)), this, SLOT(addSongList()));
     connect(closeDialog,SIGNAL(clicked(bool)),this,SLOT(dialogClosed()));

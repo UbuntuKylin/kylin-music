@@ -25,6 +25,17 @@
 #include <QAction>
 #include <QMenu>
 #include <QSqlTableModel>
+#include <QCryptographicHash>
+#include <QDir>
+#include <QFileInfo>
+#include <QByteArray>
+#include <QString>
+
+//taglib
+#include <taglib/tag.h>
+#include <taglib/tpropertymap.h>
+#include <taglib/fileref.h>
+
 
 class ChangeListWid : public QWidget
 {
@@ -59,11 +70,13 @@ class MusicListWid :public QWidget
 public:
     explicit MusicListWid(QWidget *parent = nullptr);
     void initMusicListWid();
+//    void setTableItem(QString title, QString singal, QString cd, QString time);
+
     QListWidget *musicInfoWidget;
 
-    QString getMp3FileName(QString);
+//    QString getMp3FileName(QString);
 //    void contextMenuEvent(QContextMenuEvent *event);     //歌曲列表右键菜单
-    QStringList sqlFilenameList;
+//    QStringList sqlFilenameList;
     QLabel *songNumberLabel;
     QMediaPlaylist *PlayList;
     QMediaPlayer *Music;
@@ -73,6 +86,24 @@ public:
     QToolButton *top_playAllSongBtn;  //播放界面的播放全部按钮
 
     int count = 0;
+    QStringList allmusic;
+    QStringList songFiles;
+    QString Dir;
+    QStringList matchMp3Files;
+    QString mp3Name;
+
+
+    QFileInfo fileInfo;
+    QByteArray bytes;
+    QString titleStr;
+    QString artistStr;
+    QString albumStr;
+    QString timeStr;
+    QString mp3Size;
+    QString type;
+
+    QString MD5Str;
+    QStringList MD5List;
 public slots:
     void on_top_addSongBtn_slot();  //添加歌曲
 

@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QWidget>
-#include <QWidget>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -32,6 +31,7 @@ public:
 //    QSlider *playTimeSlider, *volumeSlider;
     bool playstates = false;
 
+    QLabel *coverPhotoLabel;
     QStringList sqlFilenameList;
     QMediaPlaylist *PlayList;
     QMediaPlayer *Music;

@@ -3,13 +3,14 @@ Section: utils
 Priority: optional
 Maintainer: fengyongfan <fengyongfan@kylinos.cn>
 Build-Depends: debhelper,
-			qtbase5-dev,
+            qtbase5-dev,
             qt5-qmake,
             qtchooser,
             qtscript5-dev,
             qttools5-dev-tools,
             qtbase5-dev-tools,
-			qtmultimedia5-dev	
+            qtmultimedia5-dev,
+			taglib
 Standards-Version: 4.4.1
 Homepage: https://github.com/ubuntukylin/kylin-music
 #Vcs-Browser: https://github.com/ubuntukylin/kylin-music
@@ -17,6 +18,7 @@ Homepage: https://github.com/ubuntukylin/kylin-music
 
 Package: kylin-music
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, 
+		 ${misc:Depends}
 Description: kylin-music
  <insert long description, indented with spaces>

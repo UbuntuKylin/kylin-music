@@ -78,6 +78,7 @@
         <file>img/default/play_w.png</file>
         <file>img/clicked/sequence.png</file>
         <file>img/default/point.png</file>
+        <file>img/fengmian.png</file>
         <file>img/kylin-music.png</file>
     </qresource>
 </RCC>

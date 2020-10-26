@@ -2,6 +2,6 @@
 Name=kylin-music
 Name[zh_CN]=麒麟音乐
 Exec=/usr/bin/kylin-music %u
-Icon=/usr/share/pixmaps/kylin-music.png
+Icon=/usr/share/pixmaps/kylin-music
 Type=Application
 Categories=GNOME;Utility;
