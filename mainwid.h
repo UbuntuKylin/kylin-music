@@ -1,5 +1,28 @@
+/*
+ * Copyright (C) 2020, KylinSoft Co., Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef MAINWID_H
 #define MAINWID_H
+
+#define KYLINRECORDER "org.kylin-music-data.settings"
+#define FITTHEMEWINDOW "org.ukui.style"
+
+
+#include <QGSettings>
 
 #include <QMainWindow>
 #include <QVBoxLayout>
@@ -19,6 +42,16 @@
 #include <QMessageBox>
 #include <QMediaMetaData>
 #include <QContextMenuEvent>
+//#include <QApplication>
+#include <QStandardPaths>
+#include <QShortcut>
+#include <QMessageBox>
+#include <QRect>
+//窗口显示在屏幕中心
+#include <QApplication>
+#include <QScreen>
+//窗体阴影
+#include <QPainter>
 
 #include "titlebar.h"
 #include "sidebar.h"
@@ -26,81 +59,187 @@
 #include "playsongarea.h"
 #include "slider.h"
 #include "miniwidget.h"
+#include "allpupwindow.h"
 
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/attachedpictureframe.h>
+//#include <taglib/mpeg/mpegfile.h>
+//#include <taglib/mpeg/id3v2/id3v2tag.h>
+//#include <taglib/mpeg/id3v2/frames/attachedpictureframe.h>
 
+#include <unistd.h>
+#include <fcntl.h>
+#include <exception>
+
+struct MusicPath
+{
+    QString path;
+    bool ischecked;
+};
 
 class MainWid : public QMainWindow
 {
     Q_OBJECT
+public:
+    void Single();
+
+private:
+//    void paintEvent(QPaintEvent *event);
 
 public:
     MainWid(QWidget *parent = nullptr);
     ~MainWid();
 //    QString getMp3FileName(QString sqlName);
     void updatalistwidget(int value);//更新listWidget
-
+    void updataplaylistwidget(int value);//更新playlistWidget
     void updateSongPlaying();
-
-    void slot_showMiniWidget();   //迷你模式
+    void slot_showMiniWidget();//迷你模式
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
+    void changeDarkTheme();  //切换深浅色主题
+    void changeLightTheme();
+    void mousePressEvent(QMouseEvent *event);
+    void get_historyplaylist_information();  //保存历史记录
+    void local_Music();      //判断本地播放列表中歌曲是否存在
+    void new_PlayList();     //判断本地歌单歌曲是否存在
+    void albumCover_local_playlist(); //本地和歌单默认封面
+    void local_playInformation();     //本地播放信息
+    void playlist_playInformation();  //歌单播放信息
+    void albumCover_local();          //本地专辑
+    void albumCover_playlist();       //歌单专辑
 
+QGSettings *themeData = nullptr;
 
 public slots:
 //    void playSong(bool);
     void play_Song();   //播放和暂停
-    void contextMenuEvent(QContextMenuEvent *event);  //歌曲列表右键菜单
+    void on_musicInfoWidget_customContextMenuRequested(const QPoint &pos);  //歌曲列表右键菜单
+    void on_sidebarWidget_customContextMenuRequested(const QPoint &pos);    //侧边栏歌单区域右键菜单
+
 //    void contextMenuEvent(QContextMenuEvent *);
-    void Action1_slot();    //右键播放
-    void Action2_slot();    //右键下一首
-    void Action3_slot();    //右键添加到我喜欢
-    void Action4_slot();   //从歌单删除
-    void Action7_slot();   //歌曲信息
-    void on_listWidget_doubleClicked(QListWidgetItem *item);//双击播放playlist
-    void on_listWidget1_doubleClicked(QListWidgetItem *item);//双击播放playlist1
+    void playOrPauseAct();    //右键播放
+    void playNextSongAct();   //右键下一首
+
+    void getSongInfoAct();    //歌曲信息
+    void on_listWidget_doubleClicked(QListWidgetItem *item);         //双击本地音乐播放playlist
+    void on_musicListChangeWid_doubleClicked(QListWidgetItem *item); //双击歌单播放
     void Music_stateChang(QMediaPlayer::State state);//播放状态改变
+    void Music_playlist_stateChang(QMediaPlayer::State state);
     void on_lastBtn_clicked();             //上一首
-    void on_nextBtn_clicked();             //上一首
-    void positionChange(qint64 position);
+//    void on_playlist_lastBtn_clicked();  //上一首
+    void on_nextBtn_clicked();             //下一首
+//    void on_playlist_nextBtn_clicked();  //下一首
+    void positionChange(qint64 position);  //更新播放位置
+    void durationChange(qint64 duration);  //更新播放进度
+    void currentMediaChanged(QMediaContent content);  //按播放模式结束一段音乐自动输出封面、正在播放
+    void playlist_positionChange(qint64 position);
+    void playlist_durationChange(qint64 duration);
+//    void playlist_currentMediaChanged(QMediaContent content);
+    void setPosition(int position);
+//    void playlist_setPosition(int position);
+    bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击
+    void add_music_to_songlist(QAction *listact);    //添加到歌单
+    void deleteMusicFromLocalList(); //从本地音乐删除
+//    void deleteMusicFromSongList();  //从歌单删除音乐
+    void deleteThisSongList();
+    void showRenameDlg();
+    void renameThisSongList();       //重命名歌单
 
     // 拖动进度条
     void slidePress();
-    void slideMove(int position);
+//    void slideMove(int position);
     void slideRelease();
+//    void playlist_slidePress();
+////    void slideMove(int position);
+//    void playlist_slideRelease();
+    void PlayModeChanged(); //播放模式
 
-    void PlayModeChanged();    //播放模式
+    void initSystemTray();
+    void showBeforeList();  //显示历史播放列表
+    void show_volumeBtn();  //音量显示
+    void changeVolume(int values);
+    void addvSlider_slot();
+    void subvSlider_slot();
+    void showAboutWidget(); //显示关于界面
+    void nullMusicWidgetAddSong(); // 空页面添加歌曲
+    // 空页面添加文件夹
+    void nullMusicWidgetAddFile();
+    void add_nullMusicWidgetAddFile();
+    void clear_HistoryPlayList();  //清除历史记录
+    void showSearchResultWidget(); //显示搜索页面
+    void hideSearchResultWidget(); //隐藏搜索页面
+private:
+//    bool isStartPlay = false;      //默认不播放媒体
+
+public:
+    //添加文件夹
+    QStringList AllDirList;
+    QStringList DirList; // all checked dir
+    QStringList SongDirPath;
+    QDir matchDir;
+    QStringList matchMp3Files;
+    QString mp3Name;
+
+    QFileInfo fileInfo;
+    QByteArray bytes;
+    QString titleStr;
+    QString artistStr;
+    QString albumStr;
+    QString timeStr;
+    QString mp3Size;
+    QString type;
+    QString MD5Str;
+    QStringList MD5List;
+
+    QList<MusicPath> MusicPathList;
 
 private:
-
-    QString play_pause = "播放";
+//    QString play_pause = "播放";
     QWidget *mainWidget;
-
+    QWidget *rightWid;
     TitleBar *myTitleBar;
     SideBar *mySideBar;
-//    ChangeListWid *myChangeListWid;
+    ChangeListWid *nullMusicWidget;
     PlaySongArea *myPlaySongArea;
 
+    QVBoxLayout *rightlayout;
     QSqlTableModel *model;
     QSqlTableModel *model_1;
-
     QMenu *Menu;
-    QAction *Action1;
-    QAction *Action2;
-    QAction *Action3;
-    QAction *Action4;
-//    QAction *Action5;
-//    QAction *Action6;
-    QAction *Action7;
+    QAction *playAct;   //右键播放
+    QAction *nextAct;   //右键下一首
+    QAction *likeAct;   //右键添加到我喜欢
+    QAction *deleAct;   //右键从歌曲列表中删除
+    QAction *listAct;   //右键添加到歌单
+//    QAction *lookAct; //右键查看本地文件
+    QAction *songAct;   //右键歌曲信息
 
-//    QSlider *hSlider;
     Slider *hSlider;
+    Slider *vSlider;
+    QWidget *vSliderWid;
+    QHBoxLayout *HLayout;
     int moved = 0;
 
-   miniWidget *m_MiniWidget;
+    miniWidget *m_MiniWidget;
+//   SongItem *mySongItem;
 
+    //侧边栏歌单列表右键
+    QMenu *sideMenu;
+    QAction *actionPlay;
+    QAction *actionRename;
+    QAction *actionDelete;
+
+   //歌曲播放动效和高亮相关
+
+//   int lastPlayIndex = 0;
+    void currentPlayHighlight();
+    // 判断删除歌曲时跳过高亮
+    bool skipPlayHighlight = false;
+//    // 判断删除歌单歌曲时跳过高亮
+//    bool skipPlaylistHighlight = false;
+    AllPupWindow *aboutWidget;
+    int playMode = 0;
 
 };
 #endif // MAINWID_H

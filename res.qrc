@@ -78,7 +78,23 @@
         <file>img/default/play_w.png</file>
         <file>img/clicked/sequence.png</file>
         <file>img/default/point.png</file>
-        <file>img/fengmian.png</file>
         <file>img/kylin-music.png</file>
+        <file>translations/qt_zh_CN.qm</file>
+        <file>img/dark/lastsong.png</file>
+        <file>img/dark/nextsong.png</file>
+        <file>img/dark/singer.png</file>
+        <file>img/dark/songlist-w.png</file>
+        <file>img/dark/kylinlogo.png</file>
+        <file>img/dark/icon_love2_b@2x.png</file>
+        <file>img/dark/icon_random_w@2x.png</file>
+        <file>img/dark/icon_oneloop_w@2x.png</file>
+        <file>img/dark/icon_sequence_w@2x.png</file>
+        <file>img/dark/icon_songlist_h@2x.png</file>
+        <file>img/dark/icon_volume_large_w@2x.png</file>
+        <file>img/dark/icon_volume_close_w@2x.png</file>
+        <file>img/dark/icon_volume_small_w@2x.png</file>
+        <file>img/fengmian.png</file>
+        <file>translations/kylin-music_zh_CN.ts</file>
+        <file>translations/kylin-music_zh_CN.qm</file>
     </qresource>
 </RCC>

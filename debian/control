@@ -10,7 +10,11 @@ Build-Depends: debhelper,
             qttools5-dev-tools,
             qtbase5-dev-tools,
             qtmultimedia5-dev,
-			taglib
+			taglib,
+			libgsettings-qt-dev,
+            libqt5x11extras5-dev,
+            libkf5windowsystem-dev,
+			pkgconf
 Standards-Version: 4.4.1
 Homepage: https://github.com/ubuntukylin/kylin-music
 #Vcs-Browser: https://github.com/ubuntukylin/kylin-music
@@ -18,7 +22,11 @@ Homepage: https://github.com/ubuntukylin/kylin-music
 
 Package: kylin-music
 Architecture: any
-Depends: ${shlibs:Depends}, 
+Depends: libqt5sql5-sqlite,
+         libburner-media3-1,
+         gstreamer1.0-plugins-good,
+         gstreamer1.0-pulseaudio,
+         ${shlibs:Depends}, 
 		 ${misc:Depends}
 Description: kylin-music
  <insert long description, indented with spaces>
