@@ -31,7 +31,12 @@
 #include <QLineEdit>
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>
-
+#include <QTextEdit>
+#include <QLineEdit>
+#include <QApplication>
+#include <QScreen>
+#include <QDesktopWidget>
+#include <QDialog>
 
 #include "changelistwid.h"
 #include "songitem.h"
@@ -47,9 +52,14 @@ public:
     QDialog     *pupDialog;
     QPushButton *confirmBtn;
     QPushButton *cancelBtn;
-    QPushButton *closeBtn;
+    QToolButton *closeBtn;
     QLabel      *titleLab;
     QLineEdit   *enterLineEdit;
+    QVBoxLayout *testLayout;
+    QHBoxLayout *titleLayout;
+    QHBoxLayout *btnLayout;
+
+    QStackedWidget *stackWid;
     void dlgcolor();
 
 
@@ -59,6 +69,50 @@ public slots:
 
 private:
     void inpupdialog();
+
+};
+
+
+class SongInfoWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit SongInfoWidget(QWidget *parent = nullptr);
+
+    QDialog     *songInfoDlg;
+    QPushButton *songInfoConfirmBtn;
+    QPushButton *songInfoCancelBtn;
+    QToolButton *songInfoCloseBtn;
+    QLabel      *songInfoTitleLab;
+
+//    QLabel *songInfoDlgLabel;
+
+    QLabel *titleLab;
+    QLabel *artistLab;
+    QLabel *albumLab;
+    QLabel *typeLab;
+    QLabel *sizeLab;
+    QLabel *timeLab;
+    QLabel *pathLab;
+
+//    QLabel *musicNameLab;
+//    QLabel *singerNameLab;
+//    QLabel *albumNameLab;
+    QLineEdit   *musicNameEdit;
+    QLineEdit   *singerNameEdit;
+    QLineEdit   *albumNameEdit;
+    QLabel *fileTypeLab;
+    QLabel *fileSizeLab;
+    QLabel *fileTimeLab;
+    QLabel *filePathLab;
+    void songInfoDlgColor();
+
+public slots:
+    void songInfoCloseDialog();
+
+private:
+    void inSongInfoDlg();
+
 
 };
 #endif // ALLPUPWINDOW_H

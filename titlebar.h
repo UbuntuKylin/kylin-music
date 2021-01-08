@@ -56,19 +56,16 @@ public:
     QPushButton *userIconBtn;
     QPushButton *loginBtn;
 
-
     QPushButton *setBtn;
     QPushButton *miniBtn;
-    QPushButton *minimumBtn;
-    QPushButton *maximumBtn;
-    QPushButton *closeBtn;
-
+    QToolButton *minimumBtn;
+    QToolButton *maximumBtn;
+    QToolButton *closeBtn;
 
     //搜索相关
     QSqlTableModel *searchModel;
     QListWidget *searchWidget;
     MusicListWid *searchResultWidget;
-
 
     //设置菜单
     QMenu *settingMenu;
@@ -81,27 +78,19 @@ public:
 
     void titlecolor();
 
-
 public slots:
     void searchMusic();
 
-
 //    void showAboutWidget();
-
-
-
-
-
 
 protected:
 //    virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
-
-
 private slots:
     //进行最小化、最大化、还原、关闭
     void onClicked();
-
+private:
+    bool Minimize = false;       //最大化和还原俩个状态
 
 private:
     void initTitle();
@@ -110,7 +99,6 @@ private:
     QHBoxLayout *searchLayout;
     QHBoxLayout *LayoutLeft;
     QHBoxLayout *LayoutRight;
-
 };
 
 

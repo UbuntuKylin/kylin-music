@@ -28,11 +28,19 @@
 #include "mainwid.h"
 #include "connection.h"
 #include "xatom-helper.h"
+#include "myapplication.h"
+#include "kylinmuisc.h"
 
 int main(int argc, char *argv[])
 {
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    QApplication a(argc, argv);
+
+    MyApplication a("kylin-music", argc, argv );
+    QStringList args = a.arguments();
+    qDebug()<<"argc : "<<argc;
+    qDebug()<<"argv : "<<argv;
+    qDebug()<<"args : "<<args;
+//    QApplication a(argc, argv);
     if(!CreatConnection())
     {
         return 1;
@@ -48,8 +56,14 @@ int main(int argc, char *argv[])
         a.installTranslator(&trans_global);
         a.installTranslator(&trans_menu);
     }
+    qDebug() << "=================argc is " <<argc << argv[0] << argv[1];
 
-    MainWid w;
+    QString str = "";
+    if (argc > 1)
+    {
+        str = argv[1];
+    }
+    MainWid w(str);
 
     // 添加窗管协议
     MotifWmHints hints;
@@ -58,6 +72,8 @@ int main(int argc, char *argv[])
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(w.winId(), hints);
 
+//    w.processArgs(args);
     w.show();
+
     return a.exec();
 }

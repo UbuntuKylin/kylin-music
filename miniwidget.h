@@ -45,6 +45,9 @@ public:
     void mouseReleaseEvent(QMouseEvent *);
     void enterEvent(QEvent*);
     void leaveEvent(QEvent*);
+
+    void initMyApp();  // liucong add 20201222
+
 private:
     void initAction();
 

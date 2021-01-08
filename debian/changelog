@@ -1,3 +1,82 @@
+kylin-music (1.0.33kord) v101; urgency=medium
+
+  * 解决禅道BUG#30575 删除自建歌单后，点击播放面板的下一首按钮或双击播放，麒麟音乐闪退.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Thu, 07 Jan 2021 11:23:07 +0800
+
+kylin-music (1.0.32kord) v101; urgency=medium
+
+  * 解决禅道BUG#26686 建议弹窗要有圆角6px，投影再透明些.
+  * 解决禅道BUG#25095 新建歌单弹窗与背景界面过于融合，建议增加边框阴影.
+  * 解决禅道BUG#24705 新建歌单的窗口无阴影，无圆角.
+  * 解决禅道BUG#21370 任务栏小窗口标题未汉化
+  * 解决禅道BUG#27511 提示弹窗下半部分无圆角，按钮无阴影
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Wed, 06 Jan 2021 17:10:51 +0800
+
+kylin-music (1.0.31kord) v101; urgency=medium
+
+  * 解决禅道BUG#31791 开始菜单中连续点击两次麒麟音乐，麒麟音乐闪退.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Tue, 05 Jan 2021 16:29:05 +0800
+
+kylin-music (1.0.30kord) v101; urgency=medium
+
+  * 解决禅道BUG#24686 点击上一首应用闪退的问题.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Tue, 05 Jan 2021 10:04:33 +0800
+
+kylin-music (1.0.29kord) v101; urgency=medium
+
+  * 修改ui界面样式.
+  * 解决歌曲右键遗留下来的问题.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Tue, 29 Dec 2020 16:39:56 +0800
+
+kylin-music (1.0.28kord) v101; urgency=medium
+
+  * 根据设计改变部分按钮样式.
+  * 可以歌曲右键选择麒麟音乐进行添加歌曲.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sat, 26 Dec 2020 11:37:02 +0800
+
+kylin-music (1.0.27kord) v101; urgency=medium
+
+  * 可以拖拽添加歌曲.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Mon, 21 Dec 2020 14:10:45 +0800
+
+kylin-music (1.0.26kord) v101; urgency=medium
+
+  * 解决禅道BUG#27607 删除当前正在播放的歌曲，点击播放面板的下一曲按钮，麒麟音乐闪退.
+  * 解决禅道BUG#27522 播放我喜欢或者其他自建歌单的最后一首歌时，删除当前歌单其他歌曲，应用闪退.
+  * 解决禅道BUG#24912 在我喜欢中，切换主题后，待播放完列表的最后一首歌麒麟音乐自动退出程序.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Fri, 18 Dec 2020 15:48:48 +0800
+
+kylin-music (1.0.25kord) v101; urgency=medium
+
+  * 增加三联按钮样式.
+  * 增加F1调出用户手册快捷键.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Thu, 17 Dec 2020 19:16:00 +0800
+
+kylin-music (1.0.24kord) v101; urgency=medium
+
+  * 重新绘制歌曲列表右键歌曲信息的弹窗界面.
+  * 重绘歌单已存在、默认歌单无法删除等界面.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Tue, 15 Dec 2020 16:00:35 +0800
+
+kylin-music (1.0.23kord) v101; urgency=medium
+
+  * 解决禅道BUG#28304 创建歌单时标题长度无限制，但显示不全也无悬浮提示.
+  * 解决禅道BUG#27607 删除当前正在播放的歌曲，点击播放面板的下一曲按钮，麒麟音乐闪退.
+  * 解决禅道BUG#27522 播放我喜欢或者其他自建歌单的最后一首歌时，删除当前歌单其他歌曲，应用闪退.
+  * 解决禅道BUG#24912 在我喜欢中，切换主题后，待播放完列表的最后一首歌麒麟音乐自动退出程序.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sat, 12 Dec 2020 17:09:45 +0800
+
 kylin-music (1.0.22kord) v101; urgency=medium
 
   * 解决禅道BUG#27503 歌单重命名报错后，应用无法使用，也无法在图形化界面关闭应用.

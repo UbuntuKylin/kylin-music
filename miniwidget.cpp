@@ -17,6 +17,8 @@
 
 #include "miniwidget.h"
 #include "widgetstyle.h"
+#include "myapplication.h"
+#include <QDebug>
 
 miniWidget::miniWidget(QWidget *parent) : QFrame(parent)
 {
@@ -24,9 +26,10 @@ miniWidget::miniWidget(QWidget *parent) : QFrame(parent)
     this->setObjectName("miniWidget");
 
     m_mouseState = false;
-    setWindowFlags(Qt::FramelessWindowHint|Qt::Tool|Qt::WindowStaysOnTopHint);
+//    setWindowFlags(Qt::FramelessWindowHint|Qt::Tool|Qt::WindowStaysOnTopHint);
     this->setAttribute(Qt::WA_TranslucentBackground, true);     //窗体透明
-    this->setWindowTitle(tr("麒麟音乐"));
+//    this->setWindowTitle(tr("麒麟音乐"));
+    this->setWindowTitle(tr("Kylin music"));
 //    setStyleSheet("#miniWidget{border-top-left-radius:12px;border-bottom-left-radius:12px;}");
 
 
@@ -39,9 +42,9 @@ miniWidget::miniWidget(QWidget *parent) : QFrame(parent)
 
     // background-color:#FFFFFF;
 //    setStyleSheet("#miniWidget{border-radius:12px;background-color:transparent;}");
+    initMyApp();    // liucong add 20201222
 
     initAction();
-
 }
 
 void miniWidget::initAction()
@@ -100,6 +103,17 @@ void miniWidget::leaveEvent(QEvent *)
 
 }
 
+// liucong add 20201222
+void miniWidget::initMyApp()
+{
+    MyApplication * app = MyApplication::instance();
+//    connect(app, &MyApplication::messageReceived, [&](QString msg){
+//        qDebug() << "recv msg : " << msg;
+//    });
+//    app->setActivationWindow(this);
+}
+// liucong add 20201222 end
+
 void miniWidget::minicolor()
 {
     if(WidgetStyle::themeColor == 1)
@@ -110,9 +124,14 @@ void miniWidget::minicolor()
         m_coverLabel->setStyleSheet("QLabel{border-image:url(:/img/kylin-music.png);}");
 
         m_songNameLab->setStyleSheet("QLabel{color:#F9F9F9;}");
-        m_preBtn->setIcon(QIcon(":/img/dark/lastsong.png"));
+//        m_preBtn->setIcon(QIcon(":/img/dark/lastsong.png"));
+        m_preBtn->setStyleSheet("QPushButton{background:transparent;border-radius:15px;border-image:url(:/img/dark/lastsong.png);}"
+                               "QPushButton::hover{border-image:url(:/img/hover/lastsong.png);}"
+                               "QPushButton::pressed{border-image:url(:/img/clicked/lastsong.png);}");
 
-        m_playStateBtn->setStyleSheet("QPushButton{border-image:url(:/img/default/play2.png);}");
+        m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                      "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                      "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
         m_loveBtn->setIcon(QIcon(":/img/default/loveblack2.png"));
 
         m_orderBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/default/sequence.png);}"
@@ -127,7 +146,10 @@ void miniWidget::minicolor()
         m_recoveryWinBtn->setIconSize(QSize(30, 30));
         m_recoveryWinBtn->setStyleSheet("QPushButton{background-color:transparent;}");
 
-        m_nextBtn->setIcon(QIcon(":/img/dark/nextsong.png"));
+//        m_nextBtn->setIcon(QIcon(":/img/dark/nextsong.png"));
+        m_nextBtn->setStyleSheet("QPushButton{background:transparent;border-radius:15px;border-image:url(:/img/dark/nextsong.png);}"
+                               "QPushButton::hover{border-image:url(:/img/hover/nextsong.png);}"
+                               "QPushButton::pressed{border-image:url(:/img/clicked/nextsong.png);}");
 
         coverWid->setStyleSheet("background-color:rgba(0,0,0,0.4);\
                                 border-top-right-radius:6px;border-bottom-right-radius:6px;\
@@ -143,8 +165,13 @@ void miniWidget::minicolor()
         m_coverLabel->setStyleSheet("QLabel{border-image:url(:/img/kylin-music.png);}");
 
         m_songNameLab->setStyleSheet("QLabel{color:#303133;}");
-        m_preBtn->setIcon(QIcon(":/img/default/lastsong.png"));
-        m_playStateBtn->setStyleSheet("QPushButton{border-image:url(:/img/default/play2.png);}");
+//        m_preBtn->setIcon(QIcon(":/img/default/lastsong.png"));
+        m_preBtn->setStyleSheet("QPushButton{background:transparent;border-radius:15px;border-image:url(:/img/default/lastsong.png);}"
+                               "QPushButton::hover{border-image:url(:/img/hover/lastsong.png);}"
+                               "QPushButton::pressed{border-image:url(:/img/clicked/lastsong.png);}");
+        m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                      "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                      "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
         m_loveBtn->setIcon(QIcon(":/img/default/loveblack2.png"));
         m_orderBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/default/sequence.png);}"
                                   "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}");
@@ -156,17 +183,17 @@ void miniWidget::minicolor()
         m_recoveryWinBtn->setIconSize(QSize(30, 30));
         m_recoveryWinBtn->setStyleSheet("QPushButton{background-color:transparent;}");
 
-        m_nextBtn->setIcon(QIcon(":/img/default/nextsong_b@2x.png"));
+//        m_nextBtn->setIcon(QIcon(":/img/default/nextsong_b@2x.png"));
 
-
+        m_nextBtn->setStyleSheet("QPushButton{background:transparent;border-radius:15px;border-image:url(:/img/default/nextsong.png);}"
+                                 "QPushButton::hover{border-image:url(:/img/hover/nextsong.png);}"
+                                 "QPushButton::pressed{border-image:url(:/img/clicked/nextsong.png);}");
 
         coverWid->setStyleSheet("background-color:rgba(0,0,0,0.4);\
                                 border-top-right-radius:6px;border-bottom-right-radius:6px;\
                                 border-top-left-radius:0px;border-bottom-left-radius:0px");
 
-
     }
-
 }
 
 void miniWidget::init_miniWidget()

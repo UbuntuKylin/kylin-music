@@ -47,6 +47,9 @@
 #include <QShortcut>
 #include <QMessageBox>
 #include <QRect>
+#include <QTimer>
+#include <QLabel>
+#include <QtDBus>
 //窗口显示在屏幕中心
 #include <QApplication>
 #include <QScreen>
@@ -60,10 +63,16 @@
 #include "slider.h"
 #include "miniwidget.h"
 #include "allpupwindow.h"
+#include "daemonipcdbus.h"
+#include "kylinmuisc.h"
 
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/attachedpictureframe.h>
+#include <taglib/tag.h>
+#include <taglib/fileref.h>
+#include <taglib/taglib.h>
+#include <taglib/tpropertymap.h>
 //#include <taglib/mpeg/mpegfile.h>
 //#include <taglib/mpeg/id3v2/id3v2tag.h>
 //#include <taglib/mpeg/id3v2/frames/attachedpictureframe.h>
@@ -71,24 +80,29 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <exception>
+#include <QDBusInterface>
+#include <QDBusConnection>
 
 struct MusicPath
 {
     QString path;
+
     bool ischecked;
 };
 
 class MainWid : public QMainWindow
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.ukui.kylin_music.play")
 public:
-    void Single();
-
+    void Single(QString path);
+    void promptMessage();
 private:
 //    void paintEvent(QPaintEvent *event);
-
+//    QString g_file_path;
 public:
-    MainWid(QWidget *parent = nullptr);
+    MainWid(QString str, QWidget *parent=nullptr);
+//    MainWid(QWidget *);
     ~MainWid();
 //    QString getMp3FileName(QString sqlName);
     void updatalistwidget(int value);//更新listWidget
@@ -110,13 +124,23 @@ public:
     void albumCover_playlist();       //歌单专辑
 
 QGSettings *themeData = nullptr;
+protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
+
+public slots:
+    // 键盘响应事件
+    void keyPressEvent(QKeyEvent *event);
+    int kylin_music_play_request(QString path);
 
 public slots:
 //    void playSong(bool);
     void play_Song();   //播放和暂停
     void on_musicInfoWidget_customContextMenuRequested(const QPoint &pos);  //歌曲列表右键菜单
     void on_sidebarWidget_customContextMenuRequested(const QPoint &pos);    //侧边栏歌单区域右键菜单
-
+//    void setHsliderPosition();      //添加歌曲时记住当前播放的位置
 //    void contextMenuEvent(QContextMenuEvent *);
     void playOrPauseAct();    //右键播放
     void playNextSongAct();   //右键下一首
@@ -138,13 +162,17 @@ public slots:
 //    void playlist_currentMediaChanged(QMediaContent content);
     void setPosition(int position);
 //    void playlist_setPosition(int position);
-    bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击
+    bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击  事件过滤器
     void add_music_to_songlist(QAction *listact);    //添加到歌单
     void deleteMusicFromLocalList(); //从本地音乐删除
 //    void deleteMusicFromSongList();  //从歌单删除音乐
     void deleteThisSongList();
     void showRenameDlg();
     void renameThisSongList();       //重命名歌单
+    void promptThisSongList();       //歌单提示信息
+    void renameSongListCon();
+    void promptRenamePlayList();     //重命名歌单提示信息
+    void promptRemovePlayList();     //删除歌单提示信息
 
     // 拖动进度条
     void slidePress();
@@ -171,6 +199,26 @@ public slots:
     void hideSearchResultWidget(); //隐藏搜索页面
 private:
 //    bool isStartPlay = false;      //默认不播放媒体
+public:
+    QTimer *promptMessageTimer;
+    QLabel *promptMessageLabel;
+    void showPromptMessage();   //显示歌曲不存在的提示信息
+    void closePromptMessage();
+
+signals:
+    void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
+//    void musicDbus(QString path);
+//    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号
+//private slots:
+////    void addFile(const QStringList &addFile);
+public slots:
+//    void addFile(const QStringList &addFile);  //拖拽添加歌曲
+
+//protected:
+//    void dragEnterEvent(QDragEnterEvent *event);
+//    void dragMoveEvent(QDragMoveEvent *event);
+//    void dragLeaveEvent(QDragLeaveEvent *event);
+//    void dropEvent(QDropEvent *event);
 
 public:
     //添加文件夹
@@ -192,16 +240,33 @@ public:
     QString MD5Str;
     QStringList MD5List;
 
+    QString argName;
+
     QList<MusicPath> MusicPathList;
+public:
+    QString Dir;
+    QString musicPath;
+
+    QByteArray byteArray;
+    QString musicName;
+    QString musicSinger;
+    QString musicAlbum;
+    QString musicTime;
+    QString musicSize;
+    QString musicType;
 
 private:
-//    QString play_pause = "播放";
+    // 用户手册功能
+    DaemonIpcDbus *mDaemonIpcDbus;
+
     QWidget *mainWidget;
     QWidget *rightWid;
     TitleBar *myTitleBar;
     SideBar *mySideBar;
     ChangeListWid *nullMusicWidget;
     PlaySongArea *myPlaySongArea;
+    SongInfoWidget *mySongInfoWidget;
+    //文件拖拽功能
 
     QVBoxLayout *rightlayout;
     QSqlTableModel *model;
@@ -241,5 +306,20 @@ private:
     AllPupWindow *aboutWidget;
     int playMode = 0;
 
+public:
+    void processArgs(QStringList args);
+private:
+    void deleteConfig();
+    static MainWid *main_wid;
+    QStringList m_filesToPlay;
+    QString m_subtitleFile;
+    QString m_mediaTitle; //!< Force a title for the first file
+    // Change position and size
+    bool m_moveGui;
+    QPoint m_guiPosition;
+    bool m_resizeGui;
+    QSize m_guiSize;
+    QString m_arch;
+    QString m_snap;
 };
 #endif // MAINWID_H

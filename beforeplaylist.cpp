@@ -24,15 +24,7 @@ BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
 //    setFixedSize(320,640);
     setGeometry(640,0,320,562);
 //    setAttribute(Qt::WA_TranslucentBackground, true);
-
     setStyleSheet("background:#FFFFFF;");
-    // 设置边框阴影
-    QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect(this);
-    shadowEffect->setOffset(0, 0);
-    shadowEffect->setColor(Qt::gray);
-    shadowEffect->setBlurRadius(6);
-    this->setGraphicsEffect(shadowEffect);
-
 
     initUi();
 
@@ -44,9 +36,9 @@ void BeforePlayList::initUi()
     QHBoxLayout *titleLayout = new QHBoxLayout(this);
 
 
-    beforePlayList =new QListWidget(this);
+    beforePlayList = new QListWidget(this);
 
-
+    beforePlayList->setContentsMargins(16,0,16,0);
     beforeListTitleLabel = new QLabel(this);
 //    beforeListTitleLabel->setText("播放列表");
     beforeListTitleLabel->setText(tr("The playlist"));
@@ -83,8 +75,6 @@ void BeforePlayList::initUi()
                             "QToolButton::pressed{background-color:#FFFFFF;border-radius:16px;}"
                             );
 
-
-
     QWidget *titleWidget = new QWidget(this);
     titleWidget->setFixedHeight(45);
     titleWidget->setStyleSheet("background-color:#FFFFFF;");
@@ -99,8 +89,10 @@ void BeforePlayList::initUi()
     mainLayout->addWidget(titleWidget,0,Qt::AlignTop);
     mainLayout->addWidget(beforePlayList);
     mainLayout->setSpacing(0);
-    mainLayout->setMargin(0);
+//    mainLayout->setMargin(0);
 
+//    QWidget *mainWidget = new QWidget(this);
+//    mainWidget->setLayout(mainLayout);
 
 //    beforePlayList->setStyleSheet("QScrollBar{background-color:#F0F0F0;border-radius:3px;width:6px;}"
 //                                  "QScrollBar::handle:vertical{background-color:#C2C2C2;border-radius:3px;width:6px;min-height:20px;}"
@@ -124,10 +116,6 @@ void BeforePlayList::initUi()
 
 
     this->setLayout(mainLayout);
-
+//    mainWidget->raise();
     this->raise();
-
-
-
-
 }

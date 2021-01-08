@@ -38,6 +38,7 @@
 
 #include "beforeplaylist.h"
 #include "widgetstyle.h"
+#include "allpupwindow.h"
 
 class PlaySongArea : public QWidget
 {

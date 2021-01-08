@@ -46,12 +46,13 @@ public:
     explicit SideBar(QWidget *parent = nullptr);
 
     QLabel *recommendLabel;
-    QLabel *logoLabel;
+    QPushButton *logoLabel;
     QLabel *logoNameLabel;
     QToolButton *PlayListBtn;
     QLabel *MySongListLabel;
     QPushButton *addSongListBtn;
 
+    QToolButton *pButton; //按钮text
 
     QListWidgetItem *newSongList[20]; //包括我喜欢在内的所有item
 
@@ -74,6 +75,13 @@ public:
 
     AllPupWindow *renameSongListPup;  //重命名弹窗
 
+    AllPupWindow *promptRenamePlayList;     //默认歌单重命名第二次弹窗
+
+    AllPupWindow *promptSongListPup;  //  您确定删除歌单吗?
+
+    AllPupWindow *promptRemovePlayList;  //默认歌单删除第二次弹窗
+
+    AllPupWindow *promptExistListPup;  //歌单名已存在
 
     void get_listmusic_information(int listindex);
 
@@ -92,6 +100,7 @@ public:
 
     void sidecolor();
 
+    int currentPlayIndex = -1;   //高亮相关
     // 判断删除歌单歌曲时跳过高亮
     bool skipPlaylistHighlight = false;
 private:
@@ -108,7 +117,7 @@ public slots:
     void on_musicListChangeWid_customContextMenuRequested(const QPoint &pos);
     void listPlayAct_slot();
     void listNextAct_slot();
-    void deleteMusicFromSongList();
+    void deleteMusicFromSongList();    // 从歌单中删除歌曲
     void listSongAct_slot();
 
 //    void updataplaylistwidget(int value);//更新playlistWidget

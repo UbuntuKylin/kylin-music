@@ -171,7 +171,7 @@ void SongItem::initItem()
     mainLayout->addWidget(singerLabel,174,Qt::AlignVCenter);
     mainLayout->addWidget(albumLabel,174,Qt::AlignVCenter);
     mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
-
+    mainLayout->setContentsMargins(30,0,0,0);
 
 
 }

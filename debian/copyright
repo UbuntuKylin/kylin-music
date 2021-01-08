@@ -7,7 +7,7 @@ Source: https://github.com/UbuntuKylin/kylin-music
 
 Files: *
 Copyright: 2020, KylinSoft Co., Ltd
-License: GPL-3.0+
+License: GPL-3
 
 Files: debian/*
 Copyright: 2020 liujialin <liujialin@kylinos.cn>

@@ -43,7 +43,8 @@ void SideBar::sidecolor()
                       background: #1F2022;\
                       border-top-left-radius: 12px;border-bottom-left-radius:12px;}");
 
-        logoLabel->setStyleSheet("border-image:url(:/img/kylin-music.png);margin-left:0px;");
+        logoLabel->setStyleSheet("border-image:url(:/img/kylin-music-logo.png);"
+                                 "width:24px;height:24;");
 
         logoNameLabel->setStyleSheet("width: 56px;\
                                      height: 20px;\
@@ -62,15 +63,20 @@ void SideBar::sidecolor()
         PlayListBtn->setStyleSheet("QToolButton{padding-left:15px;margin-left:14px;\
                                    font-size: 14px;\
                                     \
-                                   background:#FF7171;\
+                                   background:#3790FA;\
                                    color:#FFFFFF;border-radius:16px;}"
-                                    "QToolButton::hover{background:#FF4848;}"
-                                    "QToolButton::pressed{background:#DD3C3C;}");
+                                    "QToolButton::hover{background:#40A9FB;}"
+                                    "QToolButton::pressed{background:#296CD9;}");
 
         MySongListLabel->setStyleSheet("font-size: 14px;margin-left:26px;\
                                 \
                                color: #8F9399;\
                                line-height: 14px;");
+
+        addSongListBtn->setStyleSheet("border-radius:4px;}"
+                                      "QPushButton::hover{color:#8F9399;}"
+                                      "QPushButton::pressed{color:#606265;}");
+
         songListWidget->setStyleSheet("QListWidget{background-color:#1F2022;border:0px;}"
                                       "QListWidget::item{background-color:#1F2022;}"
                                       "QListWidget::item:hover{background-color:#1F2022;}"
@@ -84,8 +90,7 @@ void SideBar::sidecolor()
         setStyleSheet("#SideBar{width: 210px;\
                       background: #FAFAFA;\
                       border-top-left-radius: 12px;border-bottom-left-radius:12px;}");
-        logoLabel->setStyleSheet("border-image:url(:/img/kylin-music.png);margin-left:5px;"
-                                 "width:24px;height:24;");
+        logoLabel->setStyleSheet("border-image:url(:/img/kylin-music-logo.png);");
         logoNameLabel->setStyleSheet("width: 56px;\
                                      height: 20px;\
                                      font-size: 14px;\
@@ -102,26 +107,26 @@ void SideBar::sidecolor()
                                       line-height: 14px;"
                                         );
         PlayListBtn->setStyleSheet("QToolButton{padding-left:15px;margin-left:14px;\
-                                   font-size: 14px;\
-                                    \
-                                   background:#FF7171;\
-                                   color:#FFFFFF;border-radius:16px;}"
-                                    "QToolButton::hover{background:#FF4848;}"
-                                    "QToolButton::pressed{background:#DD3C3C;}");
+                                 font-size: 14px;\
+                                  \
+                                 background:#3790FA;\
+                                 color:#FFFFFF;border-radius:16px;}"
+                                  "QToolButton::hover{background:#40A9FB;}"
+                                  "QToolButton::pressed{background:#296CD9;}");
         MySongListLabel->setStyleSheet("font-size: 14px;margin-left:26px;\
                                 \
                                color: #8F9399;\
                                line-height: 14px;");
+        addSongListBtn->setStyleSheet("border-radius:4px;}"
+                                      "QPushButton::hover{color:#8F9399;}"
+                                      "QPushButton::pressed{color:#606265;}");
 
         songListWidget->setStyleSheet("QListWidget{background-color:#FAFAFA;border:0px;}"
                                       "QListWidget::item:selected{background-color:#FAFAFA;}"
                                       "QListWidget::item:hover{background-color:#FAFAFA;}"
                                       "QListWidget::item:pressed{background-color:#FAFAFA;}");
-
     }
 }
-
-
 
 void SideBar::initTopWidget()
 {
@@ -129,16 +134,18 @@ void SideBar::initTopWidget()
     QVBoxLayout *sideBarLayout = new QVBoxLayout(this);
 
     QHBoxLayout *logoLayout = new QHBoxLayout(this);
-    logoLabel = new QLabel(this);
+    logoLabel = new QPushButton(this);
     logoNameLabel = new QLabel(this);
     logoNameLabel->setFixedSize(59,20);
 //    logoNameLabel->setText("麒麟音乐");
-    logoNameLabel->setText(tr("Kirin music"));
+    logoNameLabel->setText(tr("Kylin music"));
     //    logoLabel->setGeometry(40,20,100,30);
-    logoLabel->setFixedSize(28,24);
+    logoLabel->setFixedSize(24,24);
+    logoLabel->setIconSize(QSize(24,24));
     logoLayout->addWidget(logoLabel,Qt::AlignLeft);
+    logoLayout->setSpacing(8);
     logoLayout->addWidget(logoNameLabel,0,Qt::AlignLeft);
-
+    logoLayout->setContentsMargins(8,8,0,0);
 
     recommendLabel = new QLabel(this);
 //    recommendLabel->setText("音乐库");
@@ -149,8 +156,8 @@ void SideBar::initTopWidget()
 //    PlayListBtn->setGeometry(16,99,180,32);
     PlayListBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     PlayListBtn->setIconSize(QSize(16,16));
-//    PlayListBtn->setText("  歌曲列表");
-    PlayListBtn->setText(tr("  The song list"));
+//    PlayListBtn->setText(tr("歌曲列表"));
+    PlayListBtn->setText(tr("The song list"));
     PlayListBtn->setFixedSize(180,32);
 
     QHBoxLayout *addSongListLayout = new QHBoxLayout(this);
@@ -164,16 +171,14 @@ void SideBar::initTopWidget()
 
 //    addSongListBtn->setGeometry(100,161,16,16);
     addSongListBtn->setFixedSize(16,16);
+    addSongListBtn->setIcon(QIcon::fromTheme("list-add-symbolic"));
 //    addSongListBtn->setIcon(QIcon(":/img/default/add.png"));
-    addSongListBtn->setStyleSheet("QPushButton{border-image:url(:/img/default/add.png);}\
-                                  QPushButton:pressed{border-image:url(:/img/clicked/add.png);}");
+
     addSongListLayout->addWidget(MySongListLabel);
     addSongListLayout->addWidget(addSongListBtn);
     addSongListLayout->addSpacing(20);
 
 //    addSongListBtn->hide();   //添加歌单按钮隐藏
-
-
 
     songListWidget = new QListWidget(this);
 //    songListWidget->setFrameShape(QListWidget::NoFrame);
@@ -198,29 +203,59 @@ void SideBar::initTopWidget()
 
     this->setLayout(sideBarLayout);
 
-
-
     newSonglistPup = new AllPupWindow(this);
 //    newSonglistPup->titleLab->setText("新建歌单");
     newSonglistPup->titleLab->setText(tr("The new song list"));
     newSonglistPup->pupDialog->hide();
 
     connect(addSongListBtn, SIGNAL(clicked(bool)), this, SLOT(addSongList()));
-
     connect(newSonglistPup->confirmBtn,SIGNAL(clicked(bool)),this,SLOT(createSongList()));
     connect(newSonglistPup->enterLineEdit,SIGNAL(returnPressed()),this,SLOT(createSongList()));
 
+    //您确定要删除歌单吗?  stackWid->setCurrentIndex(1);
+    promptSongListPup = new AllPupWindow(this);
+//    promptSongListPup->titleLab->setText(tr("提示"));
+    promptSongListPup->titleLab->setText(tr("prompt"));
+    promptSongListPup->enterLineEdit->hide();
 
+    //默认歌单无法删除?  stackWid->setCurrentIndex(2);
+    promptRenamePlayList = new AllPupWindow(this);
+//    promptRenamePlayList->titleLab->setText(tr("提示信息"));
+    promptRenamePlayList->titleLab->setText(tr("Prompt information"));
+    promptRenamePlayList->enterLineEdit->hide();
 
+    //歌单重命名
     renameSongListPup = new AllPupWindow(this);
-//    renameSongListPup->titleLab->setText("重命名");
+//    renameSongListPup->titleLab->setText(tr("重命名"));
     renameSongListPup->titleLab->setText(tr("rename"));
     renameSongListPup->pupDialog->hide();
+
+    //歌单已存在   stackWid->setCurrentIndex(3);
+    promptExistListPup = new AllPupWindow(this);
+//    promptExistListPup->titleLab->setText(tr("提示信息"));
+    promptExistListPup->titleLab->setText(tr("Prompt information"));
+    promptExistListPup->enterLineEdit->hide();
+
+    //默认歌单无法重命名  stackWid->setCurrentIndex(4);
+    promptRemovePlayList = new AllPupWindow(this);
+//    promptRemovePlayList->titleLab->setText(tr("提示信息"));
+    promptRemovePlayList->titleLab->setText(tr("Prompt information"));
+    promptRemovePlayList->enterLineEdit->hide();
+
+
+//    promptRemovePlayList = new AllPupWindow(this);
+
+    //    enterLineEdit->setPlaceholderText("请输入歌单标题：");
+//    QLabel *promptLabel = new QLabel(this);
+//    promptLabel->setText(tr("您确定要删除歌单吗?"));
+//    promptSongListPup->testLayout->addLayout(promptSongListPup->titleLayout);
+//    promptSongListPup->testLayout->addWidget(promptLabel);
+//    promptSongListPup->testLayout->addLayout(promptSongListPup->btnLayout);
+//    promptSongListPup->pupDialog->hide();
 
 
     rightChangeWid = new QStackedWidget(this);
     myMusicListWid = new MusicListWid(this);
-
 
     rightChangeWid->addWidget(myMusicListWid);
 
@@ -246,7 +281,7 @@ void SideBar::initTopWidget()
 
         allListName.append(listName);  //初始化时把歌单名放进字符串表中
 
-        qDebug() << "listName" << listName;
+        qDebug() << "listName listName" << listName;
 
         newSongListBtn[i]->setText(listName);
 
@@ -287,7 +322,21 @@ void SideBar::initTopWidget()
 
         songListWidget->setItemWidget(newSongList[i],newSongListBtn[i]);
         musicListChangeWid[i] = new MusicListWid(this);
-        musicListChangeWid[i]->songListLabel->setText(listName);
+//        musicListChangeWid[i]->songListLabel->setText(listName);
+        QString listNameLab = "";
+        if(listName.length() > 9)
+        {
+            listNameLab = listName.mid(0,8);
+            listNameLab.append("...");
+            musicListChangeWid[i]->songListLabel->setText(listNameLab);
+            musicListChangeWid[i]->songListLabel->setToolTip(listName);
+        }
+        else
+        {
+            musicListChangeWid[i]->songListLabel->setText(listName);
+        }
+
+
         musicListChangeWid[i]->top_addSongBtn->hide();
         rightChangeWid->addWidget(musicListChangeWid[i]);
 
@@ -298,10 +347,7 @@ void SideBar::initTopWidget()
 
         qDebug() << "数据库" << "获取歌单歌曲";
         get_listmusic_information(i);
-
     }
-
-
 
     connect(PlayListBtn,SIGNAL(clicked(bool)),this,SLOT(ChangePage()));
 //    connect(musicListChangeWid[btnIndex]->Music,&QMediaPlayer::stateChanged,this,&SideBar::Music_playlist_stateChang);
@@ -315,8 +361,6 @@ void SideBar::initTopWidget()
 //        connect(musicListChangeWid[i]->PlayList,&QMediaPlaylist::currentIndexChanged,
 //            this,&SideBar::updataplaylistwidget);
     }
-
-
 }
 
 void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos)
@@ -444,8 +488,6 @@ void SideBar::listPlayAct_slot()
 
 
     }
-
-
 //        if(musicListChangeWid[currentSelectList]->musicInfoWidget->item(musicListChangeWid[currentSelectList]->PlayList->currentIndex())->isSelected())
 //        {
 //            if(musicListChangeWid[currentSelectList]->Music->state() == QMediaPlayer::PlayingState)
@@ -566,19 +608,19 @@ void SideBar::deleteMusicFromSongList()
     {
 
 //        musicListChangeWid[templistrow]->PlayList->setCurrentIndex(0);
+        currentPlayIndex = 0;
         musicListChangeWid[currentSelectList]->PlayList->removeMedia(tempmusicrow, tempmusicrow);
         musicListChangeWid[currentSelectList]->Music->setPlaylist(musicListChangeWid[currentSelectList]->PlayList);
         musicListChangeWid[currentSelectList]->PlayList->setCurrentIndex(tempmusicRow - 1);
+        currentPlayIndex = tempmusicRow - 1;
 
 //        musicListChangeWid[templistrow]->Music->setPosition(position);
         musicListChangeWid[currentSelectList]->Music->play();
     }
     else if (tempmusicRow == tempmusicrow)
     {
-        qDebug()<<"currentSelectList currentSelectList : "<<currentSelectList;
         if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() == 1)
         {
-            qDebug()<<"currentSelectList currentSelectList : ";
             musicListChangeWid[currentSelectList]->Music->stop();
 //            playSongArea->songText("");
 //            playSongArea->bottomLeftLabel->setText("");
@@ -587,7 +629,6 @@ void SideBar::deleteMusicFromSongList()
         {
             if (tempmusicRow == musicListChangeWid[currentSelectList]->musicInfoWidget->count() - 1)
             {
-                qDebug()<<"currentSelectList currentSelectList : "<<currentSelectList;
                 musicListChangeWid[currentSelectList]->Music->stop();
                 musicListChangeWid[currentSelectList]->PlayList->removeMedia(tempmusicRow);
                 musicListChangeWid[currentSelectList]->PlayList->setCurrentIndex(0);
@@ -595,13 +636,9 @@ void SideBar::deleteMusicFromSongList()
             }
             else
             {
-                qDebug()<<"currentSelectList : "<<currentSelectList;
                 musicListChangeWid[currentSelectList]->Music->stop();
-                qDebug()<<"currentSelectList : "<<currentSelectList;
                 musicListChangeWid[currentSelectList]->PlayList->removeMedia(tempmusicRow);
-                qDebug()<<"currentSelectList : "<<currentSelectList;
                 musicListChangeWid[currentSelectList]->PlayList->setCurrentIndex(tempmusicRow);
-                qDebug()<<"currentSelectList : "<<currentSelectList;
                 musicListChangeWid[currentSelectList]->Music->setPlaylist(musicListChangeWid[templistrow]->PlayList);
             }
         }
@@ -681,8 +718,6 @@ void SideBar::addSongList()
     newSonglistPup->enterLineEdit->clear();
     newSonglistPup->pupDialog->show();
     newSonglistPup->enterLineEdit->setFocus();
-
-
 }
 
 
@@ -692,7 +727,7 @@ void SideBar::createSongList()
 
     QString listName = newSonglistPup->enterLineEdit->text();
     newSonglistPup->enterLineEdit->clear();
-    qDebug() << listName;
+    qDebug() << "enterLineEdit : "<<listName;
 
     if( num >= 19 )
     {
@@ -765,9 +800,23 @@ void SideBar::createSongList()
         musicListChangeWid[num] = new MusicListWid(this);    //歌曲列表界面占据一个 所以此处应该是num
         musicListChangeWid[num]->top_addSongBtn->hide();
         musicListChangeWid[num]->songListLabel->setText(listName);
+
+        QString listNameLab = "";
+        if(listName.length() > 9)
+        {
+            listNameLab = listName.mid(0,8);
+            listNameLab.append("...");
+            musicListChangeWid[num]->songListLabel->setText(listNameLab);
+            musicListChangeWid[num]->songListLabel->setToolTip(listName);
+        }
+        else
+        {
+            musicListChangeWid[num]->songListLabel->setText(listName);
+        }
+
         rightChangeWid->addWidget(musicListChangeWid[num]);
 
-        qDebug() << songListWidget->count() << "121111" << rightChangeWid->count();
+        qDebug() << songListWidget->count() << "rightChangeWid->count()" << rightChangeWid->count();
         connect(newSongListBtn[num],SIGNAL(clicked(bool)),this,SLOT(AlterPage()));
         musicListChangeWid[num]->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(musicListChangeWid[num],SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -780,7 +829,6 @@ void SideBar::createSongList()
 
         newSonglistPup->pupDialog->hide();
     }
-
 }
 
 void SideBar::ChangePage()
@@ -806,7 +854,7 @@ void SideBar::AlterPage()
     qDebug() << "void SideBar::AlterPage()void SideBar::AlterPage()void SideBar::AlterPage()";
 //    rightChangeWid->setCurrentIndex(index+1);
 
-    QToolButton *pButton = qobject_cast<QToolButton *>(sender());
+    pButton = qobject_cast<QToolButton *>(sender());
 
     btnIndex = 0;
 
@@ -832,10 +880,7 @@ void SideBar::AlterPage()
             }
         }
     }
-
     qDebug() << "rightChangeWid   " << pButton->text() << "  " << btnIndex+1;
-    qDebug() << "pButton : " << pButton;
-    qDebug() << "btnIndex : " << btnIndex;
 }
 
 
@@ -884,8 +929,6 @@ void SideBar::get_listmusic_information(int listindex)
 
                 qDebug() << "歌单" << songName << allmusiclist.at(j) << "转换成整型" << num1;
             }
-
-
             musicListChangeWid[i]->PlayList->addMedia(QUrl::fromLocalFile(Path));
         }
     }

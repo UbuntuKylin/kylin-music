@@ -11,13 +11,14 @@ CONFIG += c++11
 
 TARGET = kylin-music
 
-LIBS += /usr/lib/libtag.so
-
-LIBS += /usr/lib/libtag_c.so
+LIBS += -ltag -ltag_c
 
 # 适配窗口管理器圆角阴影
 LIBS +=-lpthread
 LIBS +=-lX11
+
+INCLUDEPATH += qtsingleapplication
+DEPENDPATH += qtsingleapplication
 
 INCLUDEPATH += ./taglib
 
@@ -58,10 +59,15 @@ PKGCONFIG += gsettings-qt
 SOURCES += \
     allpupwindow.cpp \
     changelistwid.cpp \
+    daemonipcdbus.cpp \
+#    kylinmuisc.cpp \
     main.cpp \
     mainwid.cpp \
+    menumodule.cpp \
     miniwidget.cpp \
     playsongarea.cpp \
+    qtsingleapplication/qtlocalpeer.cpp \
+    qtsingleapplication/qtsingleapplication.cpp \
     sidebar.cpp \
     songitem.cpp \
     titlebar.cpp \
@@ -74,9 +80,15 @@ SOURCES += \
 HEADERS += \
     allpupwindow.h \
     changelistwid.h \
+    daemonipcdbus.h \
+#    kylinmuisc.h \
     mainwid.h \
+    menumodule.h \
     miniwidget.h \
+    myapplication.h \
     playsongarea.h \
+    qtsingleapplication/qtlocalpeer.h \
+    qtsingleapplication/qtsingleapplication.h \
     sidebar.h \
     songitem.h \
     titlebar.h \

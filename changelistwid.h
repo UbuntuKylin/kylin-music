@@ -116,16 +116,16 @@ public:
     QStringList songFiles;
     QString Dir;
     QStringList matchMp3Files;
-    QString mp3Name;
+    QString musicPath;
 
     QFileInfo fileInfo;
-    QByteArray bytes;
-    QString titleStr;
-    QString artistStr;
-    QString albumStr;
-    QString timeStr;
-    QString mp3Size;
-    QString type;
+    QByteArray byteArray;
+    QString musicName;
+    QString musicSinger;
+    QString musicAlbum;
+    QString musicTime;
+    QString musicSize;
+    QString musicType;
     QString MD5Str;
     QStringList MD5List;
     QDir matchDir;
@@ -142,6 +142,8 @@ public:
 
     int currentPlayIndex = -1;   //高亮相关
     bool isStartPlay = false;
+signals:
+//    void nullWidgetAddFile();
 public:
 
     void get_localmusic_information();   //获取初始界面的歌曲列表信息
@@ -152,13 +154,18 @@ public:
 
 //public slots:
     void on_top_addSongBtn_slot();  //添加歌曲
-    void addFile();                 //添加文件夹
-    void addSong(const QStringList &addsong);
-protected:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
-    void dropEvent(QDropEvent *event);
+
+//signals:
+//    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号
+
+public slots:
+    void addFile(const QStringList &addFile);  //拖拽添加歌曲
+
+//protected:
+//    void dragEnterEvent(QDragEnterEvent *event);
+//    void dragMoveEvent(QDragMoveEvent *event);
+//    void dragLeaveEvent(QDragLeaveEvent *event);
+//    void dropEvent(QDropEvent *event);
 
 private:
     QStackedWidget *mpwid;
