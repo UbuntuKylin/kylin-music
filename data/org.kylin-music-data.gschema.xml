@@ -1,0 +1,15 @@
+<schemalist gettext-domain="kylin-music">
+     <schema id="org.kylin-music-data.settings"  path="/org/kylin-recorder/">
+         <key name="light" type="s" >
+             <default>"1111111111"</default>
+             <summary>light</summary>
+             <description>light</description>
+         </key>
+         <key name="dark" type="s" >
+             <default>"2222222222"</default>
+             <summary>dark</summary>
+             <description>dark</description>
+         </key>
+
+     </schema>
+</schemalist>

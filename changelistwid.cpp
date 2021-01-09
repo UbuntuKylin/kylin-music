@@ -1,13 +1,31 @@
+/*
+ * Copyright (C) 2020, KylinSoft Co., Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "changelistwid.h"
+#include "songitem.h"
+#include "widgetstyle.h"
 
 ChangeListWid::ChangeListWid(QWidget *parent):QWidget(parent)
 {
     this->setObjectName("ChangeListWid");
-
-
+    this->setAcceptDrops(true);
     initStack();
-
     this->resize(750,80);
+    nullWidgetColor();
 
 }
 
@@ -18,24 +36,14 @@ void ChangeListWid::initStack()
 
     songListLabel = new QLabel(this);
     songListLabel->setGeometry(30,18,100,30);
-    songListLabel->setText("歌曲列表");
-    songListLabel->setStyleSheet("width:96px;height:24px;"
-                                 "font-size: 24px;\
-                                 font-family: PingFangSC-Regular, PingFang SC;\
-                                 font-weight: 600;\
-                                 border:none;\
-                                 color: #303133;\
-                                 line-height: 24px;");
+//    songListLabel->setText("歌曲列表");
+    songListLabel->setText(tr("The song list"));
+
 
     songNumberLabel = new QLabel(this);
     songNumberLabel->setGeometry(142,28,40,18);
-    songNumberLabel->setText("共0首");
-    songNumberLabel->setStyleSheet("font-size: 14px;\
-                                   font-family: PingFangSC-Regular, PingFang SC;\
-                                   font-weight: 400;\
-                                   border:none;\
-                                   color: #8F9399;\
-                                   line-height: 14px;");
+//    songNumberLabel->setText("共0首");
+    songNumberLabel->setText(tr("A total of 0 first"));
 
     nullMusicIconLabel = new QLabel(this);
     nullMusicIconLabel->setGeometry(275,122,200,180);
@@ -43,28 +51,99 @@ void ChangeListWid::initStack()
 
     nullMusicLabel = new QLabel(this);
     nullMusicLabel->setGeometry(333,313,84,24);
-    nullMusicLabel->setText("还没有歌曲！");
-    nullMusicLabel->setStyleSheet("font-size: 14px;\
-                                  font-family: PingFangSC-Regular, PingFang SC;\
-                                  font-weight: 400;\
-                                  border:none;\
-                                  color: #000000;\
-                                  line-height:24px;");
+//    nullMusicLabel->setText("还没有歌曲！");
+    nullMusicLabel->setText(tr("There are no songs yet!"));
+
 
     n_addLocalSong = new QPushButton(this);
     n_addLocalFolder = new QPushButton(this);
 
+//    musicListWidChange = new MusicListWid;
+
     n_addLocalSong->setGeometry(240,357,126,30);
-    n_addLocalSong->setText("添加本地歌曲");
-    n_addLocalSong->setStyleSheet("font-size:14px;color:#303133;border-radius:15px;border:2px solid #DDDFE7;"
-                                  "font-family: PingFangSC-Regular, PingFang SC;\
-                                  font-weight: 400;width:84px;height:14px;");
+//    n_addLocalSong->setText("添加本地歌曲");
+    n_addLocalSong->setText(tr("Add local songs"));
+
 
     n_addLocalFolder->setGeometry(385,357,126,30);
-    n_addLocalFolder->setText("添加本地文件夹");
-    n_addLocalFolder->setStyleSheet("font-size:14px;color:#303133;border-radius:15px;border:2px solid #DDDFE7;"
-                                    "font-family: PingFangSC-Regular, PingFang SC;\
-                                    font-weight: 400;width:84px;height:14px;");
+//    n_addLocalFolder->setText("添加本地文件夹");
+    n_addLocalFolder->setText(tr("Add local folders"));
+}
+
+void ChangeListWid::nullWidgetColor()
+{
+    if(WidgetStyle::themeColor == 1)
+    {
+        songListLabel->setStyleSheet("width:96px;height:24px;"
+                                     "font-size: 24px;\
+                                      \
+                                     font-weight: 600;\
+                                     color:rgba(249,249,249,1);\
+                                     line-height: 24px;");
+
+        songNumberLabel->setStyleSheet("font-size: 14px;\
+                                         \
+                                        font-weight: 400;\
+                                        border:none;\
+                                        color: #8F9399;\
+                                        line-height: 14px;");
+
+        nullMusicLabel->setStyleSheet("font-size: 14px;\
+                                       \
+                                      font-weight: 400;\
+                                      border:none;\
+                                      color: rgba(143, 147, 153, 1);\
+                                      line-height:24px;");
+
+        n_addLocalSong->setStyleSheet("QPushButton{font-size:14px;color:rgba(249, 249, 249, 1);border-radius:15px;border:2px solid #DDDFE7;"
+                                      "font-weight: 400;width:84px;height:14px;}"
+                                      "QPushButton::hover{color:#8F9399;}"
+                                      "QPushButton::pressed{background:#ECEEF5;}");
+
+        n_addLocalFolder->setStyleSheet("font-size:14px;color:rgba(249, 249, 249, 1);border-radius:15px;border:2px solid #DDDFE7;"
+                                        " \
+                                        font-weight: 400;width:84px;height:14px;");
+    }
+    else if(WidgetStyle::themeColor == 0)
+    {
+        songListLabel->setStyleSheet("width:96px;height:24px;"
+                                     "font-size: 24px;\
+                                      \
+                                     font-weight: 600;\
+                                     border:none;\
+                                     color: #303133;\
+                                     line-height: 24px;");
+
+        songNumberLabel->setStyleSheet("font-size: 14px;\
+                                        \
+                                       font-weight: 400;\
+                                       border:none;\
+                                       color: #8F9399;\
+                                       line-height: 14px;");
+
+        nullMusicLabel->setStyleSheet("font-size: 14px;\
+                                       \
+                                      font-weight: 400;\
+                                      border:none;\
+                                      color: #000000;\
+                                      line-height:24px;");
+
+        n_addLocalSong->setStyleSheet("QPushButton{font-size:14px;color:#303133;border-radius:15px;border:2px solid #DDDFE7;"
+                                      "font-weight: 400;width:84px;height:14px;}"
+                                      "QPushButton::hover{color:#8F9399;}"
+                                      "QPushButton::pressed{background:#ECEEF5;}"
+                                      );
+
+//        top_addSongBtn->setStyleSheet("QToolButton{font-size: 14px;line-height: 14px;font-weight: 400;\
+//                                       background:#F2F6FD;padding-left:10px;\
+//                                       color:#303133;border-radius:15px;}"
+//                                       "QToolButton::hover{color:#8F9399;}"
+//                                       "QToolButton::pressed{background:#ECEEF5;}");
+
+        n_addLocalFolder->setStyleSheet("font-size:14px;color:#303133;border-radius:15px;border:2px solid #DDDFE7;"
+                                        " \
+                                        font-weight: 400;width:84px;height:14px;");
+    }
 
 }
 
@@ -72,48 +151,35 @@ MusicListWid::MusicListWid(QWidget *parent):QWidget(parent)
 {
     this->setObjectName("ChangeListWid");
 
-
+    setAcceptDrops(true);
     initMusicListWid();
 
 //    this->resize(750,80);
+    localModel = new QSqlTableModel(this);
+    musiclistcolor();
 
 }
 
+//歌曲不为零时的切换页面
 
 void MusicListWid::initMusicListWid()
 {//    titleFrame = new QFrame(this);
 
-
-
     hTitleLayout = new QHBoxLayout(this);
-
 
     vMainLayout = new QVBoxLayout(this);
     vListWidLayout = new QVBoxLayout(this);
 
-
-
     songListLabel = new QLabel(this);
 //    songListLabel->setGeometry(30,18,100,30);
-    songListLabel->setText("歌曲列表");
-    songListLabel->setStyleSheet("width:96px;height:24px;"
-                                 "font-size: 24px;\
-                                 font-family: PingFangSC-Regular, PingFang SC;\
-                                 font-weight: 600;\
-                                 border:none;\
-                                 color: #303133;\
-                                 line-height: 24px;");
+//    songListLabel->setText("歌曲列表");
+    songListLabel->setText(tr("The song list"));
 
 
     songNumberLabel = new QLabel(this);
 //    songNumberLabel->setGeometry(142,28,40,18);
-    songNumberLabel->setText("共"+QString::number(count)+"首");
-    songNumberLabel->setStyleSheet("font-size: 14px;margin-top:12px;\
-                                   font-family: PingFangSC-Regular, PingFang SC;\
-                                   font-weight: 400;\
-                                   border:none;\
-                                   color: #8F9399;\
-                                   line-height: 14px;");
+//    songNumberLabel->setText("共"+QString::number(count)+"首");
+    songNumberLabel->setText(tr("A total of")+QString::number(count)+tr("The first"));
 
 
 
@@ -124,71 +190,55 @@ void MusicListWid::initMusicListWid()
 //    top_playAllSongBtn->setIcon(QIcon(":/img/default/play_w.png"));
 //    top_playAllSongBtn->setIconSize(QSize(16,16));
 //    top_playAllSongBtn->setText("播放全部");
+//    top_playAllSongBtn->setText(tr("Play all"));
 //    top_playAllSongBtn->setFixedSize(100,30);
 //    top_playAllSongBtn->setStyleSheet("font-size: 14px;line-height: 14px;font-weight: 400;\
-//                                       font-family: PingFangSC-Regular;\
+//                                        \
 //                                       background:#FF4848;padding-left:10px;\
 //                                       color:#FFFFFF;border-radius:15px;");
 
 
 
     top_addSongBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    top_addSongBtn->setIcon(QIcon(":/img/default/add.png"));
+//    top_addSongBtn->setIcon(QIcon(":/img/default/add.png"));
+    top_addSongBtn->setIcon(QIcon::fromTheme("list-add-symbolic"));
     top_addSongBtn->setIconSize(QSize(16,16));
-    top_addSongBtn->setText(" 添加歌曲");
+//    top_addSongBtn->setText("添加歌曲");
+    top_addSongBtn->setText(tr("Add the songs"));
     top_addSongBtn->setFixedSize(100,30);
-    top_addSongBtn->setStyleSheet("QToolButton{font-size: 14px;line-height: 14px;font-weight: 400;\
-                                   font-family: PingFangSC-Regular;\
-                                   background:#F2F6FD;padding-left:10px;\
-                                   color:#303133;border-radius:15px;}"
-                                   "QToolButton::hover{color:#8F9399;}"
-                                   "QToolButton::pressed{background:#ECEEF5;}");
 
-    connect(top_addSongBtn,SIGNAL(clicked()),this,SLOT(on_top_addSongBtn_slot()));
+
+//    connect(top_addSongBtn,SIGNAL(clicked()),this,SLOT(on_top_addSongBtn_slot()));
+    connect(top_addSongBtn,&QToolButton::clicked,this,&MusicListWid::on_top_addSongBtn_slot);
 
     songLabel = new QLabel(this);
     singerLabel = new QLabel(this);
     albumLabel = new QLabel(this);
     timeLabel = new QLabel(this);
 
-    songLabel->setText("歌曲");
-    songLabel->setStyleSheet("width:32px;height:16px;font-size:14px;font-family: PingFangSC-Regular;"
-                                 "font-weight:400;color:#8F9399;line-height:14px;");
 
-    singerLabel->setText("歌手");
-    singerLabel->setStyleSheet("width:32px;height:16px;font-size:14px;font-family: PingFangSC-Regular;"
-                                 "font-weight:400;color:#8F9399;line-height:14px;");
-
-    albumLabel->setText("专辑");
-    albumLabel->setStyleSheet("width:32px;height:16px;font-size:14px;font-family: PingFangSC-Regular;"
-                                 "font-weight:400;color:#8F9399;line-height:14px;");
-
-    timeLabel->setText("时长");
-    timeLabel->setStyleSheet("width:32px;height:16px;font-size:14px;font-family: PingFangSC-Regular;"
-                                 "font-weight:400;color:#8F9399;line-height:14px;");
-
-
-
-
-//    hTitleLayout->addWidget(songListLabel,0,Qt::AlignLeft);
-//    hTitleLayout->addWidget(songNumberLabel,Qt::AlignLeft);
+    hTitleLayout->addWidget(songListLabel,0,Qt::AlignLeft);
+    hTitleLayout->addWidget(songNumberLabel,Qt::AlignLeft);
 //    hTitleLayout->addWidget(top_playAllSongBtn);
-//    hTitleLayout->addWidget(top_addSongBtn);
+    hTitleLayout->addWidget(top_addSongBtn);
+
 
 
 //    hTitleListLayout = new QHBoxLayout(this);
 
     QHBoxLayout *testLayout = new QHBoxLayout(this);
 
-    hTitleLayout->addWidget(songLabel);
-    hTitleLayout->addWidget(singerLabel);
-    hTitleLayout->addWidget(albumLabel);
-    hTitleLayout->addWidget(timeLabel);
+    hTitleLayout->addWidget(songLabel,278);
+    hTitleLayout->addWidget(singerLabel,174);
+    hTitleLayout->addWidget(albumLabel,174);
+    hTitleLayout->addWidget(timeLabel,64);
+    hTitleLayout->setContentsMargins(30,0,0,0);
 
     testLayout->addWidget(songListLabel,0,Qt::AlignLeft);
     testLayout->addWidget(songNumberLabel,Qt::AlignLeft);
 //    testLayout->addWidget(top_playAllSongBtn);
     testLayout->addWidget(top_addSongBtn);
+    testLayout->setContentsMargins(30,0,30,0);
 
     QWidget *testWid = new QWidget(this);
     testWid->setLayout(testLayout);
@@ -206,145 +256,44 @@ void MusicListWid::initMusicListWid()
     vMainLayout->addWidget(testWid,Qt::AlignTop);
     vMainLayout->addWidget(testWid2,0,Qt::AlignTop);
 
-//    vMainLayout->addLayout(hTitleLayout);
-
-
-
-
     testWid->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-
 
     musicInfoWidget = new QListWidget(this);
 
-    musicInfoWidget->setStyleSheet("QListWidget{background-color:#FFFFFF;border:0px;}"
-                                   "QListWidget::item{height:40px;}"
-                                   "QListWidget::item:selected{background-color:#FAFAFA;color:#FF4848;}"
-                                   "QListWidget::item:hover{background-color:#FAFAFA;}");
-
-
     vMainLayout->addWidget(musicInfoWidget);
 
-//    QWidget *info1 = new QWidget(this);
-//    testMusicInfo1 = new QListWidgetItem(musicInfoWidget);
-
-//    QWidget *info2 = new QWidget(this);
-//    testMusicInfo2 = new QListWidgetItem(musicInfoWidget);
-
-//    QToolButton *infoSongName1 = new QToolButton(info1);
-
-//    QToolButton *infoSongName2 = new QToolButton(info2);
-
-//    QPushButton *infolove1 = new QPushButton(info1);
-//    QPushButton *infolove2 = new QPushButton(info2);
-
-//    QPushButton *infoplay1 = new QPushButton(info1);
-//    QPushButton *infoplay2 = new QPushButton(info2);
-
-//    QLabel *infosinger1 = new QLabel(info1);
-//    QLabel *infosinger2 = new QLabel(info2);
-
-//    QLabel *infoalbum1 = new QLabel(info1);
-//    QLabel *infoalbum2 = new QLabel(info2);
-
-//    QLabel *infotime1 = new QLabel(info1);
-//    QLabel *infotime2 = new QLabel(info2);
-
+    vMainLayout->setMargin(0);
+    vMainLayout->setSpacing(0);
 
     PlayList = new QMediaPlaylist(this);
 
     Music = new QMediaPlayer(this);
 
     this->setLayout(vMainLayout);
-    QSqlQuery query;
-    query.exec("select * from LocalMusic");  //本地音乐列表数据
-
-    while(query.next())
-    {
-        QString Name=query.value(1).toString();
-        QString FileName=query.value(2).toString();
-        QString mp3Name=getMp3FileName(Name);
-
-        sqlFilenameList.append(mp3Name);
-
-        if(Name!=""&&FileName!="")
-        {
-            QListWidgetItem *item1=new QListWidgetItem;
-//            item1->setIcon(QIcon(":/image/image/Music_32px_1144946_easyicon.net.png"));
-//            item1->setSizeHint(QSize(700,40));
-            item1->setText(mp3Name);
-            musicInfoWidget->addItem(item1);
-            PlayList->addMedia(QUrl::fromLocalFile(FileName));
-        }
-    }
-//    query.exec("select * from FavoriteMusic");
-
-//    while(query.next())
-//    {
-//        QString Name=query.value(1).toString();
-//        QString FileName=query.value(2).toString();
-//        QString mp3Name=getMp3FileName(Name);
-
-//        sqlFilenameList.append(mp3Name);
-
-//        if(Name!=""&&FileName!="")
-//        {
-//            QListWidgetItem *item1=new QListWidgetItem;
-////            item1->setIcon(QIcon(":/image/image/Music_32px_1144946_easyicon.net.png"));
-////            item1->setSizeHint(QSize(700,40));
-//            item1->setText(mp3Name);
-//            musicInfoWidget->addItem(item1);
-//            PlayList->addMedia(QUrl::fromLocalFile(FileName));
-//        }
-//    }
-
-    count = sqlFilenameList.size();
-    songNumberLabel->setText("共"+QString::number(count)+"首");
-    qDebug()<<"sqlFilenameList.size() :"<<sqlFilenameList.size();
-    Music->setPlaylist(PlayList);
 }
 
 
 void MusicListWid::on_top_addSongBtn_slot()
 {
     QSqlQuery query;
-    query.exec("select * from LocalMusic");
-    //    QFileInfo info;
-    QStringList songFiles = QFileDialog::getOpenFileNames(this, "打开文件","Music","music(*.mp3 *.ogg *.wav *.wma *.spx *.ape *.flac)");  //歌曲文件
+
+    songFiles = QFileDialog::getOpenFileNames(this, tr("Open the file"),"","音乐文件(*.mp3 *.ogg *.wav *.wma *.spx *.ape *.flac)");  //歌曲文件
     if(!songFiles.isEmpty())
     {
-        QProgressDialog *progressdialog=new QProgressDialog(this);
-        progressdialog->setWindowModality(Qt::WindowModal);
-        progressdialog->setMinimumDuration(100);
-        progressdialog->resize(500,200);
-        progressdialog->setWindowTitle(tr("添加歌曲"));
-        progressdialog->setLabelText(tr("添加中                              ."));
-        progressdialog->setCancelButtonText(tr("关闭"));
-        progressdialog->setRange(0,songFiles.size()-1);
-
-        qDebug() << "songFiles.size()" << songFiles.size();
 
         for(int i = 0; i < songFiles.size(); i++)
         {
-            QString path=QDir::toNativeSeparators(songFiles.at(i));
-            progressdialog->setValue(i);
-            if(i==songFiles.size()-1)
-            {
-                progressdialog->close();
-            }
-            if(progressdialog->wasCanceled())
-            {
-                progressdialog->close();
-            }
-            if(!path.isEmpty())
+            Dir = QDir::toNativeSeparators(songFiles.at(i));
+            musicPath = songFiles.at(i);
+            if(!musicPath.isEmpty())
             {
                 bool songExists = false;
-                qDebug() << "sqlFilenameList" << sqlFilenameList;
-                for (QString& songPlaylist:sqlFilenameList)
+                for(QString &songPlaylist:allmusic)
                 {
-                    if(getMp3FileName(path) == songPlaylist)
+                    if(musicPath == songPlaylist)    //通过路径判断歌曲是否存在
                     {
-                        qDebug()<<"歌曲已存在";
+                        qDebug()<<"歌曲已存在 (通过路径判断歌曲是否存在)";
+//                        qDebug()<<"songPlaylist : "<<songPlaylist;
                         songExists = true;
                         break;
                     }
@@ -353,36 +302,474 @@ void MusicListWid::on_top_addSongBtn_slot()
                 {
                     continue;
                 }
+
+                fileInfo.setFile(musicPath);
+
+                musicType = fileInfo.suffix();        //文件类型
+
+                qint64 musicFileSize = fileInfo.size();
+                if(musicFileSize/1024)
+                {
+                    if(musicFileSize/1024/1024)
+                    {
+                        if(musicFileSize/1024/1024/1024)
+                        {
+                            musicSize = QString::number(musicFileSize/1024/1024/1024,10)+"GB";
+                        }
+                        else
+                            musicSize = QString::number(musicFileSize/1024/1024,10)+"MB";
+                    }
+                    else
+                        musicSize = QString::number(musicFileSize/1024,10)+"KB";
+                }
+                else
+                    musicSize = QString::number(musicFileSize,10)+"B";
+                byteArray = musicPath.toLocal8Bit();
+
+                if(musicPath.split(".").last() != "amr" && musicPath.split(".").last() != "mmf")
+                {
+                    TagLib::FileRef f(byteArray.data());
+                    if(f.isNull())
+                    {
+                        //can't read this music;
+                        continue;
+                    }
+                    TagLib::PropertyMap propertyMap = f.file() ->properties();
+
+                    musicName = propertyMap["TITLE"].toString().toCString(true);
+                    if(musicName.isEmpty())
+                        musicName = fileInfo.baseName();
+                    musicSinger = propertyMap["ARTIST"].toString().toCString(true);
+                    if(musicSinger.isEmpty())
+                        musicSinger = "未知歌手";
+                    musicAlbum = propertyMap["ALBUM"].toString().toCString(true);
+                    if(musicAlbum.isEmpty())
+                        musicAlbum = "未知专辑";
+                    TagLib::AudioProperties *properties = f.audioProperties();
+
+                    int seconds = properties->length() % 60;
+                    int minutes = (properties->length() - seconds) / 60;
+                    musicTime = QString::number(minutes)+":"+QString("%1").arg(seconds, 2, 10, QChar('0'));
+    //                qDebug()<<"musicTime"<<musicTime;
+    //                qDebug() << "musicSize" << musicSize;
+                }
+                else
+                {
+                    TagLib::FileRef f(byteArray.data());
+
+                        musicName = fileInfo.baseName();
+
+                        musicSinger = "未知歌手";
+
+                        musicAlbum = "未知专辑";
+
+                      qDebug() << "musicSize" << musicSize;
+                }
+                QListWidgetItem *listItem = new QListWidgetItem(musicInfoWidget);
+                SongItem *songitem1 = new SongItem;
+                musicInfoWidget->setItemWidget(listItem,songitem1);
+//                songitem1->songNameLabel->setText(musicName); //歌曲名称
+//                songitem1->albumLabel->setText(musicAlbum);  //专辑
+//                songitem1->songTimeLabel->setText(musicTime); //时长
+//                songitem1->singerLabel->setText(musicSinger); //歌手
+                songitem1->song_singer_albumText(musicName,musicSinger,musicAlbum); //歌曲名称 歌手 专辑
+                songitem1->songTimeLabel->setText(musicTime); //时长
+
+                localModel->setTable("LocalMusic");
+                localModel->select();
+
+                int id = 0;
+                if (localModel->rowCount() != 0)
+                {
+                    int num = localModel->data(localModel->index(localModel->rowCount()-1,0)).toInt();
+                    id = num + 1;
+                }
+
+                allmusic.append(musicPath);
+                localAllMusicid.append(QString::number(id));
+                PlayList->addMedia(QUrl::fromLocalFile(musicPath));
+
+                query.exec(QString("insert into LocalMusic (id,musicname,filepath,singer,album,type,size,time) values (%1,'%2','%3','%4','%5','%6','%7','%8')")
+                           .arg(id).arg(musicName).arg(musicPath).arg(musicSinger).arg(musicAlbum).arg(musicType).arg(musicSize).arg(musicTime));
+
+                songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
             }
-            qDebug() << "sqlFilenameList" << sqlFilenameList;
-            PlayList->addMedia(QUrl::fromLocalFile(path));
-            QString Name = path.split("/").last();            //截取歌曲文件的歌曲名
-            QString musicName = Name.split(".").first();
-            QListWidgetItem *listItem = new QListWidgetItem(musicInfoWidget);
-            listItem->setText(QString("%1").arg(musicName));
-            musicInfoWidget->addItem(listItem);
-            query.exec(QString("insert into LocalMusic values (%1,'%2','%3',%4)").arg(qrand()%1000000).arg(musicName).arg(path).arg(0));
-            qDebug()<<query.exec("select * from LocalMusic");
+        }
+        Music->setPlaylist(PlayList);
+//        Music->play();
+//        Music->stop();
+        int position;
+        if(Music->state() == QMediaPlayer::PlayingState)
+        {
+            position = Music->position();
+            Music->setPosition(position);
+            Music->play();
+            isStartPlay = true;
+        }
+        else
+        {
+            Music->stop();
+            isStartPlay = false;
+        }
 
-            sqlFilenameList.append(musicName);
+    }
+}
 
-            qDebug() << "sqlFilenameList" << sqlFilenameList;
-            count += 1;
-            songNumberLabel->setText("共"+QString::number(count)+"首");
+//void MusicListWid::dragEnterEvent(QDragEnterEvent *event)   //拖进事件
+//{
+//    qDebug()<<"dragEnterEvent";
+//    // 判断拖拽文件类型，文件名 接收该动作
+//    if(event->mimeData()->hasFormat("text/uri-list"))
+//    {
+////        event->setDropAction(Qt::CopyAction);
+//        event->acceptProposedAction();
+//    }
+//    QWidget::dragEnterEvent(event);
+//}
+
+//void MusicListWid::dragMoveEvent(QDragMoveEvent *event)
+//{
+////    event->setDropAction(Qt::MoveAction);
+//}
+
+//void MusicListWid::dragLeaveEvent(QDragLeaveEvent *event)
+//{
+////    QWidget::dragLeaveEvent(event);
+//}
+
+//void MusicListWid::dropEvent(QDropEvent *event)    //放下事件
+//{
+//    qDebug()<<"dropEvent";
+//    auto urls = event->mimeData()->urls();
+//    if(urls.isEmpty())
+//    {
+//        return;
+//    }
+//    QStringList localpath;
+//    for(auto &url : urls)
+//    {
+//        localpath << url.toLocalFile();
+//    }
+
+//    if(!localpath.isEmpty())
+//    {
+////        emit fromFilemanager(localpath);
+//        addFile(localpath);
+//        emit nullWidgetAddFile();
+//    }
+//}
+
+
+void MusicListWid::addFile(const QStringList &addFile)
+{
+    QSqlQuery query;
+    if(!addFile.isEmpty())
+    {
+        for(int i = 0; i < addFile.size(); i++)
+        {
+            Dir = QDir::toNativeSeparators(addFile.at(i));
+            musicPath = addFile.at(i);
+            if(!musicPath.isEmpty())
+            {
+                bool songExists = false;
+                for(QString &songPlaylist:allmusic)
+                {
+                    if(musicPath == songPlaylist)    //通过路径判断歌曲是否存在
+                    {
+                        qDebug()<<"歌曲已存在 (通过路径判断歌曲是否存在)";
+//                        qDebug()<<"songPlaylist : "<<songPlaylist;
+                        songExists = true;
+                        break;
+                    }
+                }
+                if(songExists)
+                {
+                    continue;
+                }
+
+                fileInfo.setFile(musicPath);
+
+                musicType = fileInfo.suffix();        //文件类型
+
+                qint64 musicFileSize = fileInfo.size();
+                if(musicFileSize/1024)
+                {
+                    if(musicFileSize/1024/1024)
+                    {
+                        if(musicFileSize/1024/1024/1024)
+                        {
+                            musicSize = QString::number(musicFileSize/1024/1024/1024,10)+"GB";
+                        }
+                        else
+                            musicSize = QString::number(musicFileSize/1024/1024,10)+"MB";
+                    }
+                    else
+                        musicSize = QString::number(musicFileSize/1024,10)+"KB";
+                }
+                else
+                    musicSize = QString::number(musicFileSize,10)+"B";
+                byteArray = musicPath.toLocal8Bit();
+
+                if(musicPath.split(".").last() != "amr" && musicPath.split(".").last() != "mmf")
+                {
+                    TagLib::FileRef f(byteArray.data());
+                    if(f.isNull())
+                    {
+                        //can't read this music;
+                        continue;
+                    }
+                    TagLib::PropertyMap propertyMap = f.file() ->properties();
+
+                    musicName = propertyMap["TITLE"].toString().toCString(true);
+                    if(musicName.isEmpty())
+                        musicName = fileInfo.baseName();
+                    musicSinger = propertyMap["ARTIST"].toString().toCString(true);
+                    if(musicSinger.isEmpty())
+                        musicSinger = "未知歌手";
+                    musicAlbum = propertyMap["ALBUM"].toString().toCString(true);
+                    if(musicAlbum.isEmpty())
+                        musicAlbum = "未知专辑";
+                    TagLib::AudioProperties *properties = f.audioProperties();
+
+                    int seconds = properties->length() % 60;
+                    int minutes = (properties->length() - seconds) / 60;
+                    musicTime = QString::number(minutes)+":"+QString("%1").arg(seconds, 2, 10, QChar('0'));
+                }
+                else
+                {
+                    TagLib::FileRef f(byteArray.data());
+
+                        musicName = fileInfo.baseName();
+
+                        musicSinger = "未知歌手";
+
+                        musicAlbum = "未知专辑";
+
+                      qDebug() << "musicSize" << musicSize;
+                }
+                QListWidgetItem *listItem = new QListWidgetItem(musicInfoWidget);
+                SongItem *songitem1 = new SongItem;
+                musicInfoWidget->setItemWidget(listItem,songitem1);
+                songitem1->song_singer_albumText(musicName,musicSinger,musicAlbum); //歌曲名称 歌手 专辑
+                songitem1->songTimeLabel->setText(musicTime); //时长
+
+                localModel->setTable("LocalMusic");
+                localModel->select();
+
+                int id = 0;
+                if (localModel->rowCount() != 0)
+                {
+                    int num = localModel->data(localModel->index(localModel->rowCount()-1,0)).toInt();
+                    id = num + 1;
+                }
+
+                allmusic.append(musicPath);
+                localAllMusicid.append(QString::number(id));
+                PlayList->addMedia(QUrl::fromLocalFile(musicPath));
+
+                query.exec(QString("insert into LocalMusic (id,musicname,filepath,singer,album,type,size,time) values (%1,'%2','%3','%4','%5','%6','%7','%8')")
+                           .arg(id).arg(musicName).arg(musicPath).arg(musicSinger).arg(musicAlbum).arg(musicType).arg(musicSize).arg(musicTime));
+
+                songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
+            }
+        }
+        Music->setPlaylist(PlayList);
+//        Music->play();
+//        Music->stop();
+        int position;
+        if(Music->state() == QMediaPlayer::PlayingState)
+        {
+            position = Music->position();
+            Music->setPosition(position);
+            Music->play();
+            isStartPlay = true;
+        }
+        else
+        {
+            Music->stop();
+            isStartPlay = false;
         }
     }
-    Music->setPlaylist(PlayList);
-    Music->play();
 }
 
-QString MusicListWid::getMp3FileName(QString sqlName)
+void MusicListWid::get_localmusic_information()
 {
-    QStringList sqlList=sqlName.split('/');
+    qDebug() << "数据库" << "获取歌曲列表歌曲信息" ;
+    QSqlQuery query;
+    query.exec("select * from LocalMusic");  //本地音乐列表数据
 
-    int length=sqlList.length();
+    while(query.next())
+    {
+//        qDebug() << "select * from LocalMusic " << query.value(1).toString() << query.value(2).toString()
+//                 << query.value(3).toString() << query.value(4).toString() << query.value(7).toString();
 
-    QString songname=sqlList.value(length-1);
-    QString rmTypeName = songname.split(".").first();
-    return rmTypeName;
+        int Id = query.value(0).toInt();
+//        qDebug()<<Id;
+        QString songName = query.value(1).toString();
+        QString Path = query.value(2).toString();
+        QString Title = query.value(3).toString();
+        QString Album = query.value(4).toString();
+        QString Time = query.value(7).toString();
+
+        QFileInfo fileinfo(Path);
+        if(!fileinfo.exists())
+        {
+            continue;
+        }
+
+        if(songName != "" && Path != "")
+        {
+            allmusic.append(Path);
+            // 添加到本地音乐所有id中
+            localAllMusicid.append(QString::number(Id));
+
+            QListWidgetItem *item1=new QListWidgetItem(musicInfoWidget);
+            SongItem *songitem1 = new SongItem;
+            musicInfoWidget->setItemWidget(item1,songitem1);
+
+//            songitem1->songNameLabel->setText(songName); //歌曲名称
+//            songitem1->singerLabel->setText(Title); //歌手
+//            songitem1->albumLabel->setText(Album);  //专辑
+            songitem1->song_singer_albumText(songName,Title,Album); //歌曲名称 歌手 专辑
+            songitem1->songTimeLabel->setText(Time); //时长
+
+            PlayList->addMedia(QUrl::fromLocalFile(Path));
+        }
+    }
+
+    qDebug() << "数据库" << "歌曲信息加载完毕" ;
+    count = allmusic.size();
+//    songNumberLabel->setText("共"+QString::number(musicInfoWidget->count())+"首");
+    songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
+
+//    qDebug()<<"allmusic.size() :"<<allmusic.size();
+    Music->setPlaylist(PlayList);
 }
 
+
+QStringList MusicListWid::get_info_from_db(int musicid)
+{
+    qDebug() << "数据库" << "从数据库获取该歌曲信息" ;
+
+    QStringList musicinfo;
+    localModel->setTable("LocalMusic");
+    localModel->select();
+
+    QString musicname = localModel->data(localModel->index(musicid,1)).toString();
+    QString filepath = localModel->data(localModel->index(musicid,2)).toString();
+    QString singer = localModel->data(localModel->index(musicid,3)).toString();
+    QString album = localModel->data(localModel->index(musicid,4)).toString();
+    QString type = localModel->data(localModel->index(musicid,5)).toString();
+    QString size = localModel->data(localModel->index(musicid,6)).toString();
+    QString time = localModel->data(localModel->index(musicid,7)).toString();
+
+    musicinfo << musicname << filepath << singer << album << type << size << time;
+
+    qDebug() << "数据库" << "musicinfo" << musicinfo;
+
+    return musicinfo;
+}
+
+void MusicListWid::musiclistcolor()
+{
+    if(WidgetStyle::themeColor == 1 )
+    {
+        this->setObjectName("changelistwid");
+        this->setStyleSheet("#changelistwid{background-color:#252526;}");
+        musicInfoWidget->setStyleSheet("QListWidget{background-color:#252526;border:0px;}"
+                                       "QListWidget::item{height:40px;}"
+                                       "QListWidget::item:selected{background-color:#303032;}"
+                                       "QListWidget::item:hover{background-color:#303032;}");
+
+//        songLabel->setText("歌曲");
+        songLabel->setText(tr("song"));
+        songLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+//        singerLabel->setText("歌手");
+        singerLabel->setText(tr("singer"));
+        singerLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+//        albumLabel->setText("专辑");
+        albumLabel->setText(tr("The album"));
+        albumLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+//        timeLabel->setText("时长");
+        timeLabel->setText(tr("The length"));
+        timeLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+        top_addSongBtn->setStyleSheet("QToolButton{font-size: 14px;line-height: 14px;font-weight: 400;\
+                                       background:#393A3B;padding-left:10px;\
+                                       color:#F9F9F9;border-radius:15px;}"
+                                       "QToolButton::hover{color:#8F9399;}"
+                                       "QToolButton::pressed{background:#ECEEF5;}");
+
+        songNumberLabel->setStyleSheet("font-size: 14px;margin-top:12px;\
+                                       font-weight: 400;\
+                                       border:none;\
+                                       color: #8F9399;\
+                                       line-height: 14px;");
+
+        songListLabel->setStyleSheet("width:96px;height:24px;"
+                                      "font-size: 24px;\
+                                      font-weight: 600;\
+                                      border:none;\
+                                      color: #F9F9F9;\
+                                      line-height: 24px;");
+
+    }
+    else if (WidgetStyle::themeColor == 0)
+    {
+//        this->setStyleSheet("background-color:#FFFFFF;");
+        this->setObjectName("changelistwid");
+        this->setStyleSheet("#changelistwid{background-color:#FFFFFF;}");
+
+        musicInfoWidget->setStyleSheet("QListWidget{background-color:#FFFFFF;border:0px;}"
+                                       "QListWidget::item{height:40px;}"
+                                       "QListWidget::item:selected{background-color:#F0F0F0;}"
+                                       "QListWidget::item:hover{background-color:#F0F0F0;}");
+
+//        songLabel->setText("歌曲");
+        songLabel->setText(tr("song"));
+        songLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+//        singerLabel->setText("歌手");
+        singerLabel->setText(tr("singer"));
+        singerLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+//        albumLabel->setText("专辑");
+        albumLabel->setText(tr("The album"));
+        albumLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+//        timeLabel->setText("时长");
+        timeLabel->setText(tr("The length"));
+        timeLabel->setStyleSheet("width:32px;height:16px;font-size:14px; "
+                                     "font-weight:400;color:#8F9399;line-height:14px;");
+
+        top_addSongBtn->setStyleSheet("QToolButton{font-size: 14px;line-height: 14px;font-weight: 400;\
+                                       background:#F2F6FD;padding-left:10px;\
+                                       color:#303133;border-radius:15px;}"
+                                       "QToolButton::hover{color:#8F9399;}"
+                                       "QToolButton::pressed{background:#ECEEF5;}");
+
+        songNumberLabel->setStyleSheet("font-size: 14px;margin-top:12px;\
+                                       font-weight: 400;\
+                                       border:none;\
+                                       color: #8F9399;\
+                                       line-height: 14px;");
+
+        songListLabel->setStyleSheet("width:96px;height:24px;"
+                                      "font-size: 24px;\
+                                      font-weight: 600;\
+                                      border:none;\
+                                      color: #303133;\
+                                      line-height: 24px;");
+
+    }
+}

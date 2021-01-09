@@ -16,7 +16,6 @@
         <file>img/clicked/menu.png</file>
         <file>img/clicked/mini.png</file>
         <file>img/clicked/minimize.png</file>
-        <file>img/clicked/nextsong_r@2x.png</file>
         <file>img/clicked/oneloop.png</file>
         <file>img/clicked/play1.png</file>
         <file>img/clicked/random.png</file>
@@ -44,7 +43,6 @@
         <file>img/default/menu.png</file>
         <file>img/default/mini.png</file>
         <file>img/default/minimize.png</file>
-        <file>img/default/nextsong_b@2x.png</file>
         <file>img/default/oneloop.png</file>
         <file>img/default/pause1.png</file>
         <file>img/default/pause2.png</file>
@@ -79,5 +77,38 @@
         <file>img/clicked/sequence.png</file>
         <file>img/default/point.png</file>
         <file>img/kylin-music.png</file>
+        <file>translations/qt_zh_CN.qm</file>
+        <file>img/dark/lastsong.png</file>
+        <file>img/dark/nextsong.png</file>
+        <file>img/dark/singer.png</file>
+        <file>img/dark/songlist-w.png</file>
+        <file>img/dark/kylinlogo.png</file>
+        <file>img/dark/icon_love2_b@2x.png</file>
+        <file>img/dark/icon_random_w@2x.png</file>
+        <file>img/dark/icon_oneloop_w@2x.png</file>
+        <file>img/dark/icon_sequence_w@2x.png</file>
+        <file>img/dark/icon_songlist_h@2x.png</file>
+        <file>img/dark/icon_volume_large_w@2x.png</file>
+        <file>img/dark/icon_volume_close_w@2x.png</file>
+        <file>img/dark/icon_volume_small_w@2x.png</file>
+        <file>img/fengmian.png</file>
+        <file>translations/kylin-music_zh_CN.ts</file>
+        <file>translations/kylin-music_zh_CN.qm</file>
+        <file>img/promptwhile.png</file>
+        <file>img/promptblack.png</file>
+        <file>img/kylin-music-logo.png</file>
+        <file>img/hover/play2.png</file>
+        <file>img/hover/pause2.png</file>
+        <file>img/hover/lastsong.png</file>
+        <file>img/hover/nextsong.png</file>
+        <file>img/clicked/play2.png</file>
+        <file>img/clicked/pause2.png</file>
+        <file>img/default/nextsong.png</file>
+        <file>img/clicked/nextsong.png</file>
+        <file>img/hover/listloop.png</file>
+        <file>img/hover/oneloop.png</file>
+        <file>img/hover/random.png</file>
+        <file>img/hover/sequence.png</file>
+        <file>img/hover/delete.png</file>
     </qresource>
 </RCC>
