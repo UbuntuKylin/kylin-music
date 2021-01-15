@@ -1,3 +1,9 @@
+kylin-music (1.0.34kord) v101; urgency=medium
+
+  * 修改部分UI界面.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Fri, 08 Jan 2021 09:34:40 +0800
+
 kylin-music (1.0.33kord) v101; urgency=medium
 
   * 解决禅道BUG#30575 删除自建歌单后，点击播放面板的下一首按钮或双击播放，麒麟音乐闪退.

@@ -58,6 +58,7 @@ PKGCONFIG += gsettings-qt
 
 SOURCES += \
     allpupwindow.cpp \
+    musicDataBase.cpp \
     changelistwid.cpp \
     daemonipcdbus.cpp \
 #    kylinmuisc.cpp \
@@ -79,6 +80,7 @@ SOURCES += \
 
 HEADERS += \
     allpupwindow.h \
+    musicDataBase.h \
     changelistwid.h \
     daemonipcdbus.h \
 #    kylinmuisc.h \
@@ -92,7 +94,7 @@ HEADERS += \
     sidebar.h \
     songitem.h \
     titlebar.h \
-    connection.h \
+#    connection.h \
     slider.h \
     beforeplaylist.h \
     widgetstyle.h \

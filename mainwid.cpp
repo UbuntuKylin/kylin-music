@@ -21,6 +21,7 @@
 #include "widgetstyle.h"
 #include "myapplication.h"
 #include "xatom-helper.h"
+#include "musicDataBase.h"
 
 MainWid::MainWid(QString str, QWidget *parent)
     : QMainWindow(parent)
@@ -32,31 +33,8 @@ MainWid::MainWid(QString str, QWidget *parent)
     setAcceptDrops(true);
     mDaemonIpcDbus = new DaemonIpcDbus();
 
-    if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW))
-    {
-        themeData = new QGSettings(FITTHEMEWINDOW);
-        if(themeData->get("style-name").toString() == "ukui-dark" || themeData->get("style-name").toString() == "ukui-black"){
-            WidgetStyle::themeColor = 1;
-        }
-        else
-        {
-            WidgetStyle::themeColor = 0;
-        }
-
-        connect(themeData,&QGSettings::changed,this,[=]()
-        {
-            qDebug() << "主题颜色" << themeData->get("style-name").toString();
-            if(themeData->get("style-name").toString() == "ukui-dark" || themeData->get("style-name").toString() == "ukui-black"){
-                WidgetStyle::themeColor = 1;
-                changeDarkTheme();
-            }
-            else
-            {
-                WidgetStyle::themeColor = 0;
-                changeLightTheme();
-            }
-        });
-    }
+    bool res;
+    res = g_db->initDataBase();
 
     Single(str);   //单例
 
@@ -73,7 +51,6 @@ MainWid::MainWid(QString str, QWidget *parent)
 //    setFocus();
 //    this->setWindowFlags(Qt::FramelessWindowHint);            //
     this->setAttribute(Qt::WA_TranslucentBackground, true);     //窗体透明
-//    this->setStyleSheet("border-radius:6px;" );//主窗体圆角(注意：窗体透明与主窗体圆角要搭配使用否则无效)
 
     //窗体显示在中间
     QRect availableGeometry = qApp->primaryScreen()->availableGeometry();
@@ -91,7 +68,6 @@ MainWid::MainWid(QString str, QWidget *parent)
     //    myMusicListWid = new MusicListWid(this);
 
     myPlaySongArea = new PlaySongArea(this);
-
 
     QHBoxLayout *mainlayout = new QHBoxLayout(this);
 
@@ -199,6 +175,7 @@ MainWid::MainWid(QString str, QWidget *parent)
 
     this->setCentralWidget(mainWidget);
 
+
     connect(myPlaySongArea->playBtn,SIGNAL(clicked(bool)),this,SLOT(play_Song()));   //播放歌曲
 
     connect(mySideBar->myMusicListWid->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(on_listWidget_doubleClicked(QListWidgetItem*)));
@@ -215,7 +192,7 @@ MainWid::MainWid(QString str, QWidget *parent)
 
     connect(mySideBar->myMusicListWid->Music,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));  //滑块进度条位置改变
     connect(mySideBar->myMusicListWid->Music,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
-    connect(mySideBar->myMusicListWid->Music,SIGNAL(currentMediaChanged(QMediaContent)),this,SLOT(currentMediaChanged(QMediaContent)));
+//    connect(mySideBar->myMusicListWid->Music,SIGNAL(currentMediaChanged(QMediaContent)),this,SLOT(currentMediaChanged(QMediaContent)));
 
     connect(hSlider,SIGNAL(sliderPressed()),this,SLOT(slidePress()));
 //    connect(hSlider,SIGNAL(sliderMoved(int)),this,SLOT(slideMove(int)));
@@ -239,13 +216,13 @@ MainWid::MainWid(QString str, QWidget *parent)
 
     myPlaySongArea->mybeforeList->raise();
 
-    //播放列表右键菜单
+    //sidebar右键菜单
     mySideBar->songListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(mySideBar->songListWidget,SIGNAL(customContextMenuRequested(const QPoint&)),this,SLOT(on_sidebarWidget_customContextMenuRequested(const QPoint&)));
 
     //提示信息弹窗
     connect(mySideBar->renameSongListPup->confirmBtn,SIGNAL(clicked(bool)),this,SLOT(renameThisSongList()));
-    connect(mySideBar->promptSongListPup->confirmBtn,SIGNAL(clicked(bool)),this,SLOT(promptThisSongList())); //删除歌单提示信息
+    connect(mySideBar->promptSongListPup->confirmBtn,&QPushButton::clicked,mySideBar,&SideBar::deleteSongList); //删除歌单提示信息
     connect(mySideBar->promptExistListPup->confirmBtn,SIGNAL(clicked(bool)),this,SLOT(renameSongListCon()));
     connect(mySideBar->promptRenamePlayList->confirmBtn,SIGNAL(clicked(bool)),this,SLOT(promptRenamePlayList()));
     connect(mySideBar->promptRemovePlayList->confirmBtn,SIGNAL(clicked(bool)),this,SLOT(promptRemovePlayList()));
@@ -259,16 +236,17 @@ MainWid::MainWid(QString str, QWidget *parent)
     QShortcut *subvSlider=new QShortcut(Qt::Key_S,this);
     connect(subvSlider,&QShortcut::activated,this,&MainWid::subvSlider_slot);
 
-    connect(myPlaySongArea->mybeforeList->emptyBtn,SIGNAL(clicked(bool)),this,SLOT(clear_HistoryPlayList()));
+//    connect(myPlaySongArea->mybeforeList->emptyBtn,SIGNAL(clicked(bool)),this,SLOT(clear_HistoryPlayList()));
 //    connect(mySideBar->likeAct,&QAction::triggered,this,&MainWid::deleteMusicFromSongList);
 
-    mySideBar->sidemodel->select();
-    for(int i = 0;i < mySideBar->sidemodel->rowCount();i++)
+    QStringList playListNameList;
+    g_db->getPlayList(playListNameList);
+    for(int i = 0;i< playListNameList.size();i++)
     {
         connect(mySideBar->musicListChangeWid[i]->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
             this,SLOT(on_musicListChangeWid_doubleClicked(QListWidgetItem*)));
-//        connect(mySideBar->musicListChangeWid[i]->PlayList,&QMediaPlaylist::currentIndexChanged,
-//            this,&MainWid::updataplaylistwidget);
+        connect(mySideBar->musicListChangeWid[i]->PlayList,&QMediaPlaylist::currentIndexChanged,
+            this,&MainWid::updataplaylistwidget);
         connect(mySideBar->musicListChangeWid[i]->Music,&QMediaPlayer::stateChanged,
             this,&MainWid::Music_playlist_stateChang);
         connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(positionChanged(qint64)),
@@ -276,6 +254,7 @@ MainWid::MainWid(QString str, QWidget *parent)
         connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(durationChanged(qint64)),
             this,SLOT(playlist_durationChange(qint64)));
     }
+
     //深色模式
     connect(myTitleBar->darkThemeAct,&QAction::triggered,this,&MainWid::changeDarkTheme);
     connect(myTitleBar->lightThemeAct,&QAction::triggered,this,&MainWid::changeLightTheme);
@@ -296,12 +275,42 @@ MainWid::MainWid(QString str, QWidget *parent)
     {
         connect(mySideBar->newSongListBtn[i], &QToolButton::clicked, this, &MainWid::hideSearchResultWidget);
     }
-    get_historyplaylist_information();
     initSystemTray();
     if(argName != "")
     {
         kylin_music_play_request(argName);
     }
+    gSettings();
+}
+
+void MainWid::gSettings()
+{
+    if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW))
+    {
+        themeData = new QGSettings(FITTHEMEWINDOW);
+        if(themeData->get("style-name").toString() == "ukui-dark" || themeData->get("style-name").toString() == "ukui-black"){
+            WidgetStyle::themeColor = 1;
+        }
+        else
+        {
+            WidgetStyle::themeColor = 0;
+        }
+
+        connect(themeData,&QGSettings::changed,this,[=]()
+        {
+            qDebug() << "主题颜色" << themeData->get("style-name").toString();
+            if(themeData->get("style-name").toString() == "ukui-dark" || themeData->get("style-name").toString() == "ukui-black"){
+                WidgetStyle::themeColor = 1;
+                changeDarkTheme();
+            }
+            else
+            {
+                WidgetStyle::themeColor = 0;
+                changeLightTheme();
+            }
+        });
+    }
+
 }
 
 int MainWid::kylin_music_play_request(QString path)
@@ -382,15 +391,10 @@ void MainWid::Single(QString path)   //单例
         exit(0);
     }
     argName = path;
-//    if(path != "")
-//    {
-//        kylin_music_play_request(path);
-//    }
 }
 MainWid::~MainWid()
 {
     m_MiniWidget->~miniWidget();
-
 }
 #include <QPropertyAnimation>
 void MainWid::slot_showMiniWidget()
@@ -678,13 +682,13 @@ void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
     QMenu *menu5 = new QMenu(this);
 //    menu5->setTitle("添加到歌单");
     menu5->setTitle(tr("Add to playlist"));
-    model_1->setTable("NewPlayList");
-    model_1->select();
+    QStringList playListNameList;
 
-    for(int i = 0; i < model_1->rowCount(); i++)
+    g_db->getPlayList(playListNameList);
+    for(int i = 0;i< playListNameList.size();i++)
     {
 
-        QString listName = model_1->data(model_1->index(i,0)).toString();
+        QString listName = playListNameList.at(i);
         QAction *listaction = new QAction(this);
         listaction->setData(i);
         listaction->setText(listName);
@@ -720,7 +724,6 @@ void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
     //    delete listAct;
     //    delete lookAct;
     delete songAct;
-
 }
 
 
@@ -732,7 +735,7 @@ void MainWid::playOrPauseAct()
         if(mySideBar->myMusicListWid->musicInfoWidget->item(mySideBar->myMusicListWid->PlayList->currentIndex())->isSelected())
         {
 
-            if(mySideBar->myMusicListWid->Music->state()==QMediaPlayer::PlayingState)
+            if(mySideBar->myMusicListWid->Music->state() == QMediaPlayer::PlayingState)
             {
                 qDebug()<<"暂停";
                 playAct->setText(tr("pause"));
@@ -821,123 +824,43 @@ void MainWid::playNextSongAct()
 
 void MainWid::add_music_to_songlist(QAction *listact)   //添加歌曲到歌单
 {
+    int ret;
+    musicDataStruct musicInfo;
     int listindex = listact->data().toInt();
+    qDebug()<<"listindex " <<listindex;
+    qDebug()<<"listact "<<listact->text();
 
-    model->setTable("LocalMusic");
-    model->select();
-    model_1->select();
 
     int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
 
-    QString musicidStr = mySideBar->myMusicListWid->localAllMusicid[row];
-    int musicIndex = musicidStr.toInt();  //jialin
-
-    QString idListstr = model_1->data(model_1->index(listindex, 1)).toString();
-
-    QStringList idStringList = idListstr.split(",");
-
-    if(idStringList.indexOf(musicidStr) != -1)
+    QString fileHash = mySideBar->myMusicListWid->localAllMusicid[row];
+    g_db->getSongInfoFromLocalMusic(fileHash, musicInfo);
+    ret = g_db->addMusicToPlayList(fileHash, listact->text());
+    if(ret == DB_OP_SUCC)
     {
-        QMessageBox *message = new QMessageBox(this);
-//        message->about(this,tr("提示信息"),tr("歌单中歌曲已存在！"));
-        message->about(this,tr("Prompt information"),tr("The songs in the playlist already exist!"));
-        return ;
-    }
-    else
-    {
-        idListstr = idListstr.append(musicidStr + ",");
-        model_1->setData(model_1->index(listindex,1),idListstr);
-
-        model->submitAll();
-        model->select();
-
-        model_1->submitAll();
-        model_1->select();
-
-        qDebug() << "listindexlistindexlistindex1  " <<listindex;
-
-        QString newid = model_1->data(model_1->index(listindex, 1)).toString();
-
-        QString songName = model->data(model->index(musicIndex,1)).toString();
-        QString Path = model->data(model->index(musicIndex,2)).toString();
-        QString Title = model->data(model->index(musicIndex,3)).toString();
-        QString Album = model->data(model->index(musicIndex,4)).toString();
-        QString Time = model->data(model->index(musicIndex,7)).toString();
-
-        if(songName != ""&&Path != "")
-        {
-            QListWidgetItem *item1=new QListWidgetItem(mySideBar->musicListChangeWid[listindex]->musicInfoWidget);
-            SongItem *songitem1 = new SongItem;
-            mySideBar->musicListChangeWid[listindex]->musicInfoWidget->setItemWidget(item1,songitem1);
-//            songitem1->songNameLabel->setText(songName); //歌曲名称
-//            songitem1->albumLabel->setText(Album);  //专辑
-//            songitem1->songTimeLabel->setText(Time); //时长
-//            songitem1->singerLabel->setText(Title); //歌手
-            qDebug()<<"songName : "<<songName<<"  "<<"Title : "<<Title<<"  "<<"Album : "<<Album;
-            songitem1->song_singer_albumText(songName,Title,Album); //歌曲名称 歌手 专辑
-            songitem1->songTimeLabel->setText(Time); //时长
-
-            mySideBar->musicListChangeWid[listindex]->PlayList->addMedia(QUrl::fromLocalFile(Path));
-
-            mySideBar->musicListChangeWid[listindex]->musicInfoWidget->show();
-        }
-
-//        mySideBar->musicListChangeWid[listindex]->Music->setPlaylist(mySideBar->musicListChangeWid[listindex]->PlayList);
-//        mySideBar->musicListChangeWid[listindex]->songNumberLabel->setText("共"+QString::number(mySideBar->musicListChangeWid[listindex]->musicInfoWidget->count())+"首");
+        QListWidgetItem *item1=new QListWidgetItem(mySideBar->musicListChangeWid[listindex]->musicInfoWidget);
+        SongItem *songitem1 = new SongItem;
+        mySideBar->musicListChangeWid[listindex]->musicInfoWidget->setItemWidget(item1,songitem1);
+        songitem1->song_singer_albumText(musicInfo.title,musicInfo.singer,musicInfo.album); //歌曲名称 歌手 专辑
+        songitem1->songTimeLabel->setText(musicInfo.time); //时长
+        mySideBar->musicListChangeWid[listindex]->localAllMusicid.append(musicInfo.hash);
+        mySideBar->musicListChangeWid[listindex]->PlayList->addMedia(QUrl::fromLocalFile(musicInfo.filepath));
+        mySideBar->musicListChangeWid[listindex]->musicInfoWidget->show();
         mySideBar->musicListChangeWid[listindex]->songNumberLabel->setText(
                     tr("A total of")+QString::number(mySideBar->musicListChangeWid[listindex]->musicInfoWidget->count())+tr("The first"));
     }
 
-    connect(mySideBar->musicListChangeWid[listindex]->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-        this,SLOT(on_musicListChangeWid_doubleClicked(QListWidgetItem*)));
-//    connect(mySideBar->musicListChangeWid[listindex]->PlayList,&QMediaPlaylist::currentIndexChanged,
-//        this,&MainWid::updataplaylistwidget);
-    connect(mySideBar->musicListChangeWid[listindex]->Music,&QMediaPlayer::stateChanged,
-        this,&MainWid::Music_playlist_stateChang);
-    connect(mySideBar->musicListChangeWid[listindex]->Music,SIGNAL(positionChanged(qint64)),
-        this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
-    connect(mySideBar->musicListChangeWid[listindex]->Music,SIGNAL(durationChanged(qint64)),
-        this,SLOT(playlist_durationChange(qint64)));
+    else
+    {
+        QMessageBox::about(this,"提示信息","歌曲已存在");
+    }
 }
 
 void MainWid::deleteThisSongList()
 {
-//    QMessageBox::about(this,"提示信息","确定删除此歌单？");
-//    QMessageBox messageBox;
-//    messageBox.information(this, "提示信息", "确认删除此歌单？", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
     model_1->select();
 
-//    QMessageBox messageBox(QMessageBox::NoIcon,
-//                               "删除歌单", "你确定要删除吗?",
-//                               QMessageBox::Yes | QMessageBox::No, NULL);
-//    QMessageBox messageBox(QMessageBox::NoIcon,
-//                               tr("Delete the playlist"), tr("Are you sure you want to delete it?"),
-//                               QMessageBox::Yes | QMessageBox::No, NULL);
-//    int result = messageBox.exec();
-//    if (result == QMessageBox::Yes)
-//    {
-//        int row = mySideBar->songListWidget->currentIndex().row();
-//        if(row != 0)
-//        {
-//            model_1->removeRow(row);
-//            model_1->submitAll();
-//            model_1->select();
-//            qDebug() << "model_1->rowCount()" << model_1->rowCount();
-
-//            mySideBar->songListWidget->removeItemWidget(mySideBar->songListWidget->item(row));
-//            delete mySideBar->songListWidget->item(row);
-
-//        }
-//        else
-//        {
-////            QMessageBox::about(this,"提示信息","默认歌单无法删除！");
-//            QMessageBox::about(this,tr("Prompt information"),tr("Default playlist cannot be deleted!"));
-//        }
-//    }
-//    else
-//    {
-//        messageBox.close();
-//    }
     mySideBar->promptSongListPup->stackWid->setCurrentIndex(1);
     mySideBar->promptSongListPup->pupDialog->show();
     model_1->select();
@@ -996,43 +919,7 @@ void MainWid::renameThisSongList()
     mySideBar->renameSongListPup->pupDialog->hide();
 }
 
-void MainWid::promptThisSongList()      //删除歌单提示信息
-{
-    int row = mySideBar->songListWidget->currentIndex().row();
-    if(row != 0)
-    {
-        model_1->removeRow(row);
-        model_1->submitAll();
-        model_1->select();
-        mySideBar->songListWidget->removeItemWidget(mySideBar->songListWidget->item(row));
-        delete mySideBar->songListWidget->item(row);
-        int counter = mySideBar->musicListChangeWid[row]->musicInfoWidget->count();
-        QListWidgetItem *item;
-        for(int index = 0;index < counter;index++)
-        {
-            item = mySideBar->musicListChangeWid[row]->musicInfoWidget->takeItem(0);
-            delete item;
-        }
-        mySideBar->musicListChangeWid[row]->Music->stop();
-//        myPlaySongArea->songText("");
-//        myPlaySongArea->bottomLeftLabel->setText("");
-        int thisrow = mySideBar->musicListChangeWid[row]->PlayList->currentIndex();
 
-        qDebug()<<mySideBar->musicListChangeWid[row]->musicInfoWidget->count();
-        qDebug()<<"thisrow : "<<thisrow;
-        qDebug()<<"thisrow : "<<thisrow;
-        update();
-    }
-    else
-    {
-        mySideBar->promptSongListPup->pupDialog->hide();
-//            QMessageBox::about(this,"提示信息","默认歌单无法删除！");
-//        QMessageBox::about(this,tr("Prompt information"),tr("Default playlist cannot be deleted!"));
-        mySideBar->promptRenamePlayList->stackWid->setCurrentIndex(2);
-        mySideBar->promptRenamePlayList->pupDialog->show();
-    }
-    mySideBar->promptSongListPup->pupDialog->hide();
-}
 
 void MainWid::renameSongListCon()
 {
@@ -1053,183 +940,17 @@ void MainWid::promptRenamePlayList()
 // 从歌曲列表里删除
 void MainWid::deleteMusicFromLocalList()
 {
-    // 删除歌曲时跳过高亮变换
-    skipPlayHighlight = true;
-    int Row = mySideBar->myMusicListWid->PlayList->currentIndex();      //判断当前播放歌曲和当前点击歌曲
+
     int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
-
-    // 获取歌曲对应的歌曲id
-    QString musicId = mySideBar->myMusicListWid->localAllMusicid[row];
-
-    qDebug() << "歌单QString musicId " << musicId;
-    // 获取歌曲id对应的数据索引
-    qDebug()<<"musicId.toInt() : "<<musicId.toInt();
-    int musicIndex = musicId.toInt();
-    qDebug()<<musicIndex;
-
-    model->setTable("LocalMusic");
-    model->select();
-    model->setData(model->index(musicIndex, 1), "");
-    model->setData(model->index(musicIndex, 2), "");
-
-    mySideBar->myMusicListWid->allmusic.removeAt(row);
-    mySideBar->myMusicListWid->localAllMusicid.removeAt(row);
+    qDebug() << "row "<<row;
+    qDebug() << "localAllMusicid "<<mySideBar->myMusicListWid->localAllMusicid;
+    QString musicHash = mySideBar->myMusicListWid->localAllMusicid[row];
+    qDebug()<<"musicHash : "<<musicHash;
+    g_db->delMusicFromLocalMusic(musicHash);
+    mySideBar->myMusicListWid->localAllMusicid.removeOne(musicHash);
     mySideBar->myMusicListWid->musicInfoWidget->removeItemWidget(mySideBar->myMusicListWid->musicInfoWidget->item(row));
+    mySideBar->myMusicListWid->PlayList->removeMedia(row, row);
     delete mySideBar->myMusicListWid->musicInfoWidget->item(row);
-
-    //  如果是当前播放的，则停止播放
-    if (Row == row)
-    {
-        qDebug()<<"Row == row";
-//        if(mySideBar->myMusicListWid->musicInfoWidget->count() == 1)
-//        {
-//            qDebug()<<"Row == row";
-//            mySideBar->myMusicListWid->Music->stop();
-//            mySideBar->myMusicListWid->PlayList->removeMedia(row);
-//            model->submitAll();
-//            QPixmap default_photo = QPixmap(":/img/fengmian.png");
-//            default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
-//            myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
-//            m_MiniWidget->m_coverLabel->setPixmap(default_photo);
-
-//    //        int musicid = mySideBar->myMusicListWid->localAllMusicid[Row].toInt();
-//    //        QString mp3Name = model->data(model->index(musicid, 1)).toString();
-//            myPlaySongArea->songText("");
-//            myPlaySongArea->bottomLeftLabel->setText("");
-//        }
-        if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
-        {
-            qDebug()<<"Row == row   mySideBar->myMusicListWid->musicInfoWidget->count() - 1";
-            if (Row == mySideBar->myMusicListWid->musicInfoWidget->count() - 1)
-            {
-                if(mySideBar->myMusicListWid->musicInfoWidget->count() == 1)
-                {
-                    qDebug()<<"Row == row";
-                    mySideBar->myMusicListWid->Music->stop();
-                    mySideBar->myMusicListWid->PlayList->removeMedia(row);
-                    model->removeRow(Row);
-                    model->submitAll();
-                    QPixmap default_photo = QPixmap(":/img/fengmian.png");
-                    default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
-                    myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
-                    m_MiniWidget->m_coverLabel->setPixmap(default_photo);
-
-            //        int musicid = mySideBar->myMusicListWid->localAllMusicid[Row].toInt();
-            //        QString mp3Name = model->data(model->index(musicid, 1)).toString();
-                    myPlaySongArea->songText("");
-                    myPlaySongArea->bottomLeftLabel->setText("");
-                }
-                else
-                {
-                    mySideBar->myMusicListWid->Music->stop();
-                    mySideBar->myMusicListWid->PlayList->removeMedia(Row);
-                    model->removeRow(Row);
-                    model->submitAll();
-                    mySideBar->myMusicListWid->PlayList->setCurrentIndex(0);
-                    mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-                }
-            }
-            else
-            {
-                mySideBar->myMusicListWid->Music->stop();
-                mySideBar->myMusicListWid->PlayList->removeMedia(row);
-                model->removeRow(row);
-                model->submitAll();
-                mySideBar->myMusicListWid->PlayList->setCurrentIndex(row);
-                mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-            }
-        }
-//        else
-//        {
-//            rightlayout->replaceWidget(nullMusicWidget,mySideBar->rightChangeWid);
-//            nullMusicWidget->show();
-//            mySideBar->rightChangeWid->hide();
-//        }
-    }
-    if (Row > row)
-    {
-        int position;
-        if(mySideBar->myMusicListWid->Music->state()==QMediaPlayer::PlayingState)
-        {
-            position=mySideBar->myMusicListWid->Music->position();
-        }
-        mySideBar->myMusicListWid->PlayList->setCurrentIndex(0);
-        mySideBar->myMusicListWid->currentPlayIndex = 0;
-
-        mySideBar->myMusicListWid->PlayList->removeMedia(row, row);
-
-        mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-        mySideBar->myMusicListWid->PlayList->setCurrentIndex(Row - 1);
-        mySideBar->myMusicListWid->currentPlayIndex = Row - 1;
-
-        mySideBar->myMusicListWid->Music->setPosition(position);
-        hSlider->setValue(position);
-        mySideBar->myMusicListWid->Music->play();
-    }
-    else if (Row < row)
-    {
-        mySideBar->myMusicListWid->PlayList->removeMedia(row, row);
-        model->removeRow(row);
-        model->submitAll();
-    }
-//    mySideBar->myMusicListWid->PlayList->removeMedia(row);
-
-//    if(mySideBar->myMusicListWid->musicInfoWidget->count() == 0)
-//    {
-////        rightlayout->replaceWidget(nullMusicWidget,mySideBar->rightChangeWid);
-//        mySideBar->rightChangeWid->hide();
-//        nullMusicWidget->show();
-////        rightlayout->addWidget(mySideBar->);
-//    }
-
-    model_1->select();
-
-    // 从每个歌单中删除此id
-    for (int i = 0; i < model_1->rowCount(); i++)
-    {
-        QString idListstr = model_1->data(model_1->index(i, 1)).toString();
-        qDebug() << "判断" << idListstr.split(",");
-        QStringList idListstrList = idListstr.split(",");
-        int tempmusicrow = idListstrList.indexOf(musicId);
-
-        qDebug() << "tempmusicrow" << tempmusicrow << musicId;
-
-        if (tempmusicrow == -1)
-        {
-            continue ;
-        }
-
-        idListstr = idListstr.replace(musicId + ",", "");
-        model_1->setData(model_1->index(i,1),idListstr);
-        model_1->submitAll();
-        model_1->select();
-        mySideBar->get_listmusic_information(i);
-
-//        mySideBar->musicListChangeWid[i]->allmusic.removeAt(tempmusicrow);
-//        mySideBar->musicListChangeWid[i]->musicInfoWidget->removeItemWidget(mySideBar->musicListChangeWid[i]->musicInfoWidget->item(tempmusicrow));
-//        delete mySideBar->musicListChangeWid[i]->musicInfoWidget->item(tempmusicrow);
-//        mySideBar->musicListChangeWid[i]->musicInfoWidget->takeItem(tempmusicrow);
-
-//        mySideBar->musicListChangeWid[i]->PlayList->removeMedia(tempmusicrow);
-//        mySideBar->musicListChangeWid[i]->Music->setPlaylist(mySideBar->musicListChangeWid[i]->PlayList);
-
-//        mySideBar->musicListChangeWid[i]->songNumberLabel->setText("共"+QString::number(mySideBar->musicListChangeWid[i]->musicInfoWidget->count())+"首");
-    }
-
-    model->submitAll();
-    model->select();
-
-    model_1->submitAll();
-    model_1->select();
-
-    qDebug() << "model->rowCount()" << model->rowCount();
-    //                mySideBar->myMusicListWid->allmusic.removeAt(row);
-
-//    mySideBar->myMusicListWid->songNumberLabel->setText("共"+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+"首");
-    mySideBar->myMusicListWid->songNumberLabel->setText(
-                tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
-    // 删除歌曲结束时开启高亮变换
-    skipPlayHighlight = false;
 }
 
 //void MainWid::deleteMusicFromSongList()
@@ -1318,104 +1039,44 @@ void MainWid::deleteMusicFromLocalList()
 //歌曲信息
 void MainWid::getSongInfoAct()
 {
+    musicDataStruct fileData;
     mySongInfoWidget = new SongInfoWidget;
     mySongInfoWidget->songInfoDlg->show();
 
-    model->setTable("LocalMusic");
-    model->select();
     int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
 
-    int musicid = mySideBar->myMusicListWid->localAllMusicid[row].toInt();
+    QString musicHash = mySideBar->myMusicListWid->localAllMusicid[row];
 
-    QString titleStr  = model->data(model->index(musicid, 1)).toString();
-    QString pathStr   = model->data(model->index(musicid, 2)).toString();
-    QString artistStr = model->data(model->index(musicid, 3)).toString();
-    QString albumStr  = model->data(model->index(musicid, 4)).toString();
-    QString type      = model->data(model->index(musicid, 5)).toString();
-    QString mp3Size   = model->data(model->index(musicid, 6)).toString();
-    QString timeStr   = model->data(model->index(musicid, 7)).toString();
+    g_db->getSongInfoFromLocalMusic(musicHash, fileData);
 
-//    mySongInfoWidget->songInfoEdit->append(titleStr);
-//    mySongInfoWidget->songInfoEdit->append(artistStr);
-//    mySongInfoWidget->songInfoEdit->append(albumStr);
-//    mySongInfoWidget->songInfoEdit->append(type);
-//    mySongInfoWidget->songInfoEdit->append(mp3Size);
-//    mySongInfoWidget->songInfoEdit->append(timeStr);
-//    mySongInfoWidget->songInfoEdit->append(pathStr);
-
-//    mySongInfoWidget->titleLab ->setText(tr("歌曲名称:"));
-    mySongInfoWidget->titleLab ->setText(tr("The song name:"));
-//    mySongInfoWidget->artistLab->setText(tr("歌曲歌手:"));
-    mySongInfoWidget->artistLab->setText(tr("singer:"));
-//    mySongInfoWidget->albumLab ->setText(tr("歌曲专辑:"));
-    mySongInfoWidget->albumLab ->setText(tr("album:"));
-//    mySongInfoWidget->typeLab  ->setText(tr("文件类型:"));
-    mySongInfoWidget->typeLab  ->setText(tr("The file type:"));
-//    mySongInfoWidget->sizeLab  ->setText(tr("文件大小:"));
-    mySongInfoWidget->sizeLab  ->setText(tr("The file size:"));
-//    mySongInfoWidget->timeLab  ->setText(tr("文件时长:"));
-    mySongInfoWidget->timeLab  ->setText(tr("File length:"));
-//    mySongInfoWidget->pathLab  ->setText(tr("文件位置:"));
-    mySongInfoWidget->pathLab  ->setText(tr("File location:"));
+    mySongInfoWidget->titleLab ->setText(tr("The song name:"));  //歌曲名称
+    mySongInfoWidget->artistLab->setText(tr("singer:"));         //歌曲歌手
+    mySongInfoWidget->albumLab ->setText(tr("album:"));          //歌曲专辑
+    mySongInfoWidget->typeLab  ->setText(tr("The file type:"));  //文件类型
+    mySongInfoWidget->sizeLab  ->setText(tr("The file size:"));  //文件大小
+    mySongInfoWidget->timeLab  ->setText(tr("File length:"));    //文件时长
+    mySongInfoWidget->pathLab  ->setText(tr("File location:"));  //文件位置
 
 
-    mySongInfoWidget->musicNameEdit->setText(titleStr);
-    mySongInfoWidget->singerNameEdit->setText(artistStr);
-    mySongInfoWidget->albumNameEdit->setText(albumStr);
-    mySongInfoWidget->fileTypeLab->setText(" "+type);
-    mySongInfoWidget->fileSizeLab->setText(" "+mp3Size);
-    mySongInfoWidget->fileTimeLab->setText(" "+timeStr);
-//    mySongInfoWidget->filePathLab->setText(" "+pathStr);
+    mySongInfoWidget->musicNameEdit->setText(fileData.title);
+    mySongInfoWidget->singerNameEdit->setText(fileData.singer);
+    mySongInfoWidget->albumNameEdit->setText(fileData.album);
+    mySongInfoWidget->fileTypeLab->setText(" "+fileData.filetype);
+    mySongInfoWidget->fileSizeLab->setText(" "+fileData.size);
+    mySongInfoWidget->fileTimeLab->setText(" "+fileData.time);
+
     QString showpathStr   = "";
-    if(pathStr.length() > 30)
+    if(fileData.filepath.length() > 30)
     {
-        showpathStr = pathStr.mid(0,29);
+        showpathStr = fileData.filepath.mid(0,29);
         showpathStr.append("...");
-        mySongInfoWidget->filePathLab->setText(showpathStr);
-        mySongInfoWidget->filePathLab->setToolTip(pathStr);
+        mySongInfoWidget->filePathLab->setText(" "+showpathStr);
+        mySongInfoWidget->filePathLab->setToolTip(" "+fileData.filepath);
     }
     else
     {
-        mySongInfoWidget->filePathLab->setText(pathStr);
-//        mySongInfoWidget->filePathLab->setToolTip(pathStr);
+        mySongInfoWidget->filePathLab->setText(" "+fileData.filepath);
     }
-
-//        QStringList list;
-//        list << MusicName << Author << Album
-//             << type << time
-//             << FileName;
-
-//        for(int i = 0;i < list.length();++i)
-//        {
-
-//        }
-//    QMessageBox::about(this,tr("歌曲信息"),tr("歌曲名称: %1 \n"
-//                                                    "歌手: %2 \n"
-//                                                    "专辑: %3 \n"
-//                                                    "文件类型: %4 \n"
-//                                                    "文件大小: %5 \n"
-//                                                    "文件时长: %6 \n"
-//                                                    "文件位置: %7 \n").arg(titleStr)
-//                                                                    .arg(artistStr)
-//                                                                    .arg(albumStr)
-//                                                                    .arg(type)
-//                                                                    .arg(mp3Size)
-//                                                                    .arg(timeStr)
-//                                                                    .arg(pathStr));
-//    QMessageBox::about(this,tr("Song information"),QString(tr("The song name") + ": %1 \n" +
-//                                                   tr("singer")        + ": %2 \n" +
-//                                                   tr("The album")     + ": %3 \n" +
-//                                                   tr("The file type") + ": %4 \n" +
-//                                                   tr("The file size") + ": %5 \n" +
-//                                                   tr("File length")   + ": %6 \n" +
-//                                                   tr("File location") + ": %7 \n")
-//                                                                    .arg(titleStr)
-//                                                                    .arg(artistStr)
-//                                                                    .arg(albumStr)
-//                                                                    .arg(type)
-//                                                                    .arg(mp3Size)
-//                                                                    .arg(timeStr)
-//                                                                    .arg(pathStr));
 }
 
 void MainWid::updatalistwidget(int value)//更新listWidget
@@ -1530,175 +1191,107 @@ void MainWid::updateSongPlaying()
 
 void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地音乐播放playlist
 {
+    int row;
+    int ret;
+    QList<musicDataStruct> resList;
+    musicDataStruct fileData;
+    QString musichash;
+
+    qDebug() << "=================doubleClicked";
+    /* default cover */
     QPixmap default_photo = QPixmap(":/img/fengmian.png");
     default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
     myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
     m_MiniWidget->m_coverLabel->setPixmap(default_photo);
 
-//    qDebug()<<"currentSelectList : "<<mySideBar->currentSelectList;
-//    qDebug()<<"currentPlayList : "<<mySideBar->currentPlayList;
+    /* 检查是否切换了歌单 */
+    if (mySideBar->currentMusicPlaylist != -1) {
+        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->stop();
+    }
 
-//    if (mySideBar->currentPlayList != -1 && mySideBar->currentPlayList != -2) {
-//        mySideBar->musicListChangeWid[mySideBar->currentPlayList]->Music->stop();
-//    }
-//    if (mySideBar->myMusicListWid->Music->playlist() != mySideBar->myMusicListWid->PlayList) {
-//        mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-//    }
-    mySideBar->musicListChangeWid[mySideBar->currentPlayList]->Music->stop();
+    /* get music info */
+    row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
     mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-    mySideBar->myMusicListWid->PlayList->setCurrentIndex(mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row());
 
-    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight);
-    //    mySideBar->myMusicListWid->PlayList->setCurrentIndex(mySideBar->myMusicListWid->musicInfoWidget->row(item));
+    mySideBar->myMusicListWid->PlayList->setCurrentIndex(row);
+    mySideBar->currentMusicPlaylist = -1;
+//    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight);
 
-    model->setTable("LocalMusic");
-    model->select();
-    int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
-    int musicid = mySideBar->myMusicListWid->localAllMusicid[row].toInt();
-    QString mp3Name = model->data(model->index(musicid, 1)).toString();
-//    myPlaySongArea->songNameofNowPlaying->setText(mp3Name);  //正在播放
-    QString mp3Name1 = model->data(model->index(musicid, 1)).toString();
     //迷你模式正在播放
-    m_MiniWidget->m_songNameLab->setText(mp3Name);
+    /* to do */
 
-    QString artistStr = model->data(model->index(musicid, 3)).toString();
-//    QString albumStr = model->data(model->index(row, 4)).toString();
-    QString timeStr   = model->data(model->index(musicid, 7)).toString();
-    QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-    HistoryListItem *besongitem1 = new HistoryListItem;
-    myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-
+    /* play area info */
     qDebug()<<"双击 mp3Name : "<<mp3Name;
-    myPlaySongArea->songText(mp3Name); // 正在播放
+    musichash = mySideBar->myMusicListWid->localAllMusicid[row];
+    g_db->getSongInfoFromLocalMusic(musichash, fileData);
+    myPlaySongArea->songText(fileData.title); // 正在播放
+    mySideBar->myMusicListWid->Music->play();
 
-    besongitem1->song_singerText(mp3Name1,artistStr); //历史列表
-    besongitem1->songTimeLabel->setText(timeStr);
-
-    QSqlQuery query;
-    query.exec(QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-               .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr));
-    qDebug()<<QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-              .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr);
-    myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-                tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
-    local_Music();  //判断本地播放列表中歌曲是否存在
-    mySideBar->myMusicListWid->isStartPlay = true;
-//    TagLib::MPEG::File fx(mySideBar->myMusicListWid->PlayList->currentMedia().canonicalUrl().path().toStdString().c_str());
-//    qDebug()<<"local_Musiclocal_Musiclocal_Musiclocal_Music";
-//    TagLib::ID3v2::FrameList frameList = fx.ID3v2Tag()->frameListMap()["APIC"];
-//    qDebug()<<"local_Musiclocal_Musiclocal_Musiclocal_Music";
-//    if (!frameList.isEmpty())
-//    {
-//        TagLib::ID3v2::AttachedPictureFrame *picFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *> (frameList.front());
-//        QPixmap photo;
-//        photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-//        photo = photo.scaled(40,40,Qt::KeepAspectRatio);
-//        myPlaySongArea->coverPhotoLabel->setPixmap(photo);
-//        m_MiniWidget->m_coverLabel->setPixmap(photo);
-
-//        photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-//    }
-//    qDebug()<<"local_Musiclocal_Musiclocal_Musiclocal_Music";
+    /* ===to do: add to history table */
+    ret = g_db->addMusicToHistoryMusic(fileData.hash);
+    if (ret == DB_OP_SUCC) {
+        QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+        HistoryListItem *besongitem1 = new HistoryListItem;
+        myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+        besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+        besongitem1->songTimeLabel->setText(fileData.time); //时长
+    }
 }
 
 // 双击歌单播放
 void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
 {
+    int row;
+    int ret;
+    QList<musicDataStruct> resList;
+    musicDataStruct fileData;
+    QString musichash;
+
+    qDebug() << "=================doubleClicked";
+    /* default cover */
     QPixmap default_photo = QPixmap(":/img/fengmian.png");
     default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
     myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
     m_MiniWidget->m_coverLabel->setPixmap(default_photo);
 
-    qDebug() << "双击歌单播放";
+    /* 检查是否切换了歌单 */
+    if(mySideBar->currentMusicPlaylist != mySideBar->currentSelectList) {
+        if (mySideBar->currentMusicPlaylist == -1) {
+            mySideBar->myMusicListWid->Music->stop();
+        } else {
+            mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->stop();
+        }
+    }
 
-    mySideBar->myMusicListWid->Music->stop();
-    qDebug() << "mySideBar->currentPlayList : " << mySideBar->currentPlayList;
-    qDebug() << "mySideBar->currentSelectList : " << mySideBar->currentSelectList;
-
-//    if (mySideBar->currentPlayList != -1 && mySideBar->currentPlayList != -2) {
-//        mySideBar->musicListChangeWid[mySideBar->currentPlayList]->Music->stop();
-//    }
-
-//    mySideBar->currentPlayList = mySideBar->currentSelectList;
-
-//    if (mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->playlist() !=
-//        mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList) {
-//        mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->setPlaylist(
-//        mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList);
-//    }
-    if (mySideBar->currentPlayList >= 0)
-        if (mySideBar->musicListChangeWid[mySideBar->currentPlayList]->Music->state() == QMediaPlayer::PlayingState)
-            mySideBar->musicListChangeWid[mySideBar->currentPlayList]->Music->stop();
-
-    mySideBar->currentPlayList = mySideBar->currentSelectList;
+    /* get music info */
+    row = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
+    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->setPlaylist(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList);
 
 
-    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->setPlaylist(
-                mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList);
 
-    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(
-                mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row());
-    //    mySideBar->myMusicListWid->PlayList->setCurrentIndex(mySideBar->myMusicListWid->musicInfoWidget->row(item));
-//    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
+    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(row);
+    mySideBar->currentMusicPlaylist = mySideBar->currentSelectList;
+//    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight);
 
-    int tempmusicrow = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
-    int templistrow = mySideBar->currentSelectList;
-    QString tempAllId = model_1->data(model_1->index(templistrow,1)).toString();
-    int tempid = tempAllId.split(",")[tempmusicrow].toInt();
-    qDebug()<<"双击 tempid : "<<tempid;
-    int row = tempid;
-    qDebug()<<"row : "<<row;
-
-    int thisrow = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentIndex();
-    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(thisrow);
-    mySideBar->sidemodel->setTable("NewPlayList");
-    mySideBar->sidemodel->select();
-    QString allmusicid = mySideBar->sidemodel->data(mySideBar->sidemodel->index(mySideBar->currentSelectList,1)).toString();
-    int thisid = allmusicid.split(",")[thisrow].toInt();
-    QStringList thismusicinfo = mySideBar->myMusicListWid->get_info_from_db(thisid);
-    QString mp3Name   = thismusicinfo[0];
-    QString mp3Name1  = thismusicinfo[0];
-    QString artistStr = thismusicinfo[2];
-    QString timeStr   = thismusicinfo[6];
-
-    QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-    HistoryListItem *besongitem1 = new HistoryListItem;
-    myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-    myPlaySongArea->songText(mp3Name); // 正在播放
-    besongitem1->song_singerText(mp3Name1,artistStr); //历史列表
-    besongitem1->songTimeLabel->setText(timeStr);
     //迷你模式正在播放
-    m_MiniWidget->m_songNameLab->setText(mp3Name);
+    /* to do */
 
-    QSqlQuery query;
-    query.exec(QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-               .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr));
-    qDebug()<<QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-              .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr);
-    myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-                tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
+    /* play area info */
+    qDebug()<<"双击 mp3Name : "<<mp3Name;
+    musichash = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->localAllMusicid[row];
+    g_db->getSongInfoFromLocalMusic(musichash, fileData);
+    myPlaySongArea->songText(fileData.title); // 正在播放
+    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
 
-    new_PlayList();
-//    mySideBar->currentPlayList = 1;    // jialin
-
-    qDebug() << "双击歌单播放 " << mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentIndex();
-
-//    TagLib::MPEG::File fx(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentMedia().canonicalUrl().path().toStdString().c_str());
-//    TagLib::ID3v2::FrameList frameList = fx.ID3v2Tag()->frameListMap()["APIC"];
-//    if (!frameList.isEmpty())
-//    {
-//        TagLib::ID3v2::AttachedPictureFrame *picFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *> (frameList.front());
-//        QPixmap photo;
-//        photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-//        photo = photo.scaled(40,40,Qt::KeepAspectRatio);
-//        myPlaySongArea->coverPhotoLabel->setPixmap(photo);
-//        m_MiniWidget->m_coverLabel->setPixmap(photo);
-
-//        photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-//    }
+    /* ===to do: add to history table */
+    ret = g_db->addMusicToHistoryMusic(fileData.hash);
+    if (ret == DB_OP_SUCC) {
+        QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+        HistoryListItem *besongitem1 = new HistoryListItem;
+        myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+        besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+        besongitem1->songTimeLabel->setText(fileData.time); //时长
+    }
 }
 
 void MainWid::Music_stateChang(QMediaPlayer::State state)//播放状态改变
@@ -1775,302 +1368,98 @@ void MainWid::Music_playlist_stateChang(QMediaPlayer::State state)//播放状态
 
 void MainWid::on_lastBtn_clicked()             //上一首
 {
-    if (mySideBar->currentSelectList == -1)
-    {
-        if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
-        {
-            QPixmap default_photo = QPixmap(":/img/fengmian.png");
-            default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
-            myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
-            m_MiniWidget->m_coverLabel->setPixmap(default_photo);
-            //        mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->stop();
+    int preIndex;
+    int ret;
+    QString musicHash;
+    musicDataStruct fileData;
 
-            if(mySideBar->myMusicListWid->Music->playlist()==mySideBar->myMusicListWid->PlayList)
-            {
-                int currentIndex=mySideBar->myMusicListWid->PlayList->currentIndex();
-                //        mpwid->setCurrentIndex(0);
-                //        pushbuttonstyle();
-                if(--currentIndex < 0)
-                {
-                    currentIndex = 0;
-                }
-                mySideBar->myMusicListWid->PlayList->setCurrentIndex(currentIndex);
-                int musicid = mySideBar->myMusicListWid->localAllMusicid[currentIndex].toInt();
-                QString mp3Name = model->data(model->index(musicid, 1)).toString();
-                QString mp3Name1 = model->data(model->index(musicid, 1)).toString();
-                QString artistStr = model->data(model->index(musicid, 3)).toString();
-                QString timeStr   = model->data(model->index(musicid, 7)).toString();
-                QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-                HistoryListItem *besongitem1 = new HistoryListItem;
-                myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-                myPlaySongArea->songText(mp3Name); // 正在播放
+    if (mySideBar->currentMusicPlaylist == -1) {
+        preIndex = (mySideBar->myMusicListWid->PlayList->currentIndex() - 1 + mySideBar->myMusicListWid->PlayList->mediaCount()) % \
+                mySideBar->myMusicListWid->PlayList->mediaCount();
+        mySideBar->myMusicListWid->PlayList->setCurrentIndex(preIndex);
+        mySideBar->myMusicListWid->Music->play();
 
-                besongitem1->song_singerText(mp3Name1,artistStr); //历史列表
-                besongitem1->songTimeLabel->setText(timeStr);
-                //迷你模式正在播放
-                m_MiniWidget->m_songNameLab->setText(mp3Name);
+        /* 添加到历史列表 */
+        musicHash = mySideBar->myMusicListWid->localAllMusicid[preIndex];
+        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->myMusicListWid->tableName);
 
-                QSqlQuery query;
-                query.exec(QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                           .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr));
-                qDebug()<<QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                          .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr);
-                myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-                            tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
-            }
-            //        mySideBar->myMusicListWid->Music->play();
-
-            local_Music();
+        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+        if (ret == DB_OP_SUCC) {
+            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+            HistoryListItem *besongitem1 = new HistoryListItem;
+            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+            besongitem1->songTimeLabel->setText(fileData.time); //时长
         }
+    } else {
+        preIndex = (mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex() - 1 + \
+                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount()) % \
+                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount();
+        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->setCurrentIndex(preIndex);
+        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
 
-        //上一首时歌曲封面输出
-//        TagLib::MPEG::File fx(mySideBar->myMusicListWid->PlayList->currentMedia().canonicalUrl().path().toStdString().c_str());
-//        TagLib::ID3v2::FrameList frameList = fx.ID3v2Tag()->frameListMap()["APIC"];
-//        if (!frameList.isEmpty())
-//        {
-//            TagLib::ID3v2::AttachedPictureFrame *picFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *> (frameList.front());
-//            QPixmap photo;
-//            photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-//            photo = photo.scaled(40,40,Qt::KeepAspectRatio);
-//    //        m_MiddleWidget->m_PlaySongInfoWidget->cdLabel->setPixmap(photo);
-//            myPlaySongArea->coverPhotoLabel->setPixmap(photo);
-//            m_MiniWidget->m_coverLabel->setPixmap(photo);
-//    //        photo = photo.scaled(42,42,Qt::KeepAspectRatio);
-//    //        m_MiniWidget->m_photoLabel->setPixmap(photo);
-//            photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-//    //        m_turntableWidget->pix_cd = photo; m_turntableWidget->update();
-//        }
+        /* 添加到历史列表 */
+        musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[preIndex];
+        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
 
-
-    }
-    else if (mySideBar->currentPlayList >= 0)
-    {
-        if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->count() > 0)
-        {
-            QPixmap default_photo = QPixmap(":/img/fengmian.png");
-            default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
-            myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
-            m_MiniWidget->m_coverLabel->setPixmap(default_photo);
-            mySideBar->myMusicListWid->Music->stop();
-
-            if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->playlist()==mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList)
-            {
-                int currentIndex = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentIndex();
-                //        mpwid->setCurrentIndex(0);
-                //        pushbuttonstyle();
-                if(--currentIndex < 0)
-                {
-                    currentIndex = 0;
-                }
-                mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(currentIndex);
-
-                int templistrow = mySideBar->currentSelectList;
-                QString tempAllId = model_1->data(model_1->index(templistrow,1)).toString();
-                qDebug()<<"tempAllId : "<<tempAllId;
-                QStringList list = tempAllId.split(",");
-                qDebug()<<"list : "<<list<<"长度："<<list.count();
-                for(int i = 0;i < list.count()-1;i++)
-                {
-                    if(currentIndex == i)
-                    {
-                        QString listlist = list.at(currentIndex);
-                        qDebug()<<"listlist : "<<listlist;
-                        int row = listlist.toInt();
-                        QString mp3Name = model->data(model->index(row, 1)).toString();
-                        QString mp3Name1 = model->data(model->index(row, 1)).toString();
-                        QString artistStr = model->data(model->index(row, 3)).toString();
-                        QString timeStr   = model->data(model->index(row, 7)).toString();
-                        QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-                        HistoryListItem *besongitem1 = new HistoryListItem;
-                        myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-                        myPlaySongArea->songText(mp3Name); // 正在播放
-
-                        besongitem1->song_singerText(mp3Name1,artistStr); //历史列表
-                        besongitem1->songTimeLabel->setText(timeStr);
-                        //迷你模式正在播放
-                        m_MiniWidget->m_songNameLab->setText(mp3Name);
-
-                        QSqlQuery query;
-                        query.exec(QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                                   .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr));
-                        qDebug()<<QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                                  .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr);
-                        myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-                                    tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
-                    }
-                }
-            }
-    //        mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
-
-            new_PlayList();
-
-//            TagLib::MPEG::File fx(mySideBar->myMusicListWid->PlayList->currentMedia().canonicalUrl().path().toStdString().c_str());
-//            TagLib::ID3v2::FrameList frameList = fx.ID3v2Tag()->frameListMap()["APIC"];
-//            if (!frameList.isEmpty())
-//            {
-//                TagLib::ID3v2::AttachedPictureFrame *picFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *> (frameList.front());
-//                QPixmap photo;
-//                photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-//                photo = photo.scaled(40,40,Qt::KeepAspectRatio);
-//        //        m_MiddleWidget->m_PlaySongInfoWidget->cdLabel->setPixmap(photo);
-//                myPlaySongArea->coverPhotoLabel->setPixmap(photo);
-//                m_MiniWidget->m_coverLabel->setPixmap(photo);
-//        //        photo = photo.scaled(42,42,Qt::KeepAspectRatio);
-//        //        m_MiniWidget->m_photoLabel->setPixmap(photo);
-//                photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-//        //        m_turntableWidget->pix_cd = photo; m_turntableWidget->update();
-//                qDebug()<<"cxz";
-//            }
+        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+        if (ret == DB_OP_SUCC) {
+            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+            HistoryListItem *besongitem1 = new HistoryListItem;
+            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+            besongitem1->songTimeLabel->setText(fileData.time); //时长
         }
     }
-    //    updateSongPlaying();
 }
 
 
 void MainWid::on_nextBtn_clicked()      //下一首
 {
-    if (mySideBar->currentSelectList == -1)
-    {
-        if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
-        {
-            QPixmap default_photo = QPixmap(":/img/fengmian.png");
-            default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
-            myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
-            m_MiniWidget->m_coverLabel->setPixmap(default_photo);
+    int nextIndex;
+    int ret;
+    QString musicHash;
+    musicDataStruct fileData;
 
-    //        mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->stop();
+    if (mySideBar->currentMusicPlaylist == -1) {
+        /* 歌曲列表下一首 */
+        nextIndex = (mySideBar->myMusicListWid->PlayList->currentIndex() + 1)%mySideBar->myMusicListWid->PlayList->mediaCount();
+        mySideBar->myMusicListWid->PlayList->setCurrentIndex(nextIndex);
+        mySideBar->myMusicListWid->Music->play();
 
-            if(mySideBar->myMusicListWid->Music->playlist()==mySideBar->myMusicListWid->PlayList)
-            {
+        /* 添加到历史列表 */
+        musicHash = mySideBar->myMusicListWid->localAllMusicid[nextIndex];
+        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->myMusicListWid->tableName);
 
-                int currentIndex = mySideBar->myMusicListWid->PlayList->currentIndex();
-                if(++currentIndex == mySideBar->myMusicListWid->PlayList->mediaCount())
-                {
-                    currentIndex = 0;
-                }
-                mySideBar->myMusicListWid->PlayList->setCurrentIndex(currentIndex);
-                int musicid = mySideBar->myMusicListWid->localAllMusicid[currentIndex].toInt();
-                QString mp3Name = model->data(model->index(musicid, 1)).toString();
-                QString mp3Name1 = model->data(model->index(musicid, 1)).toString();
-                QString artistStr = model->data(model->index(musicid, 3)).toString();
-                QString timeStr   = model->data(model->index(musicid, 7)).toString();
-                QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-                HistoryListItem *besongitem1 = new HistoryListItem;
-                myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-                myPlaySongArea->songText(mp3Name); // 正在播放
-
-                besongitem1->song_singerText(mp3Name1,artistStr); //历史列表
-                besongitem1->songTimeLabel->setText(timeStr);
-                //迷你模式正在播放
-                m_MiniWidget->m_songNameLab->setText(mp3Name);
-
-                QSqlQuery query;
-                query.exec(QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                           .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr));
-                qDebug()<<QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                          .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr);
-                myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-                            tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
-            }
-    //        mySideBar->myMusicListWid->Music->play();
-            local_Music();
-
-            //下一首时封面输出
-//            TagLib::MPEG::File fx(mySideBar->myMusicListWid->PlayList->currentMedia().canonicalUrl().path().toStdString().c_str());
-//            TagLib::ID3v2::FrameList frameList = fx.ID3v2Tag()->frameListMap()["APIC"];
-//            if (!frameList.isEmpty())
-//            {
-//                TagLib::ID3v2::AttachedPictureFrame *picFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *> (frameList.front());
-//                QPixmap photo;
-//                photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-//                photo = photo.scaled(40,40,Qt::KeepAspectRatio);
-//                myPlaySongArea->coverPhotoLabel->setPixmap(photo);
-//                m_MiniWidget->m_coverLabel->setPixmap(photo);
-
-//                photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-//            }
+        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+        if (ret == DB_OP_SUCC) {
+            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+            HistoryListItem *besongitem1 = new HistoryListItem;
+            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+            besongitem1->songTimeLabel->setText(fileData.time); //时长
         }
 
-    }
+    } else {
+        /* 歌单下一首 */
+        nextIndex = (mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex() + 1) % \
+                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount();
+        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->setCurrentIndex(nextIndex);
+        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
 
-    else if (mySideBar->currentPlayList >= 0)
-    {
-        if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->count() > 0)
-        {
-            QPixmap default_photo = QPixmap(":/img/fengmian.png");
-            default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
-            myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
-            m_MiniWidget->m_coverLabel->setPixmap(default_photo);
+        /* 添加到历史列表 */
+        musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[nextIndex];
+        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
 
-    //        mySideBar->myMusicListWid->Music->stop();
-
-            if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->playlist() ==
-                    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList)
-            {
-                int currentIndex=mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentIndex();
-
-                if(++currentIndex==mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->mediaCount())
-                {
-                    currentIndex = 0;
-                }
-                mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(currentIndex);
-
-                int templistrow = mySideBar->currentSelectList;
-                QString tempAllId = model_1->data(model_1->index(templistrow,1)).toString();
-                QStringList list = tempAllId.split(",");
-                for(int i = 0;i < list.count()-1;i++)
-                {
-                    if(currentIndex == i)
-                    {
-                        QString listlist = list.at(currentIndex);
-                        qDebug()<<"listlist : "<<listlist;
-                        int row = listlist.toInt();
-                        QString mp3Name = model->data(model->index(row, 1)).toString();
-                        QString mp3Name1 = model->data(model->index(row, 1)).toString();
-                        QString artistStr = model->data(model->index(row, 3)).toString();
-                        QString timeStr   = model->data(model->index(row, 7)).toString();
-                        QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-                        HistoryListItem *besongitem1 = new HistoryListItem;
-                        myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-                        myPlaySongArea->songText(mp3Name); // 正在播放
-
-                        besongitem1->song_singerText(mp3Name1,artistStr); //历史列表
-                        besongitem1->songTimeLabel->setText(timeStr);
-                        //迷你模式正在播放
-                        m_MiniWidget->m_songNameLab->setText(mp3Name);
-
-                        QSqlQuery query;
-                        query.exec(QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                                   .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr));
-                        qDebug()<<QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-                                  .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr);
-                        myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-                                    tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
-                    }
-                }
-            }
-    //        mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
-            new_PlayList();
-    //        TagLib::MPEG::File fx(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentMedia().canonicalUrl().path().toStdString().c_str());
-    //        TagLib::ID3v2::FrameList frameList = fx.ID3v2Tag()->frameListMap()["APIC"];
-    //        if (!frameList.isEmpty())
-    //        {
-    //            TagLib::ID3v2::AttachedPictureFrame *picFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *> (frameList.front());
-    //            QPixmap photo;
-    //            photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-    //            photo = photo.scaled(40,40,Qt::KeepAspectRatio);
-    //            myPlaySongArea->coverPhotoLabel->setPixmap(photo);
-    //            m_MiniWidget->m_coverLabel->setPixmap(photo);
-
-    //            photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-    //        }
+        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+        if (ret == DB_OP_SUCC) {
+            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+            HistoryListItem *besongitem1 = new HistoryListItem;
+            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+            besongitem1->songTimeLabel->setText(fileData.time); //时长
         }
     }
-    //    updateSongPlaying();
 }
 
 void MainWid::positionChange(qint64 position)    //更新播放位置
@@ -2246,7 +1635,6 @@ void MainWid::currentMediaChanged(QMediaContent content)
                             //                            warn->button(QMessageBox::Yes)->setText("确定");
                             //                            warn->exec();
 //                            promptMessage();
-                            qDebug()<<"mp3Namemp3Name";
                             mySideBar->myMusicListWid->Music->stop();
                             QString mp3Name = model->data(model->index(currentIndex, 1)).toString();
                             mySideBar->myMusicListWid->Music->play();
@@ -2448,47 +1836,6 @@ bool MainWid::eventFilter(QObject *obj, QEvent *event)   //鼠标滑块点击
         }
     }
     return QObject::eventFilter(obj,event);
-}
-
-void MainWid::get_historyplaylist_information()
-{
-    QSqlQuery query;
-    query.exec("select * from HistoryPlayList");  //历史列表数据
-    while(query.next())
-    {
-//        qDebug() << "select * from LocalMusic " << query.value(1).toString() << query.value(2).toString()
-//                 << query.value(3).toString() << query.value(4).toString() << query.value(7).toString();
-
-        QString Name = query.value(1).toString();
-        QString singer = query.value(2).toString();
-        QString Time = query.value(3).toString();
-        if (Name == "")
-        {
-            continue;
-        }
-        // 添加到本地音乐所有id中
-//        localAllMusicid.append(QString::number(Id));
-
-        if(Name != ""&&singer != "")
-        {
-            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-            HistoryListItem *besongitem1 = new HistoryListItem;
-            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-
-//            besongitem1->songNameLabel->setText(Name); //歌曲名称
-//            besongitem1->singerLabel->setText(singer); //歌手
-//            besongitem1->songTimeLabel->setText(Time); //时长
-            besongitem1->song_singerText(Name,singer); //历史列表
-            besongitem1->songTimeLabel->setText(Time); //时长
-
-//            PlayList->addMedia(QUrl::fromLocalFile(Name));
-        }
-
-    }
-    myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-                tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
-//    qDebug()<<"allmusic.size() :"<<allmusic.size();
-
 }
 
 void MainWid::PlayModeChanged()
@@ -2786,22 +2133,19 @@ void MainWid::subvSlider_slot()
 void MainWid::showAboutWidget()
 {
     qDebug() << "关于";
-//    myTitleBar->aboutWidget->raise();
 
-//    myTitleBar->aboutWidget->show();
     aboutWidget = new AllPupWindow(this);
     aboutWidget->resize(420,300);
     aboutWidget->cancelBtn->hide();
 
 //    aboutWidget->hide();
     aboutWidget->pupDialog->show();
-
-
-
 }
 
+//切换深色主题
 void MainWid::changeDarkTheme()
 {
+    QStringList playListNameList;
     WidgetStyle::themeColor = 1;
     mySideBar->newSonglistPup->dlgcolor();
     mySideBar->renameSongListPup->dlgcolor();
@@ -2810,18 +2154,22 @@ void MainWid::changeDarkTheme()
     m_MiniWidget->minicolor();
     myTitleBar->titlecolor();
 //    mySideBar->myMusicListWid->musicInfoWidget->clear();     //主题切换清理musicInfoWidget引起闪退
-    mySideBar->myMusicListWid->get_localmusic_information();
+//    mySideBar->myMusicListWid->get_localmusic_information();           jialin
     nullMusicWidget->nullWidgetColor();
     mySideBar->myMusicListWid->musiclistcolor();
-    for (int i = 0; i < mySideBar->songListWidget->count(); i++) {
+//    mySideBar->songListBtncolor();
+
+    g_db->getPlayList(playListNameList);
+    for (int i = 0; i < playListNameList.size(); i++)
+    {
+        qDebug()<<"mySideBar->songListWidget->count() : "<<mySideBar->songListWidget->count();
         mySideBar->musicListChangeWid[i]->musiclistcolor();
         mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
-        mySideBar->get_listmusic_information(i);
+//        mySideBar->get_listmusic_information(i, playListNameList.at(i));
         mySideBar->newSongListBtn[i]->setIcon(QIcon(":/img/default/songlist_w .png"));
 
         mySideBar->newSongListBtn[i]->setStyleSheet("QToolButton{padding-left:15px;margin-left:10px;\
                                          font-size: 14px;\
-                                         \
                                         background-color:#1F2022;\
                                         color:#F9F9F9;border-radius:16px;}"
                                         "QToolButton::hover{background-color:#303032;border-radius:16px;}"
@@ -2831,8 +2179,10 @@ void MainWid::changeDarkTheme()
     rightWid->setStyleSheet("#rightWid{background:#252526;}");
 }
 
+//切换浅色主题
 void MainWid::changeLightTheme()
 {
+    QStringList playListNameList;
     WidgetStyle::themeColor = 0;
     mySideBar->newSonglistPup->dlgcolor();
     mySideBar->renameSongListPup->dlgcolor();
@@ -2841,13 +2191,15 @@ void MainWid::changeLightTheme()
     m_MiniWidget->minicolor();
     myTitleBar->titlecolor();
 //    mySideBar->myMusicListWid->musicInfoWidget->clear();
-    mySideBar->myMusicListWid->get_localmusic_information();
+//    mySideBar->myMusicListWid->get_localmusic_information();          jialin
     nullMusicWidget->nullWidgetColor();
 
     mySideBar->myMusicListWid->musiclistcolor();
-    for (int i = 0; i < mySideBar->songListWidget->count(); i++) {
+    g_db->getPlayList(playListNameList);
+    for (int i = 0; i < playListNameList.size(); i++)
+    {
         mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
-        mySideBar->get_listmusic_information(i);
+//        mySideBar->get_listmusic_information(i, playListNameList.at(i));
         mySideBar->musicListChangeWid[i]->musiclistcolor();
 
         mySideBar->newSongListBtn[i]->setIcon(QIcon(":/img/default/songlist.png"));
@@ -2928,7 +2280,6 @@ void MainWid::add_nullMusicWidgetAddFile()
          AllDirList.append(box->text());
     }
     SongDirPath = DirList;
-    QSqlQuery query;
 
 ////        Dir = QDir::toNativeSeparators(songFiles.at(i));
 //        matchDir.setPath(AllDirList.at(i));   // QDir
@@ -3037,10 +2388,6 @@ void MainWid::add_nullMusicWidgetAddFile()
             mySideBar->myMusicListWid->localAllMusicid.append(QString::number(id));
             mySideBar->myMusicListWid->PlayList->addMedia(QUrl::fromLocalFile(mp3Name));
 
-            query.exec(QString("insert into LocalMusic (id,musicname,filepath,singer,album,type,size,time) values (%1,'%2','%3','%4','%5','%6','%7','%8')")
-                       .arg(id).arg(titleStr).arg(mp3Name).arg(artistStr).arg(albumStr).arg(type).arg(mp3Size).arg(timeStr));
-
-            mySideBar->myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
             qDebug()<<"musicInfoWidget count : "<<mySideBar->myMusicListWid->musicInfoWidget->count();
         }
     }
@@ -3253,12 +2600,16 @@ void MainWid::local_Music()
 
 void MainWid::new_PlayList()
 {
-    qDebug()<<"count : "<<mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->count();
     int thisrow = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentIndex();
+    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(thisrow);
     model_1->select();
+//    int thisrow = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentIndex();
+//    mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(thisrow);
     qDebug()<<"currentSelectList : "<<mySideBar->currentSelectList;
-    qDebug()<<"thisrow : "<<thisrow;
-    qDebug()<<"thisrow : "<<thisrow;
+//    qDebug() << thisrow << allmusicid.size();
+//    if (thisrow  >= allmusicid.size() - 2) {
+//        thisrow = 0;
+//    }
     if(thisrow != -1)
     {
         mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(thisrow);
@@ -3356,51 +2707,8 @@ void MainWid::new_PlayList()
                 default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
                 myPlaySongArea->coverPhotoLabel->setPixmap(default_photo);
                 m_MiniWidget->m_coverLabel->setPixmap(default_photo);
-
-
-//                TagLib::MPEG::File fx(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentMedia().canonicalUrl().path().toStdString().c_str());
-//                TagLib::ID3v2::FrameList frameList = fx.ID3v2Tag()->frameListMap()["APIC"];
-//                if (!frameList.isEmpty())
-//                {
-//                    TagLib::ID3v2::AttachedPictureFrame *picFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *> (frameList.front());
-//                    QPixmap photo;
-//                    photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-//                    photo = photo.scaled(40,40,Qt::KeepAspectRatio);
-//                    myPlaySongArea->coverPhotoLabel->setPixmap(photo);
-//                    m_MiniWidget->m_coverLabel->setPixmap(photo);
-
-//                    photo.loadFromData(reinterpret_cast<const uchar*>(picFrame->picture().data()), picFrame->picture().size());
-
-//                }
-
-            }
-    //        mySideBar->sidemodel->setTable("NewPlayList");
-    //        mySideBar->sidemodel->select();
-
-    //        QStringList thismusicinfo = mySideBar->myMusicListWid->get_info_from_db(thisrow);
-    //        QString mp3Name   = thismusicinfo[0];
-    //        QString mp3Name1   = thismusicinfo[0];
-    //        QString artistStr   = thismusicinfo[2];
-    //        QString timeStr   = thismusicinfo[6];
-    //        //迷你模式正在播放
-    //        m_MiniWidget->m_songNameLab->setText(mp3Name);
-
-    //        QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-    //        HistoryListItem *besongitem1 = new HistoryListItem;
-    //        myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-    //        myPlaySongArea->songText(mp3Name); // 正在播放
-    //        besongitem1->song_singerText(mp3Name1,artistStr); //历史列表
-    //        besongitem1->songTimeLabel->setText(timeStr);
-
-    //        QSqlQuery query;
-    //        query.exec(QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-    //                   .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr));
-    //        qDebug()<<QString("insert into HistoryPlayList (id,mp3Name,artistStr,timeStr) values (%1,'%2','%3','%4')")
-    //                  .arg(qrand()%1000000).arg(mp3Name1).arg(artistStr).arg(timeStr);
-    //        myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
-    //                    tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
             return ;
+            }
         }
     }
 }
@@ -3455,8 +2763,8 @@ void MainWid::playlist_playInformation()
     qDebug()<<thisid;
     QStringList thismusicinfo = mySideBar->myMusicListWid->get_info_from_db(thisid);
     QString mp3Name   = thismusicinfo[0];
-    QString mp3Name1   = thismusicinfo[0];
-    QString artistStr   = thismusicinfo[2];
+    QString mp3Name1  = thismusicinfo[0];
+    QString artistStr = thismusicinfo[2];
     QString timeStr   = thismusicinfo[6];
 
     QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
@@ -3709,7 +3017,7 @@ void MainWid::processArgs(QStringList args)
 
         }
     }
-    if(mySideBar->myMusicListWid->allmusic.indexOf(musicPath) == -1)
+    if(mySideBar->myMusicListWid->allmusic.indexOf(musicPath) == -1 && musicPath != "")
     {
         if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
         {

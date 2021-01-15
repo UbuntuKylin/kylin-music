@@ -86,6 +86,8 @@ void TitleBar::initTitle()
 {
     setStyleSheet(::main_style);
 
+    menumodule = new menuModule(this);
+//    menumodule->menuButton
     resize(750,56);
 
     titleLayout = new QHBoxLayout(this);
@@ -205,7 +207,7 @@ void TitleBar::initTitle()
     settingMenu->addMenu(changeThemeColorMenu);
     changeThemeColorMenu->addAction(lightThemeAct);
     changeThemeColorMenu->addAction(darkThemeAct);
-    settingMenu->addAction(aboutAct);
+//    settingMenu->addAction(aboutAct);
 
     setBtn->setMenu(settingMenu);   //下拉三角图标
 
@@ -261,7 +263,7 @@ void TitleBar::initTitle()
 //    LayoutRight->addWidget(userIconBtn);
 //    LayoutRight->addWidget(loginBtn);
 //    LayoutRight->addSpacing(20);
-    LayoutRight->addWidget(setBtn);
+    LayoutRight->addWidget(menumodule->menuButton);
     LayoutRight->addSpacing(4);
     LayoutRight->addWidget(miniBtn);
     LayoutRight->addSpacing(4);
@@ -340,7 +342,7 @@ void TitleBar::titlecolor()
                                  border-image:url(:/img/default/search.png);}\
                                  QPushButton::hover{border-image:url(:/img/hover/search.png);}");
 
-        setBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
+        menumodule->menuButton->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
                               }"
                               "QPushButton::hover{background:#D4DBE9;opacity:0.04;}"
                               "QPushButton::pressed{background:#BEBEBE;opacity:0.04;}"
@@ -391,7 +393,7 @@ void TitleBar::titlecolor()
                                  border-image:url(:/img/default/search.png);}\
                                  QPushButton::hover{border-image:url(:/img/hover/search.png);}");
 
-        setBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
+        menumodule->menuButton->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
                               }"
                               "QPushButton::hover{background:rgba(0,0,0,0.15);}"
                               "QPushButton::pressed{background:rgba(0, 0, 0, 0.2);}"

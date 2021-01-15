@@ -30,15 +30,15 @@ void menuModule::initAction(){
 //    互斥按钮组
     QMenu *themeMenu = new QMenu;
     QActionGroup *themeMenuGroup = new QActionGroup(this);
-    QAction *autoTheme = new QAction("Auto",this);
+    QAction *autoTheme = new QAction(tr("Auto"),this);
     themeMenuGroup->addAction(autoTheme);
     themeMenu->addAction(autoTheme);
     autoTheme->setCheckable(true);
-    QAction *lightTheme = new QAction("Light",this);
+    QAction *lightTheme = new QAction(tr("Light"),this);
     themeMenuGroup->addAction(lightTheme);
     themeMenu->addAction(lightTheme);
     lightTheme->setCheckable(true);
-    QAction *darkTheme = new QAction("Dark",this);
+    QAction *darkTheme = new QAction(tr("Dark"),this);
     themeMenuGroup->addAction(darkTheme);
     themeMenu->addAction(darkTheme);
     darkTheme->setCheckable(true);
@@ -57,7 +57,7 @@ void menuModule::initAction(){
 void menuModule::setThemeFromLocalThemeSetting(QList<QAction* > themeActions)
 {
 #if DEBUG_MENUMODULE
-    confPath = "org.kylin-usb-creator-data.settings";
+    confPath = "org.kylin-music-data.settings";
 #endif
     m_pGsettingThemeStatus = new QGSettings(confPath.toLocal8Bit());
     if(!m_pGsettingThemeStatus){
@@ -101,11 +101,11 @@ void menuModule::triggerMenu(QAction *act){
 
 
     QString str = act->text();
-    if("Quit" == str){
+    if(tr("Quit") == str){
         emit menuModuleClose();
-    }else if("About" == str){
+    }else if(tr("About") == str){
         aboutAction();
-    }else if("Help" == str){
+    }else if(tr("Help") == str){
         helpAction();
     }
 }
@@ -144,7 +144,7 @@ void menuModule::aboutAction(){
 void menuModule::helpAction(){
 //    帮助点击事件处理
 #if DEBUG_MENUMODULE
-    appName = "tools/kylin-usb-creator";
+    appName = "tools/kylin-music";
 #endif
     DaemonIpcDbus *ipcDbus = new DaemonIpcDbus();
     if(!ipcDbus->daemonIsNotRunning()){
@@ -182,8 +182,8 @@ QHBoxLayout* menuModule::initTitleBar(){
     QPushButton *titleBtnClose = new QPushButton;
     titleIcon->setFixedSize(QSize(24,24));
 #if DEBUG_MENUMODULE
-    iconPath = ":/data/kylin-usb-creator.svg";
-    appShowingName = "kylin usb creator";
+    iconPath = ":/img/kylin-music.png";
+    appShowingName = "kylin music";
 #endif
     //TODO：直接从主题调图标，不会QIcon转qpixmap所以暂时从本地拿
     titleIcon->setPixmap(QPixmap::fromImage(QImage(iconPath)));

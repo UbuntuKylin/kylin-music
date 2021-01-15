@@ -41,10 +41,10 @@ int main(int argc, char *argv[])
     qDebug()<<"argv : "<<argv;
     qDebug()<<"args : "<<args;
 //    QApplication a(argc, argv);
-    if(!CreatConnection())
-    {
-        return 1;
-    }
+//    if(!CreatConnection())
+//    {
+//        return 1;
+//    }
     a.setWindowIcon(QIcon(":/img/kylin-music.png"));
 
     // 国际化

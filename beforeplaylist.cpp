@@ -14,18 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+#include "musicDataBase.h"
 #include "beforeplaylist.h"
 #include <QGraphicsDropShadowEffect>
 
 BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
 {
-//    setFixedWidth(320);
-//    setFixedSize(320,640);
+    QList<musicDataStruct> resList;
     setGeometry(640,0,320,562);
 //    setAttribute(Qt::WA_TranslucentBackground, true);
     setStyleSheet("background:#FFFFFF;");
 
+    /* 初始化历史列表 */
+    beforePlayList = new QListWidget(this);
+    beforePlayList->setContentsMargins(16,0,16,0);
+    beforePlayList->setStyleSheet("QListWidget{background-color:#FFFFFF;border:0px;}"
+                                  "QListWidget::item{height:40px;}"
+                                  "QListWidget::item:selected{background-color:#FFFFFF;color:#FF4848;}"
+                                  "QListWidget::item:hover{background-color:#FFFFFF;}"
+                                  );
+    g_db->getSongInfoListFromHistoryMusic(resList);
+    for (int i = 0; i < resList.size(); i++) {
+        QListWidgetItem *belistItem = new QListWidgetItem(beforePlayList);
+        HistoryListItem *besongitem1 = new HistoryListItem;
+        beforePlayList->setItemWidget(belistItem,besongitem1);
+        besongitem1->song_singerText(resList.at(i).title, resList.at(i).singer); //历史列表
+        besongitem1->songTimeLabel->setText(resList.at(i).time); //时长
+    }
     initUi();
 
 }
@@ -35,10 +50,6 @@ void BeforePlayList::initUi()
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QHBoxLayout *titleLayout = new QHBoxLayout(this);
 
-
-    beforePlayList = new QListWidget(this);
-
-    beforePlayList->setContentsMargins(16,0,16,0);
     beforeListTitleLabel = new QLabel(this);
 //    beforeListTitleLabel->setText("播放列表");
     beforeListTitleLabel->setText(tr("The playlist"));
@@ -60,7 +71,8 @@ void BeforePlayList::initUi()
                                          line-height: 14px;\
                                          ");
 
-
+    beforeListNumberLabel->setText(
+        tr("A total of")+QString::number(beforePlayList->count())+tr("The first"));
     emptyBtn = new QToolButton(this);
     emptyBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     emptyBtn->setIcon(QIcon(":/img/default/delete.png"));
@@ -89,31 +101,6 @@ void BeforePlayList::initUi()
     mainLayout->addWidget(titleWidget,0,Qt::AlignTop);
     mainLayout->addWidget(beforePlayList);
     mainLayout->setSpacing(0);
-//    mainLayout->setMargin(0);
-
-//    QWidget *mainWidget = new QWidget(this);
-//    mainWidget->setLayout(mainLayout);
-
-//    beforePlayList->setStyleSheet("QScrollBar{background-color:#F0F0F0;border-radius:3px;width:6px;}"
-//                                  "QScrollBar::handle:vertical{background-color:#C2C2C2;border-radius:3px;width:6px;min-height:20px;}"
-//                                  "QListWidget{background-color:#FFFFFF;border:0px;}"
-//                                  "QListWidget::item{height:40px;}"
-//                                  "QListWidget::item:selected{background-color:#FFFFFF;color:#FF4848;}"
-//                                  "QListWidget::item:hover{background-color:#FFFFFF;}"
-//                                  );
-
-    beforePlayList->setStyleSheet("QListWidget{background-color:#FFFFFF;border:0px;}"
-                                  "QListWidget::item{height:40px;}"
-                                  "QListWidget::item:selected{background-color:#FFFFFF;color:#FF4848;}"
-                                  "QListWidget::item:hover{background-color:#FFFFFF;}"
-                                  );
-
-
-//    beforePlayList->setStyleSheet("QScrollBar{background-color:white;border-radius:2px;width:4px;}"
-//                                  "QScrollBar::handle:vertical{background-color:#8F9399;border-radius:2px;width:4px;}"
-//                                  "QScrollBar::handle:vertical:hover{background-color:#303032;border-radius:4px;width:4px;min-height:20;}"
-//                                  );
-
 
     this->setLayout(mainLayout);
 //    mainWidget->raise();

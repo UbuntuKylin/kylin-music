@@ -64,6 +64,19 @@
 //#include <taglib/toolkit/tpropertymap.h>
 
 #include "widgetstyle.h"
+#include "musicDataBase.h"
+
+//struct AllMusic
+//{
+//    QString hash;
+//    QString title;
+//    QString filepath;
+//    QString singer;
+//    QString album;
+//    QString filetype;
+//    QString size;
+//    QString time;
+//};
 
 class ChangeListWid : public QWidget
 {
@@ -116,16 +129,16 @@ public:
     QStringList songFiles;
     QString Dir;
     QStringList matchMp3Files;
-    QString musicPath;
+//    QString musicPath;
 
     QFileInfo fileInfo;
-    QByteArray byteArray;
-    QString musicName;
-    QString musicSinger;
-    QString musicAlbum;
-    QString musicTime;
-    QString musicSize;
-    QString musicType;
+//    QByteArray byteArray;
+//    QString musicName;
+//    QString musicSinger;
+//    QString musicAlbum;
+//    QString musicTime;
+//    QString musicSize;
+//    QString musicType;
     QString MD5Str;
     QStringList MD5List;
     QDir matchDir;
@@ -138,22 +151,31 @@ public:
     QMediaPlaylist *PlayList;
     QMediaPlayer *Music;
     QSqlTableModel *localModel;
+    QString tableName;
 
 
     int currentPlayIndex = -1;   //高亮相关
     bool isStartPlay = false;
+
+public:
+    musicDataStruct musicdataStruct;
 signals:
-//    void nullWidgetAddFile();
+//     void filePathHash(QString);
 public:
 
-    void get_localmusic_information();   //获取初始界面的歌曲列表信息
+    void get_localmusic_information(QString tableName);   //获取初始界面的歌曲列表信息
 //    void get_listmusic_information(int listindex);  //获取歌单页面歌曲信息
 
     QStringList get_info_from_db(int musicid);  //从数据库用歌曲id获取歌曲信息
     void musiclistcolor();
 
-//public slots:
-    void on_top_addSongBtn_slot();  //添加歌曲
+    void on_top_addSongBtn_slot();       //添加歌曲
+    QString filepathHash(QString filePath);      //通过歌曲路径获取歌曲hash
+    QString filepath(QString filepath);          //获取文件路径
+    QStringList fileInformation(QString filepath);   //获取歌曲信息
+    QString fileSize(QFileInfo fileInfo);        //获取文件大小
+    QString fileType(QFileInfo fileInfo);        //获取文件类型
+    void showFileInformation(QString musicName,QString musicSinger,QString musicAlbum,QString musicTime); //显示到界面的歌曲信息
 
 //signals:
 //    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号

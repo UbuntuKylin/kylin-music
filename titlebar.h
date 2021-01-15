@@ -32,6 +32,7 @@
 #include "changelistwid.h"
 #include "allpupwindow.h"
 #include "widgetstyle.h"
+#include "menumodule.h"
 
 const QString main_style = "QFrame{background:#FFFFFF;border-top-right-radius:12px;}";
 
@@ -44,6 +45,8 @@ class TitleBar : public QFrame
 public:
     explicit TitleBar(QWidget *parent = nullptr);
     ~TitleBar(){}
+
+    menuModule *menumodule;
 
     QLabel *nullLabel;
 

@@ -65,6 +65,7 @@
 #include "allpupwindow.h"
 #include "daemonipcdbus.h"
 #include "kylinmuisc.h"
+//#include "menumodule.h"
 
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
@@ -105,16 +106,16 @@ public:
 //    MainWid(QWidget *);
     ~MainWid();
 //    QString getMp3FileName(QString sqlName);
+    void gSettings();
     void updatalistwidget(int value);//更新listWidget
     void updataplaylistwidget(int value);//更新playlistWidget
     void updateSongPlaying();
     void slot_showMiniWidget();//迷你模式
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
-    void changeDarkTheme();  //切换深浅色主题
-    void changeLightTheme();
+    void changeDarkTheme();  //切换深色主题
+    void changeLightTheme(); //切换浅色主题
     void mousePressEvent(QMouseEvent *event);
-    void get_historyplaylist_information();  //保存历史记录
     void local_Music();      //判断本地播放列表中歌曲是否存在
     void new_PlayList();     //判断本地歌单歌曲是否存在
     void albumCover_local_playlist(); //本地和歌单默认封面
@@ -166,10 +167,9 @@ public slots:
     void add_music_to_songlist(QAction *listact);    //添加到歌单
     void deleteMusicFromLocalList(); //从本地音乐删除
 //    void deleteMusicFromSongList();  //从歌单删除音乐
-    void deleteThisSongList();
+    void deleteThisSongList();       //删除歌单弹窗
     void showRenameDlg();
     void renameThisSongList();       //重命名歌单
-    void promptThisSongList();       //歌单提示信息
     void renameSongListCon();
     void promptRenamePlayList();     //重命名歌单提示信息
     void promptRemovePlayList();     //删除歌单提示信息
@@ -206,6 +206,7 @@ public:
     void closePromptMessage();
 
 signals:
+//    void deleteLocalMusic(QString musicHash);
     void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
 //    void musicDbus(QString path);
 //    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号
@@ -214,11 +215,7 @@ signals:
 public slots:
 //    void addFile(const QStringList &addFile);  //拖拽添加歌曲
 
-//protected:
-//    void dragEnterEvent(QDragEnterEvent *event);
-//    void dragMoveEvent(QDragMoveEvent *event);
-//    void dragLeaveEvent(QDragLeaveEvent *event);
-//    void dropEvent(QDropEvent *event);
+public:
 
 public:
     //添加文件夹
@@ -266,6 +263,7 @@ private:
     ChangeListWid *nullMusicWidget;
     PlaySongArea *myPlaySongArea;
     SongInfoWidget *mySongInfoWidget;
+//    menuModule *menumodule;
     //文件拖拽功能
 
     QVBoxLayout *rightlayout;

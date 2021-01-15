@@ -39,6 +39,12 @@
 #include "widgetstyle.h"
 #include "playsongarea.h"
 
+struct PlayListNew
+{
+    int id;
+    QString hash;       //表名
+};
+
 class SideBar :public QFrame
 {
     Q_OBJECT
@@ -48,7 +54,7 @@ public:
     QLabel *recommendLabel;
     QPushButton *logoLabel;
     QLabel *logoNameLabel;
-    QToolButton *PlayListBtn;
+    QToolButton *PlayListBtn;    //歌曲列表
     QLabel *MySongListLabel;
     QPushButton *addSongListBtn;
 
@@ -83,13 +89,13 @@ public:
 
     AllPupWindow *promptExistListPup;  //歌单名已存在
 
-    void get_listmusic_information(int listindex);
-
     QMenu *menu;
     QAction *listPlayAct;
     QAction *listNextAct;
     QAction *listDeleAct;
     QAction *listSongAct;
+
+    int currentMusicPlaylist = 0;
 
     // 当前播放列表索引
     int currentPlayList = 0;
@@ -103,12 +109,21 @@ public:
     int currentPlayIndex = -1;   //高亮相关
     // 判断删除歌单歌曲时跳过高亮
     bool skipPlaylistHighlight = false;
-private:
+public:
+//    void songListBtncolor();         //歌单按钮(包括我喜欢)样式
+
+public:
+    PlayListNew playListNew;
+    QStringList playListName;               //歌单名hash
+    QString enterLineEdit(QString text);    //获取歌单名的hash
 
 public slots:
 
     void addSongList();
+    void initDefaultMusicList();
     void createSongList();  //新建歌单
+    void addItemToSongList();  //创建歌单
+    void deleteSongList();    //删除歌单
 
     void ChangePage();
     void AlterPage();
@@ -118,7 +133,7 @@ public slots:
     void listPlayAct_slot();
     void listNextAct_slot();
     void deleteMusicFromSongList();    // 从歌单中删除歌曲
-    void listSongAct_slot();
+    void listSongAct_slot();           // 歌单中歌曲信息
 
 //    void updataplaylistwidget(int value);//更新playlistWidget
 //    void on_musicListChangeWid_doubleClicked(QListWidgetItem *item);
