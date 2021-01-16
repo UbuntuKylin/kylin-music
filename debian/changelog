@@ -1,3 +1,9 @@
+kylin-music (1.0.35kord) v101; urgency=medium
+
+  * 重构数据库逻辑相关逻辑.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Fri, 15 Jan 2021 22:01:38 +0800
+
 kylin-music (1.0.34kord) v101; urgency=medium
 
   * 修改部分UI界面.

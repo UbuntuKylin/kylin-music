@@ -18,14 +18,15 @@ void menuModule::initAction(){
     m_menu = new QMenu();
     QList<QAction *> actions ;
     QAction *actionTheme = new QAction(m_menu);
-    actionTheme->setText(tr("Theme"));
+//    actionTheme->setText(tr("Theme"));
     QAction *actionHelp = new QAction(m_menu);
-    actionHelp->setText(tr("Help"));
+//    actionHelp->setText(tr("Help"));
     QAction *actionAbout = new QAction(m_menu);
     actionAbout->setText(tr("About"));
     QAction *actionQuit = new QAction(m_menu);
-    actionQuit->setText(tr("Quit"));
-    actions<<actionTheme<<actionHelp<<actionAbout<<actionQuit;
+//    actionQuit->setText(tr("Quit"));
+//    actions<<actionTheme<<actionHelp<<actionAbout<<actionQuit;
+    actions<<actionAbout;
     m_menu->addActions(actions);
 //    互斥按钮组
     QMenu *themeMenu = new QMenu;

@@ -124,6 +124,7 @@ void TitleBar::initTitle()
     searchEdit->setPlaceholderText(tr("Search for music, singers"));
 
 //    searchEdit->setContentsMargins(0,4,0,0);
+    searchEdit->hide();
     searchBtn = new QPushButton(searchEdit);
 
     searchBtn->setFixedSize(16,16);
