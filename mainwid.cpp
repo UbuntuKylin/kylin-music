@@ -25,13 +25,164 @@
 MainWid::MainWid(QString str, QWidget *parent)
     : QMainWindow(parent)
 {
-//    QGSettings *recordData = new QGSettings(KYLINRECORDER);
-//    qDebug()<<recordData->get("dark").toString();
-//    recordData->set("dark","黑色");
     // 用户手册功能
     setAcceptDrops(true);
     mDaemonIpcDbus = new DaemonIpcDbus();
 
+    gsettingInit();//初始化gsetting
+
+    Single(str);   //单例
+
+    dbusInit();//初始化dbus
+
+    styleInit();//初始化控件及样式
+
+    actionInit();//初始化事件
+
+}
+
+void MainWid::styleInit()
+{
+    //    promptMessage();  //提示信息
+        setMinimumSize(960,640);
+    //    setFocus();
+    //    this->setWindowFlags(Qt::FramelessWindowHint);            //
+        this->setAttribute(Qt::WA_TranslucentBackground, true);     //窗体透明
+    //    this->setStyleSheet("border-radius:6px;" );//主窗体圆角(注意：窗体透明与主窗体圆角要搭配使用否则无效)
+
+        //窗体显示在中间
+        QRect availableGeometry = qApp->primaryScreen()->availableGeometry();
+        this->move((availableGeometry.width() - this->width())/2, (availableGeometry.height() - this->height())/2);
+
+    //    this->setWindowTitle(tr("麒麟音乐"));
+        this->setWindowTitle(tr("Kylin music"));
+        this->setWindowIcon(QIcon(":/img/kylin-music.png"));
+
+        //    this->setStyleSheet("background-color:#FFFFFF;");
+        myTitleBar = new TitleBar(this);
+        mySideBar = new SideBar(this);
+        nullMusicWidget = new ChangeListWid(this);   //空页面
+
+        //    myMusicListWid = new MusicListWid(this);
+
+        myPlaySongArea = new PlaySongArea(this);
+
+
+        QHBoxLayout *mainlayout = new QHBoxLayout(this);
+
+        QVBoxLayout *leftlayout = new QVBoxLayout(this);
+        rightlayout = new QVBoxLayout(this);
+
+        model = new QSqlTableModel(this);
+        model->setTable("LocalMusic");
+        model->select();
+
+        model_1 = new QSqlTableModel(this);
+        model_1->setTable("NewPlayList");
+        model_1->select();
+
+        leftlayout->addWidget(mySideBar);
+
+        rightlayout->addWidget(myTitleBar, 0, Qt::AlignTop);
+
+        if(mySideBar->myMusicListWid->musicInfoWidget->count() == 0)
+        {
+            rightlayout->addWidget(nullMusicWidget,Qt::AlignTop);
+            mySideBar->rightChangeWid->hide();
+        }
+        else
+        {
+            rightlayout->addWidget(mySideBar->rightChangeWid,Qt::AlignTop);
+            nullMusicWidget->hide();
+        }
+
+    //    nullMusicWidget->hide();
+
+    //    rightlayout->addWidget(mySideBar->rightChangeWid,Qt::AlignTop);
+    //    mySideBar->rightChangeWid->hide();
+
+        hSlider = new Slider(this);
+        hSlider->installEventFilter(this);
+        hSlider->setOrientation(Qt::Horizontal);
+        hSlider->setStyleSheet("QSlider::groove:horizontal{height: 2px;background:#3790FA;}\
+                                QSlider::add-page:horizontal{background:#ECEEF5;}\
+                                QSlider::handle:horizontal{width: 14px;margin: -5 0 -5 0;border-image:url(:/img/default/point.png);}");
+
+
+        rightlayout->addWidget(hSlider);
+        rightlayout->addWidget(myPlaySongArea,0,Qt::AlignBottom);
+
+        vSlider = new Slider;
+        vSlider->installEventFilter(this);
+        vSlider->setOrientation(Qt::Vertical);
+    //    vSlider->setFixedSize(100,12);
+    //    vSlider->setToolTip("音量调节");
+        vSlider->setToolTip(tr("volume"));
+        vSlider->setMinimum(0);
+        vSlider->setMaximum(100);
+        vSliderWid = new QWidget();
+        vSliderWid->setFixedSize(30,90);
+        vSliderWid->setWindowFlags(Qt::FramelessWindowHint);
+
+        HLayout = new QHBoxLayout;
+
+        HLayout->addWidget(vSlider);
+        vSliderWid->setLayout(HLayout);
+        vSliderWid->setStyleSheet("background-color:white;");
+
+        connect(vSlider,&QSlider::valueChanged,this,&MainWid::changeVolume);
+    //    connect(myPlaySongArea->volumeBtn,&QPushButton::clicked,this,&MainWid::show_volumeBtn);
+
+        rightlayout->setMargin(0);
+        rightlayout->setSpacing(0);
+
+        rightWid = new QWidget(this);
+        rightWid->setObjectName("rightWid");
+        rightWid->setLayout(rightlayout);
+
+        mainlayout->addLayout(leftlayout);
+        mainlayout->addWidget(rightWid);
+
+        mainlayout->setMargin(0);
+        mainlayout->setSpacing(0);
+
+        mainWidget = new QWidget(this);
+        mainWidget->setLayout(mainlayout);
+
+        mainWidget->setObjectName("mainWidget");
+
+        m_MiniWidget = new miniWidget;
+        MotifWmHints hints;
+        hints.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
+        hints.functions = MWM_FUNC_ALL;
+        hints.decorations = MWM_DECOR_BORDER;
+        XAtomHelper::getInstance()->setWindowMotifHint(m_MiniWidget->winId(), hints);
+
+        if (WidgetStyle::themeColor == 1)
+        {
+            mainWidget->setStyleSheet("#mainWidget{background:#252526;}");
+            rightWid->setStyleSheet("#rightWid{background:#252526;}");
+        }
+        else if(WidgetStyle::themeColor == 0)
+        {
+            mainWidget->setStyleSheet("#mainWidget{background:#FFFFFF;}");
+            rightWid->setStyleSheet("#rightWid{background:#FFFFFF;}");
+        }
+}
+
+void MainWid::dbusInit()
+{
+    QDBusConnection sessionBus = QDBusConnection::sessionBus();
+    if(sessionBus.registerService("org.ukui.kylin_music"))
+    {
+        sessionBus.registerObject("/org/ukui/kylin_music",this,
+                                  QDBusConnection::ExportAllContents);
+        qDebug("dbus register ok.");
+    }
+}
+
+void MainWid::gsettingInit()
+{
     if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW))
     {
         themeData = new QGSettings(FITTHEMEWINDOW);
@@ -57,143 +208,10 @@ MainWid::MainWid(QString str, QWidget *parent)
             }
         });
     }
+}
 
-    Single(str);   //单例
-
-    QDBusConnection sessionBus = QDBusConnection::sessionBus();
-    if(sessionBus.registerService("org.ukui.kylin_music"))
-    {
-        sessionBus.registerObject("/org/ukui/kylin_music",this,
-                                  QDBusConnection::ExportAllContents);
-        qDebug("dbus register ok.");
-    }
-
-//    promptMessage();  //提示信息
-    setMinimumSize(960,640);
-//    setFocus();
-//    this->setWindowFlags(Qt::FramelessWindowHint);            //
-    this->setAttribute(Qt::WA_TranslucentBackground, true);     //窗体透明
-//    this->setStyleSheet("border-radius:6px;" );//主窗体圆角(注意：窗体透明与主窗体圆角要搭配使用否则无效)
-
-    //窗体显示在中间
-    QRect availableGeometry = qApp->primaryScreen()->availableGeometry();
-    this->move((availableGeometry.width() - this->width())/2, (availableGeometry.height() - this->height())/2);
-
-//    this->setWindowTitle(tr("麒麟音乐"));
-    this->setWindowTitle(tr("Kylin music"));
-    this->setWindowIcon(QIcon(":/img/kylin-music.png"));
-
-    //    this->setStyleSheet("background-color:#FFFFFF;");
-    myTitleBar = new TitleBar(this);
-    mySideBar = new SideBar(this);
-    nullMusicWidget = new ChangeListWid(this);   //空页面
-
-    //    myMusicListWid = new MusicListWid(this);
-
-    myPlaySongArea = new PlaySongArea(this);
-
-
-    QHBoxLayout *mainlayout = new QHBoxLayout(this);
-
-    QVBoxLayout *leftlayout = new QVBoxLayout(this);
-    rightlayout = new QVBoxLayout(this);
-
-    model = new QSqlTableModel(this);
-    model->setTable("LocalMusic");
-    model->select();
-
-    model_1 = new QSqlTableModel(this);
-    model_1->setTable("NewPlayList");
-    model_1->select();
-
-    leftlayout->addWidget(mySideBar);
-
-    rightlayout->addWidget(myTitleBar, 0, Qt::AlignTop);
-
-    if(mySideBar->myMusicListWid->musicInfoWidget->count() == 0)
-    {
-        rightlayout->addWidget(nullMusicWidget,Qt::AlignTop);
-        mySideBar->rightChangeWid->hide();
-    }
-    else
-    {
-        rightlayout->addWidget(mySideBar->rightChangeWid,Qt::AlignTop);
-        nullMusicWidget->hide();
-    }
-
-//    nullMusicWidget->hide();
-
-//    rightlayout->addWidget(mySideBar->rightChangeWid,Qt::AlignTop);
-//    mySideBar->rightChangeWid->hide();
-
-    hSlider = new Slider(this);
-    hSlider->installEventFilter(this);
-    hSlider->setOrientation(Qt::Horizontal);
-    hSlider->setStyleSheet("QSlider::groove:horizontal{height: 2px;background:#3790FA;}\
-                            QSlider::add-page:horizontal{background:#ECEEF5;}\
-                            QSlider::handle:horizontal{width: 14px;margin: -5 0 -5 0;border-image:url(:/img/default/point.png);}");
-
-
-    rightlayout->addWidget(hSlider);
-    rightlayout->addWidget(myPlaySongArea,0,Qt::AlignBottom);
-
-    vSlider = new Slider;
-    vSlider->installEventFilter(this);
-    vSlider->setOrientation(Qt::Vertical);
-//    vSlider->setFixedSize(100,12);
-//    vSlider->setToolTip("音量调节");
-    vSlider->setToolTip(tr("volume"));
-    vSlider->setMinimum(0);
-    vSlider->setMaximum(100);
-    vSliderWid = new QWidget();
-    vSliderWid->setFixedSize(30,90);
-    vSliderWid->setWindowFlags(Qt::FramelessWindowHint);
-
-    HLayout = new QHBoxLayout;
-
-    HLayout->addWidget(vSlider);
-    vSliderWid->setLayout(HLayout);
-    vSliderWid->setStyleSheet("background-color:white;");
-
-    connect(vSlider,&QSlider::valueChanged,this,&MainWid::changeVolume);
-//    connect(myPlaySongArea->volumeBtn,&QPushButton::clicked,this,&MainWid::show_volumeBtn);
-
-    rightlayout->setMargin(0);
-    rightlayout->setSpacing(0);
-
-    rightWid = new QWidget(this);
-    rightWid->setObjectName("rightWid");
-    rightWid->setLayout(rightlayout);
-
-    mainlayout->addLayout(leftlayout);
-    mainlayout->addWidget(rightWid);
-
-    mainlayout->setMargin(0);
-    mainlayout->setSpacing(0);
-
-    mainWidget = new QWidget(this);
-    mainWidget->setLayout(mainlayout);
-
-    mainWidget->setObjectName("mainWidget");
-
-    m_MiniWidget = new miniWidget;
-    MotifWmHints hints;
-    hints.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
-    hints.functions = MWM_FUNC_ALL;
-    hints.decorations = MWM_DECOR_BORDER;
-    XAtomHelper::getInstance()->setWindowMotifHint(m_MiniWidget->winId(), hints);
-
-    if (WidgetStyle::themeColor == 1)
-    {
-        mainWidget->setStyleSheet("#mainWidget{background:#252526;}");
-        rightWid->setStyleSheet("#rightWid{background:#252526;}");
-    }
-    else if(WidgetStyle::themeColor == 0)
-    {
-        mainWidget->setStyleSheet("#mainWidget{background:#FFFFFF;}");
-        rightWid->setStyleSheet("#rightWid{background:#FFFFFF;}");
-    }
-
+void MainWid::actionInit()
+{
     connect(myTitleBar->miniBtn,&QPushButton::clicked,this,&MainWid::slot_showMiniWidget);
     connect(m_MiniWidget->m_recoveryWinBtn,&QPushButton::clicked,this,&MainWid::slot_recoverNormalWidget);
 
@@ -303,6 +321,7 @@ MainWid::MainWid(QString str, QWidget *parent)
         kylin_music_play_request(argName);
     }
 }
+
 
 int MainWid::kylin_music_play_request(QString path)
 {
@@ -2809,7 +2828,7 @@ void MainWid::changeDarkTheme()
     myPlaySongArea->playcolor();
     m_MiniWidget->minicolor();
     myTitleBar->titlecolor();
-//    mySideBar->myMusicListWid->musicInfoWidget->clear();     //主题切换清理musicInfoWidget引起闪退
+    mySideBar->myMusicListWid->musicInfoWidget->clear();     //主题切换清理musicInfoWidget引起闪退
     mySideBar->myMusicListWid->get_localmusic_information();
     nullMusicWidget->nullWidgetColor();
     mySideBar->myMusicListWid->musiclistcolor();
@@ -2840,7 +2859,7 @@ void MainWid::changeLightTheme()
     myPlaySongArea->playcolor();
     m_MiniWidget->minicolor();
     myTitleBar->titlecolor();
-//    mySideBar->myMusicListWid->musicInfoWidget->clear();
+    mySideBar->myMusicListWid->musicInfoWidget->clear();
     mySideBar->myMusicListWid->get_localmusic_information();
     nullMusicWidget->nullWidgetColor();
 
@@ -3126,7 +3145,7 @@ void MainWid::currentPlayHighlight()
 //    QList<QLabel*> songItemList = itemWid->findChildren<QLabel*>();
 //    songItemList[0]->setStyleSheet("color:red;");
 
-//    qDebug() << "songItemList[0]->songNameLabel" << songItemList[0]->songNameLabel->text();
+    //    qDebug() << "songItemList[0]->songNameLabel" << songItemList[0]->songNameLabel->text();
 }
 
 void MainWid::local_Music()

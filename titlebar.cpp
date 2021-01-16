@@ -142,7 +142,8 @@ void TitleBar::initTitle()
     LayoutLeft->addSpacing(16);
     LayoutLeft->addWidget(rightBtn);
     LayoutLeft->addSpacing(30);
-    LayoutLeft->addWidget(searchEdit);
+    //搜索框暂时隐藏
+    //LayoutLeft->addWidget(searchEdit);
     LayoutLeft->setSpacing(8);
     LayoutLeft->setContentsMargins(30,0,0,0);
 
@@ -205,7 +206,8 @@ void TitleBar::initTitle()
     settingMenu->addMenu(changeThemeColorMenu);
     changeThemeColorMenu->addAction(lightThemeAct);
     changeThemeColorMenu->addAction(darkThemeAct);
-    settingMenu->addAction(aboutAct);
+    //暂时隐藏关于按钮
+    //settingMenu->addAction(aboutAct);
 
     setBtn->setMenu(settingMenu);   //下拉三角图标
 

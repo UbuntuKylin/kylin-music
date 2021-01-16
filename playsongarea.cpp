@@ -265,7 +265,8 @@ void PlaySongArea::initWidget()
     bottmRightLayout->addSpacing(6);
     bottmRightLayout->addWidget(playModeBtn,Qt::AlignRight);
     bottmRightLayout->addSpacing(6);
-    bottmRightLayout->addWidget(listBtn,Qt::AlignRight);
+    //暂时隐藏历史播放列表
+   // bottmRightLayout->addWidget(listBtn,Qt::AlignRight);
 
     bottomLeftWid->setLayout(bottomLeftLayout);
     playCenterWid->setLayout(playCenterLayout);
