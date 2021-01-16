@@ -14,19 +14,20 @@ void menuModule::initAction(){
     iconSize = QSize(30,30);
     menuButton = new QPushButton;
     menuButton->setIcon(QIcon::fromTheme("application-menu"));
+    menuButton->setToolTip(tr("set"));
     menuButton->setFixedSize(iconSize);
     m_menu = new QMenu();
     QList<QAction *> actions ;
     QAction *actionTheme = new QAction(m_menu);
 //    actionTheme->setText(tr("Theme"));
     QAction *actionHelp = new QAction(m_menu);
-//    actionHelp->setText(tr("Help"));
+    actionHelp->setText(tr("Help"));
     QAction *actionAbout = new QAction(m_menu);
     actionAbout->setText(tr("About"));
     QAction *actionQuit = new QAction(m_menu);
 //    actionQuit->setText(tr("Quit"));
 //    actions<<actionTheme<<actionHelp<<actionAbout<<actionQuit;
-    actions<<actionAbout;
+    actions<<actionHelp<<actionAbout;
     m_menu->addActions(actions);
 //    互斥按钮组
     QMenu *themeMenu = new QMenu;
@@ -173,7 +174,7 @@ void menuModule::initAbout(){
     //TODO:在屏幕中央显示
     QRect availableGeometry = qApp->primaryScreen()->availableGeometry();
     aboutWindow->move((availableGeometry.width()-aboutWindow->width())/2,(availableGeometry.height()- aboutWindow->height())/2);
-//    aboutWindow->setStyleSheet("background-color:rgba(255,255,255,1);");
+    aboutWindow->setStyleSheet("background-color:rgba(255,255,255,1);");
     aboutWindow->show();
 }
 

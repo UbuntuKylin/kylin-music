@@ -35,7 +35,7 @@ public:
 //    程序在实例化的时候需要传递的信息字段,打开debug开关后这些字段会被自动填充
     QString appName = "tools/kylin-music"; //格式kylin-usb-creator
     QString appShowingName = tr("kylin music"); //格式kylin usb creator ,用来在前端展示
-    QString appVersion = "kylin-music 1.0.35kord";
+    QString appVersion = "kylin-music 1.0.36kord";
     QString appDesc = "2020.01.08";
     QString iconPath = ":/img/kylin-music.png";
     QString confPath = "org.kylin-music-data.settings";

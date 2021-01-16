@@ -113,6 +113,8 @@ public:
     void slot_showMiniWidget();//迷你模式
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
+    void slot_showMaximized();  //最大化和还原
+    void close_MainWid();    //关闭程序
     void changeDarkTheme();  //切换深色主题
     void changeLightTheme(); //切换浅色主题
     void mousePressEvent(QMouseEvent *event);
@@ -206,18 +208,10 @@ public:
     void closePromptMessage();
 
 signals:
-//    void deleteLocalMusic(QString musicHash);
     void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
-//    void musicDbus(QString path);
-//    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号
-//private slots:
-////    void addFile(const QStringList &addFile);
-public slots:
-//    void addFile(const QStringList &addFile);  //拖拽添加歌曲
 
 public:
-
-public:
+    bool Minimize = false;       //最大化和还原俩个状态
     //添加文件夹
     QStringList AllDirList;
     QStringList DirList; // all checked dir

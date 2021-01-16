@@ -21,6 +21,7 @@
 BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
 {
     QList<musicDataStruct> resList;
+    int ret;
     setGeometry(640,0,320,562);
 //    setAttribute(Qt::WA_TranslucentBackground, true);
     setStyleSheet("background:#FFFFFF;");
@@ -33,13 +34,16 @@ BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
                                   "QListWidget::item:selected{background-color:#FFFFFF;color:#FF4848;}"
                                   "QListWidget::item:hover{background-color:#FFFFFF;}"
                                   );
-    g_db->getSongInfoListFromHistoryMusic(resList);
-    for (int i = 0; i < resList.size(); i++) {
-        QListWidgetItem *belistItem = new QListWidgetItem(beforePlayList);
-        HistoryListItem *besongitem1 = new HistoryListItem;
-        beforePlayList->setItemWidget(belistItem,besongitem1);
-        besongitem1->song_singerText(resList.at(i).title, resList.at(i).singer); //历史列表
-        besongitem1->songTimeLabel->setText(resList.at(i).time); //时长
+    ret == g_db->getSongInfoListFromHistoryMusic(resList);
+    if(ret == DB_OP_SUCC)
+    {
+        for (int i = 0; i < resList.size(); i++) {
+            QListWidgetItem *belistItem = new QListWidgetItem(beforePlayList);
+            HistoryListItem *besongitem1 = new HistoryListItem;
+            beforePlayList->setItemWidget(belistItem,besongitem1);
+            besongitem1->song_singerText(resList.at(i).title, resList.at(i).singer); //历史列表
+            besongitem1->songTimeLabel->setText(resList.at(i).time); //时长
+        }
     }
     initUi();
 

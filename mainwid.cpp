@@ -201,8 +201,12 @@ MainWid::MainWid(QString str, QWidget *parent)
 //    connect(hSlider,&MusicListWid::on_top_addSongBtn_slot,this,&MainWid::setHsliderPosition);
 
     connect(mySideBar->myMusicListWid->Music,&QMediaPlayer::stateChanged,this,&MainWid::Music_stateChang);
-
     connect(myPlaySongArea->playModeBtn,SIGNAL(clicked(bool)),this,SLOT(PlayModeChanged()));
+
+    /* 最大化 最小化 关闭 */
+    connect(myTitleBar->maximumBtn, &QToolButton::clicked, this, &MainWid::slot_showMaximized);
+    connect(myTitleBar->minimumBtn, &QToolButton::clicked, this, &MainWid::showMinimized);
+    connect(myTitleBar->closeBtn, &QToolButton::clicked, this, &MainWid::close_MainWid);
 
     //迷你模式槽函数绑定
     connect(m_MiniWidget->m_nextBtn,&QPushButton::clicked,this,&MainWid::on_nextBtn_clicked);
@@ -236,7 +240,7 @@ MainWid::MainWid(QString str, QWidget *parent)
     QShortcut *subvSlider=new QShortcut(Qt::Key_S,this);
     connect(subvSlider,&QShortcut::activated,this,&MainWid::subvSlider_slot);
 
-//    connect(myPlaySongArea->mybeforeList->emptyBtn,SIGNAL(clicked(bool)),this,SLOT(clear_HistoryPlayList()));
+    connect(myPlaySongArea->mybeforeList->emptyBtn,SIGNAL(clicked(bool)),this,SLOT(clear_HistoryPlayList()));
 //    connect(mySideBar->likeAct,&QAction::triggered,this,&MainWid::deleteMusicFromSongList);
 
     QStringList playListNameList;
@@ -341,6 +345,15 @@ void MainWid::keyPressEvent(QKeyEvent *event)
             mDaemonIpcDbus->showGuide("tools/kylin-music");
         }
     }
+    else if(event->key() == Qt::Key_Right)
+    {
+        return;
+    }
+    else if(event->key() == Qt::Key_Left)
+    {
+        return;
+    }
+    QMainWindow::keyPressEvent(event);
 }
 
 void MainWid::Single(QString path)   //单例
@@ -375,7 +388,6 @@ MainWid::~MainWid()
 #include <QPropertyAnimation>
 void MainWid::slot_showMiniWidget()
 {
-//    this->hide();   //fyf
     // 添加过渡动画
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
     animation->setDuration(200);
@@ -408,6 +420,32 @@ void MainWid::slot_showMiniWidget()
 
 }
 
+void MainWid::slot_showMaximized()
+{
+    if(Minimize)
+    {
+        showNormal();
+        Minimize = false;
+        myTitleBar->maximumBtn->setIcon(QIcon::fromTheme("window-maximize-symbolic"));
+        myTitleBar->maximumBtn->setToolTip(tr("maximize"));
+        qDebug()<<"最大化";
+    }
+    else
+    {
+        showMaximized();
+        Minimize = true;
+        myTitleBar->maximumBtn->setIcon(QIcon::fromTheme("window-restore-symbolic"));
+//                maximumBtn->setToolTip(tr("还原"));
+        myTitleBar->maximumBtn->setToolTip(tr("reduction"));
+        qDebug()<<"还原";
+    }
+}
+
+void MainWid::close_MainWid()
+{
+    this->close();
+}
+
 void MainWid::slot_closeMiniWidget()
 {
     this->close();
@@ -432,7 +470,8 @@ void MainWid::play_Song()
 {
     if(mySideBar->currentSelectList == -1)
     {
-        if (mySideBar->myMusicListWid->musicInfoWidget->count() != 0)
+        int ret;
+        if (mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
         {
             musicDataStruct fileData;
             if(mySideBar->myMusicListWid->isStartPlay)
@@ -454,10 +493,7 @@ void MainWid::play_Song()
                 m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
                                                             "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
                                                             "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
-                qDebug()<<"currentPlayList : "<<mySideBar->currentPlayList;
                 mySideBar->myMusicListWid->Music->pause();
-                qDebug()<<"currentPlayList : "<<mySideBar->currentPlayList;
-
             }
             //
             else
@@ -479,39 +515,40 @@ void MainWid::play_Song()
                                                             "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
                                                             "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
-                qDebug() << "播放歌曲列表";
                 albumCover_local_playlist();  //本地和歌单默认封面
 
 
                 int currentIndex = mySideBar->myMusicListWid->PlayList->currentIndex();
+                if(currentIndex == -1)
+                {
+                    return;
+                }
 
                 QString fileHash = mySideBar->myMusicListWid->localAllMusicid[currentIndex];
-                 qDebug() << "fileHash"<<fileHash;
-                g_db->getSongInfoFromLocalMusic(fileHash, fileData);
-
-                 mySideBar->myMusicListWid->Music->play();
-
-                 myPlaySongArea->songText(fileData.title); // 正在播放
-                 m_MiniWidget->m_songNameLab->setText(fileData.title);
-//                albumCover_local();           //本地专辑
-
+                qDebug() << "fileHash"<<fileHash;
+                ret == g_db->getSongInfoFromLocalMusic(fileHash, fileData);
+                if(ret == DB_OP_SUCC)
+                {
+                    myPlaySongArea->songText(fileData.title); // 正在播放
+                    m_MiniWidget->songText(fileData.title);   //mini正在播放
+                }
+                mySideBar->myMusicListWid->Music->play();
             }
         }
     }
-    else if(mySideBar->currentPlayList >= 0)
+    else if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget > 0)
     {
+        int ret;
+        musicDataStruct fileData;
         if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->state() == QMediaPlayer::PlayingState)
         {
             qDebug()<<"暂停播放";
             myPlaySongArea->playBtn->setFixedSize(36,36);
             myPlaySongArea->playBtn->setCursor(Qt::PointingHandCursor);
-//            myPlaySongArea->playBtn->setToolTip(tr("播放"));
-//            myPlaySongArea->playBtn->setToolTip(tr("play"));
-//            myPlaySongArea->playBtn->setIcon(QIcon(":/img/default/pause2.png"));
             myPlaySongArea->playBtn->setIconSize(QSize(36,36));
-            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                                   "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                                   "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
 
             //迷你模式样式
 //            m_MiniWidget->m_playStateBtn->setIcon(QIcon(":/img/default/play2.png"));
@@ -520,7 +557,6 @@ void MainWid::play_Song()
                                                         "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
                                                         "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
             // 根据当前播放的列表进行暂停
-
             mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->pause();
             return ;
         }
@@ -531,29 +567,33 @@ void MainWid::play_Song()
             myPlaySongArea->playBtn->setFixedSize(36,36);
             myPlaySongArea->playBtn->setCursor(Qt::PointingHandCursor);
 
-//            myPlaySongArea->playBtn->setToolTip("暂停");
-//            myPlaySongArea->playBtn->setToolTip(tr("pause"));
-//            myPlaySongArea->playBtn->setIcon(QIcon(":/img/default/play2.png"));
             myPlaySongArea->playBtn->setIconSize(QSize(36,36));
-            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
-                                                   "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
-                                                   "QPushButton::pressed{border-image:url(:/img/clicked/play.png);}");
+            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
             //迷你模式样式
-//            m_MiniWidget->m_playStateBtn->setIcon(QIcon(":/img/default/pause2.png"));
             m_MiniWidget->m_playStateBtn->setIconSize(QSize(36,36));
             m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
                                                         "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
                                                         "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
             // 播放歌曲，并设置当前播放列表索引
-            qDebug() << "播放歌单";
-            mySideBar->myMusicListWid->Music->stop();
+            int currentIndex = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->currentIndex();
+            if(currentIndex == -1)
+            {
+                return;
+            }
+
+            QString fileHash = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->localAllMusicid[currentIndex];
+            qDebug() << "fileHash"<<fileHash;
+            ret == g_db->getSongInfoFromPlayList(fileData, fileHash, mySideBar->musicListChangeWid[mySideBar->currentSelectList]->tableName);
+            if(ret == DB_OP_SUCC)
+            {
+                myPlaySongArea->songText(fileData.title); // 正在播放
+                m_MiniWidget->songText(fileData.title);   //mini正在播放
+            }
             mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
-//            albumCover_local_playlist();  //本地和歌单默认封面
-//            playlist_playInformation();   //歌单播放信息
-//            new_PlayList();               //判断本地歌单歌曲是否存在
-//            albumCover_playlist();        //歌单专辑
         }
     }
 }
@@ -595,6 +635,7 @@ void MainWid::on_sidebarWidget_customContextMenuRequested(const QPoint &pos)    
 
 void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
 {
+    int ret;
     QListWidgetItem *curItem1=mySideBar->myMusicListWid->musicInfoWidget->itemAt(pos);
 
     if(curItem1 == NULL)
@@ -641,31 +682,27 @@ void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
     menu5->setTitle(tr("Add to playlist"));
     QStringList playListNameList;
 
-    g_db->getPlayList(playListNameList);
-    for(int i = 0;i< playListNameList.size();i++)
+    ret == g_db->getPlayList(playListNameList);
+    if(ret == DB_OP_SUCC)
     {
-
-        QString listName = playListNameList.at(i);
-        QAction *listaction = new QAction(this);
-        listaction->setData(i);
-        listaction->setText(listName);
-        menu5->addAction(listaction);
-
-        qDebug() << "listindexlistactionlistaction " << i;
+        for(int i = 0;i< playListNameList.size();i++)
+        {
+            QString listName = playListNameList.at(i);
+            QAction *listaction = new QAction(this);
+            listaction->setData(i);
+            listaction->setText(listName);
+            menu5->addAction(listaction);
+            qDebug() << "listindexlistactionlistaction " << i;
+        }
     }
-//    connect(menu5,&QMenu::triggered(QAction* listact) ,this,&MainWid::add_music_to_songlist(QAction *listact));
-
     connect(menu5, SIGNAL(triggered(QAction*)), this, SLOT(add_music_to_songlist(QAction*)));
 
-
     Menu->addMenu(menu5);
-
 
     Menu->addAction(deleAct);
     //    Menu->addAction(listAct);
     //    Menu->addAction(lookAct);
     Menu->addAction(songAct);
-
 //    connect(playAct,&QAction::triggered,this,&MainWid::playOrPauseAct);  //jialin
 //    connect(nextAct,&QAction::triggered,this,&MainWid::playNextSongAct);
 //    connect(likeAct,&QAction::triggered,this,&MainWid::add_music_to_songlist);
@@ -682,7 +719,6 @@ void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
     //    delete lookAct;
     delete songAct;
 }
-
 
 // 右键播放暂停功能
 void MainWid::playOrPauseAct()
@@ -1058,7 +1094,6 @@ void MainWid::updateSongPlaying()
         QString mp3Name = model_1->data(model_1->index(row, 1)).toString();
         myPlaySongArea->songNameofNowPlaying->setText(mp3Name);  //正在播放
         //迷你模式正在播放
-
         m_MiniWidget->m_songNameLab->setText(mp3Name);
     }
 }
@@ -1067,7 +1102,6 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
 {
     int row;
     int ret;
-    QList<musicDataStruct> resList;
     musicDataStruct fileData;
     QString musichash;
 
@@ -1097,9 +1131,9 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
     /* play area info */
     musichash = mySideBar->myMusicListWid->localAllMusicid[row];
     g_db->getSongInfoFromLocalMusic(musichash, fileData);
-    myPlaySongArea->songText(fileData.title); // 正在播放
     mySideBar->myMusicListWid->Music->play();
-    m_MiniWidget->m_songNameLab->setText(fileData.title);
+    myPlaySongArea->songText(fileData.title); // 正在播放
+    m_MiniWidget->songText(fileData.title);   //mini正在播放
 
     /* ===to do: add to history table */
     ret = g_db->addMusicToHistoryMusic(fileData.hash);
@@ -1118,6 +1152,8 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
                                                 "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
                                                 "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
     mySideBar->myMusicListWid->isStartPlay = true;
+    myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
+                tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
 }
 
 // 双击歌单播放
@@ -1125,7 +1161,6 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
 {
     int row;
     int ret;
-    QList<musicDataStruct> resList;
     musicDataStruct fileData;
     QString musichash;
 
@@ -1161,9 +1196,9 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     /* play area info */
     musichash = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->localAllMusicid[row];
     g_db->getSongInfoFromLocalMusic(musichash, fileData);
-    myPlaySongArea->songText(fileData.title); // 正在播放
-    m_MiniWidget->m_songNameLab->setText(fileData.title);
     mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
+    myPlaySongArea->songText(fileData.title); // 正在播放
+    m_MiniWidget->songText(fileData.title);   //mini正在播放
 
     /* ===to do: add to history table */
     ret = g_db->addMusicToHistoryMusic(fileData.hash);
@@ -1182,6 +1217,8 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
                                                 "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
                                                 "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
     mySideBar->myMusicListWid->isStartPlay = true;
+    myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
+                tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
 }
 
 void MainWid::Music_stateChang(QMediaPlayer::State state)//播放状态改变
@@ -1258,68 +1295,78 @@ void MainWid::Music_playlist_stateChang(QMediaPlayer::State state)//播放状态
 
 void MainWid::on_lastBtn_clicked()             //上一首
 {
-    int preIndex;
+    int preIndex = 0;
     int ret;
     QString musicHash;
     musicDataStruct fileData;
 
     if (mySideBar->currentMusicPlaylist == -1) {
-        preIndex = (mySideBar->myMusicListWid->PlayList->currentIndex() - 1 + mySideBar->myMusicListWid->PlayList->mediaCount()) % \
-                mySideBar->myMusicListWid->PlayList->mediaCount();
-        mySideBar->myMusicListWid->PlayList->setCurrentIndex(preIndex);
-        mySideBar->myMusicListWid->Music->play();
+        if(mySideBar->myMusicListWid->musicInfoWidget > 0)
+        {
+            preIndex = (mySideBar->myMusicListWid->PlayList->currentIndex() - 1 + mySideBar->myMusicListWid->PlayList->mediaCount()) % \
+                    mySideBar->myMusicListWid->PlayList->mediaCount();
+            mySideBar->myMusicListWid->PlayList->setCurrentIndex(preIndex);
+            mySideBar->myMusicListWid->Music->play();
 
-        /* 添加到历史列表 */
-        musicHash = mySideBar->myMusicListWid->localAllMusicid[preIndex];
-        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->myMusicListWid->tableName);
+            /* 添加到历史列表 */
+            musicHash = mySideBar->myMusicListWid->localAllMusicid[preIndex];
+            g_db->getSongInfoFromLocalMusic(musicHash, fileData);
+            ret = g_db->addMusicToHistoryMusic(fileData.hash);
+            if (ret == DB_OP_SUCC) {
+                QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+                HistoryListItem *besongitem1 = new HistoryListItem;
+                myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+                besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+                besongitem1->songTimeLabel->setText(fileData.time); //时长
+            }
+            myPlaySongArea->songText(fileData.title); // 正在播放
+            m_MiniWidget->songText(fileData.title);   //mini正在播放
+            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
-        if (ret == DB_OP_SUCC) {
-            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-            HistoryListItem *besongitem1 = new HistoryListItem;
-            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
-            besongitem1->songTimeLabel->setText(fileData.time); //时长
+            m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                        "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                        "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+            mySideBar->myMusicListWid->isStartPlay = true;
+            myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
+                        tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
         }
-        myPlaySongArea->songText(fileData.title); // 正在播放
-        m_MiniWidget->m_songNameLab->setText(fileData.title);
-        myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                               "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                               "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
-        m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
-        mySideBar->myMusicListWid->isStartPlay = true;
     } else {
-        preIndex = (mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex() - 1 + \
-                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount()) % \
-                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount();
-        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->setCurrentIndex(preIndex);
-        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
+        if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget > 0)
+        {
+            preIndex = (mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex() - 1 + \
+                    mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount()) % \
+                    mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount();
+            mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->setCurrentIndex(preIndex);
+            mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
 
-        /* 添加到历史列表 */
-        musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[preIndex];
-        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
+            /* 添加到历史列表 */
+            musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[preIndex];
+            g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
 
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
-        if (ret == DB_OP_SUCC) {
-            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-            HistoryListItem *besongitem1 = new HistoryListItem;
-            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
-            besongitem1->songTimeLabel->setText(fileData.time); //时长
+            ret = g_db->addMusicToHistoryMusic(fileData.hash);
+            if (ret == DB_OP_SUCC) {
+                QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+                HistoryListItem *besongitem1 = new HistoryListItem;
+                myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+                besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+                besongitem1->songTimeLabel->setText(fileData.time); //时长
+            }
+            myPlaySongArea->songText(fileData.title); // 正在播放
+            m_MiniWidget->songText(fileData.title);   //mini正在播放
+            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+
+            m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                        "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                        "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+            mySideBar->myMusicListWid->isStartPlay = true;
+            myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
+                        tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
         }
-        myPlaySongArea->songText(fileData.title); // 正在播放
-        m_MiniWidget->m_songNameLab->setText(fileData.title);
-        myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                               "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                               "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
-
-        m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
-        mySideBar->myMusicListWid->isStartPlay = true;
     }
 }
 
@@ -1332,63 +1379,78 @@ void MainWid::on_nextBtn_clicked()      //下一首
     musicDataStruct fileData;
 
     if (mySideBar->currentMusicPlaylist == -1) {
-        /* 歌曲列表下一首 */
-        nextIndex = (mySideBar->myMusicListWid->PlayList->currentIndex() + 1)%mySideBar->myMusicListWid->PlayList->mediaCount();
-        mySideBar->myMusicListWid->PlayList->setCurrentIndex(nextIndex);
-        mySideBar->myMusicListWid->Music->play();
+        if(mySideBar->myMusicListWid->musicInfoWidget > 0)
+        {
+            /* 歌曲列表下一首 */
+            nextIndex = (mySideBar->myMusicListWid->PlayList->currentIndex() + 1)%mySideBar->myMusicListWid->PlayList->mediaCount();
+            mySideBar->myMusicListWid->PlayList->setCurrentIndex(nextIndex);
+            if(nextIndex < 0)
+            {
+                return;
+            }
+            mySideBar->myMusicListWid->Music->play();
 
-        /* 添加到历史列表 */
-        musicHash = mySideBar->myMusicListWid->localAllMusicid[nextIndex];
-        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->myMusicListWid->tableName);
+            /* 添加到历史列表 */
+            musicHash = mySideBar->myMusicListWid->localAllMusicid[nextIndex];
+    //        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->myMusicListWid->tableName);
+            g_db->getSongInfoFromLocalMusic(musicHash, fileData);
+            qDebug()<<fileData.title;
+            ret = g_db->addMusicToHistoryMusic(fileData.hash);
+            if (ret == DB_OP_SUCC) {
+                QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+                HistoryListItem *besongitem1 = new HistoryListItem;
+                myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+                besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+                besongitem1->songTimeLabel->setText(fileData.time); //时长
+            }
+            myPlaySongArea->songText(fileData.title); // 正在播放
+            m_MiniWidget->songText(fileData.title);   //mini正在播放
+            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
-        if (ret == DB_OP_SUCC) {
-            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-            HistoryListItem *besongitem1 = new HistoryListItem;
-            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
-            besongitem1->songTimeLabel->setText(fileData.time); //时长
+            m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                        "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                        "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+            mySideBar->myMusicListWid->isStartPlay = true;
+            myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
+                        tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
         }
-        myPlaySongArea->songText(fileData.title); // 正在播放
-        m_MiniWidget->m_songNameLab->setText(fileData.title);
-        myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                               "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                               "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
-
-        m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
-        mySideBar->myMusicListWid->isStartPlay = true;
 
     } else {
-        /* 歌单下一首 */
-        nextIndex = (mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex() + 1) % \
-                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount();
-        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->setCurrentIndex(nextIndex);
-        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
+        if(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget > 0)
+        {
+            /* 歌单下一首 */
+            nextIndex = (mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex() + 1) % \
+                    mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->mediaCount();
+            mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->setCurrentIndex(nextIndex);
+            mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
 
-        /* 添加到历史列表 */
-        musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[nextIndex];
-        g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
+            /* 添加到历史列表 */
+            musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[nextIndex];
+            g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
 
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
-        if (ret == DB_OP_SUCC) {
-            QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
-            HistoryListItem *besongitem1 = new HistoryListItem;
-            myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
-            besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
-            besongitem1->songTimeLabel->setText(fileData.time); //时长
+            ret = g_db->addMusicToHistoryMusic(fileData.hash);
+            if (ret == DB_OP_SUCC) {
+                QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
+                HistoryListItem *besongitem1 = new HistoryListItem;
+                myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+                besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
+                besongitem1->songTimeLabel->setText(fileData.time); //时长
+            }
+            myPlaySongArea->songText(fileData.title); // 正在播放
+            m_MiniWidget->songText(fileData.title);   //mini正在播放
+            myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+
+            m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                        "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                        "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+            mySideBar->myMusicListWid->isStartPlay = true;
+            myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
+                        tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
         }
-        myPlaySongArea->songText(fileData.title); // 正在播放
-        m_MiniWidget->m_songNameLab->setText(fileData.title);
-        myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                               "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                               "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
-
-        m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
-                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
-                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
-        mySideBar->myMusicListWid->isStartPlay = true;
     }
 }
 
@@ -2302,18 +2364,23 @@ void MainWid::add_nullMusicWidgetAddFile()
 // 清除历史记录
 void MainWid::clear_HistoryPlayList()
 {
-//    int values=QMessageBox::information(this,tr("清除本地音乐列表"),tr("确定清除本地音乐列表?."),QMessageBox::Yes|QMessageBox::No,QMessageBox::No);
-//    if(values == QMessageBox::Yes)
-//    {
-    QSqlQuery query;
-    query.exec("select * from HistoryPlayList");
-    query.exec("delete from HistoryPlayList");
-    qDebug()<<query.exec("delete from HistoryPlayList");
+    int ret;
+    QList<musicDataStruct> resList;
+
+    ret = g_db->getSongInfoListFromHistoryMusic(resList);
     myPlaySongArea->mybeforeList->beforePlayList->clear();
-//        playlist->clear();
+    if(ret == DB_OP_SUCC)
+    {
+        for (int i = 0; i < resList.size(); i++)
+        {
+            g_db->delMusicFromHistoryMusic(resList.at(i).hash);
+            mySideBar->myMusicListWid->localAllMusicid.removeOne(resList.at(i).hash);
+        }
+    }
 
     myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
                 tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
+
 }
 
 void MainWid::showSearchResultWidget()

@@ -40,48 +40,6 @@ TitleBar::TitleBar(QWidget *parent) : QFrame(parent)
     titlecolor();
 }
 
-//控制最大化、最小化、关闭按钮
-
-void TitleBar::onClicked()
-{
-    QToolButton *pButton = qobject_cast<QToolButton *>(sender());
-    QWidget *pWindow = this->window();
-    if (pWindow->isTopLevel())
-    {
-        if (pButton == minimumBtn)
-        {
-            pWindow->showMinimized();
-        }
-        else if (pButton == maximumBtn)
-        {
-            if(Minimize)
-            {
-                Minimize = false;
-//                pWindow->isMaximized() ? pWindow->showNormal() : pWindow->showMaximized();
-                pWindow->showNormal();
-            }
-            else
-            {
-                Minimize = true;
-                pWindow->showMaximized();
-//                maximumBtn->setIcon(QIcon::fromTheme("window-restore-symbolic"));
-//                maximumBtn->setToolTip(tr("还原"));
-//                maximumBtn->setToolTip(tr("reduction")); //:/img/default/enlarg.png
-//                maximumBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
-//                                           border-image:url(:/img/default/enlarg.png);}"
-//                                          "QPushButton::hover{border-image:url(:/img/hover/enlarg.png);background:rgba(0,0,0,0.15);}"
-//                                          "QPushButton::pressed{border-image:url(:/img/clicked/enlarg.png);background:rgba(0, 0, 0, 0.2);}"
-//                                          );
-            }
-        }
-
-        else if (pButton == closeBtn)
-        {
-            pWindow->close();
-        }
-    }
-}
-
 void TitleBar::initTitle()
 {
     setStyleSheet(::main_style);
@@ -222,13 +180,13 @@ void TitleBar::initTitle()
     miniBtn->setCursor(Qt::PointingHandCursor);
     miniBtn->setFixedSize(30,30);
 //    miniBtn->setToolTip("mini模式");
-//    miniBtn->setToolTip(tr("mini model"));
+    miniBtn->setToolTip(tr("mini model"));
     miniBtn->setIcon(QIcon::fromTheme("ukui-mini"));
 
     minimumBtn = new QToolButton;
     minimumBtn->setCursor(Qt::PointingHandCursor);
 //    minimumBtn->setToolTip(tr("最小化"));
-//    minimumBtn->setToolTip(tr("To minimize the"));
+    minimumBtn->setToolTip(tr("To minimize the"));
     minimumBtn->setFixedSize(30,30);
     minimumBtn->setIcon(QIcon::fromTheme("window-minimize-symbolic"));
 
@@ -236,7 +194,7 @@ void TitleBar::initTitle()
     maximumBtn->setCursor(Qt::PointingHandCursor);
     maximumBtn->setFixedSize(30,30);
 //    maximumBtn->setToolTip(tr("最大化"));
-//    maximumBtn->setToolTip(tr("maximize"));
+    maximumBtn->setToolTip(tr("maximize"));
     maximumBtn->setObjectName("maximumBtn");
     maximumBtn->setIcon(QIcon::fromTheme("window-maximize-symbolic"));
 
@@ -245,16 +203,12 @@ void TitleBar::initTitle()
     closeBtn->setCursor(Qt::PointingHandCursor);
     closeBtn->setFixedSize(30,30);
 //    closeBtn->setToolTip("关闭");
-//    closeBtn->setToolTip(tr("close"));
+    closeBtn->setToolTip(tr("close"));
     closeBtn->setIcon(QIcon::fromTheme("window-close-symbolic"));
     closeBtn->setProperty("isWindowButton", 0x2);
     closeBtn->setProperty("useIconHighlightEffect", 0x8);
     closeBtn->setAutoRaise(true);
 
-
-    connect(maximumBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
-    connect(minimumBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
-    connect(closeBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
 
 //    connect(searchBtn,SIGNAL(clicked(bool)),this,SLOT(searchMusic()));
     connect(searchEdit,&QLineEdit::textChanged,this,&TitleBar::searchMusic);

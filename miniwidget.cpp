@@ -134,8 +134,9 @@ void miniWidget::minicolor()
                                       "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
         m_loveBtn->setIcon(QIcon(":/img/default/loveblack2.png"));
 
-        m_orderBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/default/sequence.png);}"
-                                  "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}");
+        m_orderBtn->setStyleSheet("QPushButton{background:transparent;}"
+                                  "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}"
+                                  "QPushButton::pressed{border-image:url(:/img/clicked/sequence.png);}");
 
         m_closeBtn->setIcon(QIcon(":/img/clicked/close.png"));
 
@@ -173,8 +174,10 @@ void miniWidget::minicolor()
                                       "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
                                       "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
         m_loveBtn->setIcon(QIcon(":/img/default/loveblack2.png"));
-        m_orderBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/default/sequence.png);}"
-                                  "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}");
+        m_orderBtn->setStyleSheet("QPushButton{background:transparent;}"
+                                  "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}"
+                                  "QPushButton::pressed{border-image:url(:/img/clicked/sequence.png);}");
+
         m_closeBtn->setIcon(QIcon(":/img/clicked/close.png"));
         m_closeBtn->setIconSize(QSize(30, 30));
         m_closeBtn->setStyleSheet("QPushButton{background:transparent;}");
@@ -261,6 +264,7 @@ void miniWidget::init_miniWidget()
     m_loveBtn = new QPushButton;
     m_loveBtn->setFixedSize(16,16);
     m_loveBtn->setCursor(Qt::PointingHandCursor);
+    m_loveBtn->hide();
 //    m_loveBtn->setStyleSheet("QPushButton{background:transparent;\
 //                             border-image:url(:/img/default/loveback2.png);}");
 
@@ -268,6 +272,7 @@ void miniWidget::init_miniWidget()
     m_orderBtn = new QPushButton;
     m_orderBtn->setFixedSize(16,16);
     m_orderBtn->setCursor(Qt::PointingHandCursor);
+    m_orderBtn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
 
     /***************************************/
     m_vSysLayout = new QVBoxLayout;
@@ -319,4 +324,21 @@ void miniWidget::init_miniWidget()
 //    m_hLayout->addWidget(controlFrame);
 
 //    m_mainFrame->setStyleSheet("border-radius:12px;");
+}
+
+void miniWidget::songText(QString songName)
+{
+    QString show_songName = "";
+    if(songName.length() > 10)
+    {
+        show_songName = songName.mid(0,9);
+        show_songName.append("...");
+        m_songNameLab->setText(show_songName);
+        m_songNameLab->setToolTip(songName);
+    }
+    else
+    {
+        m_songNameLab->setText(songName);
+        m_songNameLab->setToolTip(songName);
+    }
 }

@@ -465,17 +465,21 @@ void SideBar::listNextAct_slot()
 
 void SideBar::deleteMusicFromSongList()
 {
-
+    int ret;
     int row = musicListChangeWid[currentSelectList]->musicInfoWidget->currentIndex().row();
-    qDebug() << "row "<<row;
-    qDebug() << "localAllMusicid "<<musicListChangeWid[currentSelectList]->localAllMusicid;
+    qDebug() << "--------------row------------" << row;
+    qDebug() << "localAllMusicid " << musicListChangeWid[currentSelectList]->localAllMusicid;
     QString musicHash = musicListChangeWid[currentSelectList]->localAllMusicid[row];
-    qDebug()<<"musicHash : "<<musicHash;
-    g_db->delMusicFromPlayList(musicHash, musicListChangeWid[currentSelectList]->tableName);
-    musicListChangeWid[currentSelectList]->localAllMusicid.removeOne(musicHash);
-    musicListChangeWid[currentSelectList]->musicInfoWidget->removeItemWidget(musicListChangeWid[currentSelectList]->musicInfoWidget->item(row));
-    musicListChangeWid[currentSelectList]->PlayList->removeMedia(row, row);
-    delete musicListChangeWid[currentSelectList]->musicInfoWidget->item(row);
+    qDebug() << "musicHash : " << musicHash;
+    qDebug() << "tableName" << musicListChangeWid[currentSelectList]->tableName;
+    ret = g_db->delMusicFromPlayList(musicHash, musicListChangeWid[currentSelectList]->tableName);
+    if(ret == DB_OP_SUCC)
+    {
+        musicListChangeWid[currentSelectList]->localAllMusicid.removeOne(musicHash);
+        musicListChangeWid[currentSelectList]->musicInfoWidget->removeItemWidget(musicListChangeWid[currentSelectList]->musicInfoWidget->item(row));
+        musicListChangeWid[currentSelectList]->PlayList->removeMedia(row, row);
+        delete musicListChangeWid[currentSelectList]->musicInfoWidget->item(row);
+    }
 
     musicListChangeWid[currentSelectList]->songNumberLabel->setText(
                 tr("A total of")+QString::number(musicListChangeWid[currentSelectList]->musicInfoWidget->count())+tr("The first"));

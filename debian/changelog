@@ -1,3 +1,9 @@
+kylin-music (1.0.53kord) v101; urgency=medium
+
+  * 解决最大化和最小化相关的问题，添加帮助菜单.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Fri, 16 Jan 2021 20:44:38 +0800
+
 kylin-music (1.0.35kord) v101; urgency=medium
 
   * 重构数据库逻辑相关逻辑.
