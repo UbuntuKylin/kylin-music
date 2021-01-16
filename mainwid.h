@@ -94,13 +94,19 @@ class MainWid : public QMainWindow
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.ukui.kylin_music.play")
+
+signals:
+    void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
+//    void musicDbus(QString path);
+//    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号
+//private slots:
+////    void addFile(const QStringList &addFile);
+
+
 public:
     void Single(QString path);
     void promptMessage();
-private:
-//    void paintEvent(QPaintEvent *event);
-//    QString g_file_path;
-public:
+
     MainWid(QString str, QWidget *parent=nullptr);
 //    MainWid(QWidget *);
     ~MainWid();
@@ -123,17 +129,51 @@ public:
     void albumCover_local();          //本地专辑
     void albumCover_playlist();       //歌单专辑
 
-QGSettings *themeData = nullptr;
-protected:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
-    void dropEvent(QDropEvent *event);
+    QGSettings *themeData = nullptr;
 
-public slots:
-    // 键盘响应事件
-    void keyPressEvent(QKeyEvent *event);
-    int kylin_music_play_request(QString path);
+    QTimer *promptMessageTimer;
+    QLabel *promptMessageLabel;
+    void showPromptMessage();   //显示歌曲不存在的提示信息
+    void closePromptMessage();
+
+    //添加文件夹
+    QStringList AllDirList;
+    QStringList DirList; // all checked dir
+    QStringList SongDirPath;
+    QDir matchDir;
+    QStringList matchMp3Files;
+    QString mp3Name;
+
+    QFileInfo fileInfo;
+    QByteArray bytes;
+    QString titleStr;
+    QString artistStr;
+    QString albumStr;
+    QString timeStr;
+    QString mp3Size;
+    QString type;
+    QString MD5Str;
+    QStringList MD5List;
+
+    QString argName;
+
+    QList<MusicPath> MusicPathList;
+
+
+
+    QString Dir;
+    QString musicPath;
+
+    QByteArray byteArray;
+    QString musicName;
+    QString musicSinger;
+    QString musicAlbum;
+    QString musicTime;
+    QString musicSize;
+    QString musicType;
+
+    void processArgs(QStringList args);
+
 
 public slots:
 //    void playSong(bool);
@@ -197,65 +237,26 @@ public slots:
     void clear_HistoryPlayList();  //清除历史记录
     void showSearchResultWidget(); //显示搜索页面
     void hideSearchResultWidget(); //隐藏搜索页面
-private:
-//    bool isStartPlay = false;      //默认不播放媒体
-public:
-    QTimer *promptMessageTimer;
-    QLabel *promptMessageLabel;
-    void showPromptMessage();   //显示歌曲不存在的提示信息
-    void closePromptMessage();
 
-signals:
-    void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
-//    void musicDbus(QString path);
-//    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号
-//private slots:
-////    void addFile(const QStringList &addFile);
-public slots:
+    int kylin_music_play_request(QString path);
 //    void addFile(const QStringList &addFile);  //拖拽添加歌曲
 
-//protected:
-//    void dragEnterEvent(QDragEnterEvent *event);
-//    void dragMoveEvent(QDragMoveEvent *event);
-//    void dragLeaveEvent(QDragLeaveEvent *event);
-//    void dropEvent(QDropEvent *event);
 
-public:
-    //添加文件夹
-    QStringList AllDirList;
-    QStringList DirList; // all checked dir
-    QStringList SongDirPath;
-    QDir matchDir;
-    QStringList matchMp3Files;
-    QString mp3Name;
+protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
+    // 键盘响应事件
+    void keyPressEvent(QKeyEvent *event);
 
-    QFileInfo fileInfo;
-    QByteArray bytes;
-    QString titleStr;
-    QString artistStr;
-    QString albumStr;
-    QString timeStr;
-    QString mp3Size;
-    QString type;
-    QString MD5Str;
-    QStringList MD5List;
 
-    QString argName;
-
-    QList<MusicPath> MusicPathList;
-public:
-    QString Dir;
-    QString musicPath;
-
-    QByteArray byteArray;
-    QString musicName;
-    QString musicSinger;
-    QString musicAlbum;
-    QString musicTime;
-    QString musicSize;
-    QString musicType;
 
 private:
+//    void paintEvent(QPaintEvent *event);
+//    QString g_file_path;
+//    bool isStartPlay = false;      //默认不播放媒体
+
     // 用户手册功能
     DaemonIpcDbus *mDaemonIpcDbus;
 
@@ -306,9 +307,6 @@ private:
     AllPupWindow *aboutWidget;
     int playMode = 0;
 
-public:
-    void processArgs(QStringList args);
-private:
     void deleteConfig();
     static MainWid *main_wid;
     QStringList m_filesToPlay;
@@ -321,5 +319,10 @@ private:
     QSize m_guiSize;
     QString m_arch;
     QString m_snap;
+
+    void styleInit();//初始化样式
+    void dbusInit();//初始化dbus
+    void gsettingInit();//初始化gsetting
+    void actionInit();//初始化事件
 };
 #endif // MAINWID_H
