@@ -85,7 +85,8 @@ bool MusicDataBase::initDataBase()
                                        ));//创建我喜欢列表
     queryRes &= queryInit.exec(QString("create table if not exists ListOfPlayList (hash varchar primary key)"));//创建播放列表名称列表
 
-    queryRes &= createNewPlayList("我喜欢");
+    //queryRes &= createNewPlayList(tr("我喜欢"));
+    qDebug()<<"创建【我喜欢】歌单："<< createNewPlayList(tr("我喜欢"));
     return queryRes;
 }
 

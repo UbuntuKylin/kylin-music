@@ -272,11 +272,14 @@ void TitleBar::searchMusic()
     }
 }
 
+void TitleBar::showAboutWidget()
+{
+    qDebug()<<"再此显示关于界面";
+}
+
 
 void TitleBar::titlecolor()
 {
-
-
     if (WidgetStyle::themeColor == 1)
     {
         settingMenu->setStyleSheet("QMenu{background-color:#303032;color:#F9F9F9;}"
