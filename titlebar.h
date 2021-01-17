@@ -84,7 +84,7 @@ public:
 public slots:
     void searchMusic();
 
-//    void showAboutWidget();
+    void showAboutWidget();//显示关于事件
 
 protected:
 //    virtual void mouseDoubleClickEvent(QMouseEvent *event);

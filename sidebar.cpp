@@ -559,6 +559,7 @@ void SideBar::initDefaultMusicList()
 }
 void SideBar::createSongList()
 {
+    qDebug()<<"开始创建播放列表";
     QStringList playListNameList;
     QString listName;
 
@@ -610,7 +611,7 @@ void SideBar::createSongList()
         }
         songListWidget->setItemWidget(newSongList[i],newSongListBtn[i]);
         playListName.append(listName);
-        qDebug()<<"listName : "<<listName;
+        //qDebug()<<"listName : "<<listName;
 
         musicListChangeWid[i] = new MusicListWid(this);    //歌曲列表界面占据一个 所以此处应该是num
         musicListChangeWid[i]->top_addSongBtn->hide();
@@ -632,7 +633,7 @@ void SideBar::createSongList()
 
         rightChangeWid->addWidget(musicListChangeWid[i]);
 
-        qDebug() << songListWidget->count() << "rightChangeWid->count()" << rightChangeWid->count();
+        //qDebug() << songListWidget->count() << "rightChangeWid->count()" << rightChangeWid->count();
         connect(newSongListBtn[i],SIGNAL(clicked(bool)),this,SLOT(AlterPage()));
         musicListChangeWid[i]->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(musicListChangeWid[i],SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -640,6 +641,7 @@ void SideBar::createSongList()
 
         newSonglistPup->pupDialog->hide();
     }
+        qDebug()<<"创建播放列表完成";
 }
 
 void SideBar::addItemToSongList()

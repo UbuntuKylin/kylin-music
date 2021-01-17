@@ -255,8 +255,8 @@ void PlaySongArea::initWidget()
     bottomLeftLayout->addWidget(coverPhotoLabel);
     bottomLeftLayout->addWidget(timeAndNameWidget);
     bottomLeftLayout->setContentsMargins(30,0,0,0);
-
-    playCenterLayout->addWidget(lastBtn,0,Qt::AlignRight);
+    //暂时隐藏历史播放列表
+    //playCenterLayout->addWidget(lastBtn,0,Qt::AlignRight);
     playCenterLayout->addSpacing(10);
     playCenterLayout->addWidget(playBtn,Qt::AlignRight);
     playCenterLayout->addSpacing(10);

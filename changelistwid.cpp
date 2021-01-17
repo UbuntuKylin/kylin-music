@@ -177,14 +177,14 @@ void MusicListWid::initMusicListWid()
     songListLabel->setText(tr("The song list"));
 
 
-    songNumberLabel = new QLabel(this);
+    songNumberLabel = new QLabel();
 //    songNumberLabel->setGeometry(142,28,40,18);
 //    songNumberLabel->setText("共"+QString::number(count)+"首");
     songNumberLabel->setText(tr("A total of")+QString::number(count)+tr("The first"));
 
 
 
-    top_addSongBtn = new QToolButton(this);
+    top_addSongBtn = new QToolButton();
 //    top_playAllSongBtn = new QToolButton(this);
 
 //    top_playAllSongBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -212,10 +212,10 @@ void MusicListWid::initMusicListWid()
 //    connect(top_addSongBtn,SIGNAL(clicked()),this,SLOT(on_top_addSongBtn_slot()));
     connect(top_addSongBtn,&QToolButton::clicked,this,&MusicListWid::on_top_addSongBtn_slot);
 
-    songLabel = new QLabel(this);
-    singerLabel = new QLabel(this);
-    albumLabel = new QLabel(this);
-    timeLabel = new QLabel(this);
+    songLabel = new QLabel();
+    singerLabel = new QLabel();
+    albumLabel = new QLabel();
+    timeLabel = new QLabel();
 
 
     hTitleLayout->addWidget(songListLabel,0,Qt::AlignLeft);
@@ -227,7 +227,7 @@ void MusicListWid::initMusicListWid()
 
 //    hTitleListLayout = new QHBoxLayout(this);
 
-    QHBoxLayout *testLayout = new QHBoxLayout(this);
+    QHBoxLayout *testLayout = new QHBoxLayout();
 
     hTitleLayout->addWidget(songLabel,278);
     hTitleLayout->addWidget(singerLabel,174);
@@ -241,7 +241,7 @@ void MusicListWid::initMusicListWid()
     testLayout->addWidget(top_addSongBtn);
     testLayout->setContentsMargins(30,0,30,0);
 
-    QWidget *testWid = new QWidget(this);
+    QWidget *testWid = new QWidget();
     testWid->setLayout(testLayout);
     testWid->setFixedHeight(80);
 
@@ -249,7 +249,7 @@ void MusicListWid::initMusicListWid()
 
 //    testWid->resize(750, 40);
 
-    QWidget *testWid2 = new QWidget(this);
+    QWidget *testWid2 = new QWidget();
     testWid2->setLayout(hTitleLayout);
     testWid2->setFixedHeight(40);
 //    testWid2->setStyleSheet("background:blue;");
@@ -259,16 +259,16 @@ void MusicListWid::initMusicListWid()
 
     testWid->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    musicInfoWidget = new QListWidget(this);
+    musicInfoWidget = new QListWidget();
 
     vMainLayout->addWidget(musicInfoWidget);
 
     vMainLayout->setMargin(0);
     vMainLayout->setSpacing(0);
 
-    PlayList = new QMediaPlaylist(this);
+    PlayList = new QMediaPlaylist();
 
-    Music = new QMediaPlayer(this);
+    Music = new QMediaPlayer();
 
     this->setLayout(vMainLayout);
 }
@@ -530,14 +530,12 @@ void MusicListWid::get_localmusic_information(QString tableName)
 {
     int ret = -1;
     QList<musicDataStruct> resList;
-    qDebug() << "数据库" << "获取歌曲列表歌曲信息" ;
     if(tableName == "LocalMusic") {
         ret = g_db->getSongInfoListFromLocalMusic(resList);
     } else {
         ret = g_db->getSongInfoListFromPlayList(resList, tableName);
     }
-    qDebug()<<"==================="<<resList.size()<< ",ret = " << ret << "tablename is " \
-           << tableName;
+    //qDebug()<<"==================="<<resList.size()<< ",ret = " << ret << "tablename is " << tableName;
     this->tableName = tableName;
     for(int i = 0;i < resList.size(); i++)
     {
@@ -546,20 +544,19 @@ void MusicListWid::get_localmusic_information(QString tableName)
             QListWidgetItem *item = new QListWidgetItem(this->musicInfoWidget);
             SongItem *songitem = new SongItem;
             this->musicInfoWidget->setItemWidget(item,songitem);
-            qDebug()<<resList.at(i).title;
+            //qDebug()<<resList.at(i).title;
             this->localAllMusicid.append(resList.at(i).hash);
             songitem->song_singer_albumText(resList.at(i).title,resList.at(i).singer,resList.at(i).album); //歌曲名称 歌手 专辑
             songitem->songTimeLabel->setText(resList.at(i).time); //时长
             this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
         }
     }
-    qDebug() << "数据库" << "歌曲信息加载完毕" ;
+    qDebug() << "从数据库获取歌曲信息加载完毕" ;
 }
 
 
 QStringList MusicListWid::get_info_from_db(int musicid)
 {
-    qDebug() << "数据库" << "从数据库获取该歌曲信息" ;
 
     QStringList musicinfo;
     localModel->setTable("LocalMusic");
@@ -575,7 +572,7 @@ QStringList MusicListWid::get_info_from_db(int musicid)
 
     musicinfo << musicname << filepath << singer << album << type << size << time;
 
-    qDebug() << "数据库" << "musicinfo" << musicinfo;
+    qDebug() << "从数据库获取该歌曲信息:" << musicinfo;
 
     return musicinfo;
 }
