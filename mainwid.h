@@ -99,12 +99,11 @@ class MainWid : public QMainWindow
 signals:
     void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
 
-
 public:
     MainWid(QString str, QWidget *parent=nullptr);
     ~MainWid();
-    //    MainWid(QWidget *);
-    //    QString getMp3FileName(QString sqlName);
+//    MainWid(QWidget *);
+//    QString getMp3FileName(QString sqlName);
     void promptMessage();
     void updatalistwidget(int value);//更新listWidget
     void updataplaylistwidget(int value);//更新playlistWidget
@@ -156,7 +155,6 @@ public:
 
     QList<MusicPath> MusicPathList;
 
-
     QString Dir;
     QString musicPath;
 
@@ -170,16 +168,14 @@ public:
 
     void processArgs(QStringList args);
 
-
 public slots:
 
     int kylin_music_play_request(QString path);
-    //    void playSong(bool);
     void play_Song();   //播放和暂停
     void on_musicInfoWidget_customContextMenuRequested(const QPoint &pos);  //歌曲列表右键菜单
     void on_sidebarWidget_customContextMenuRequested(const QPoint &pos);    //侧边栏歌单区域右键菜单
-    //    void setHsliderPosition();      //添加歌曲时记住当前播放的位置
-    //    void contextMenuEvent(QContextMenuEvent *);
+//    void setHsliderPosition();      //添加歌曲时记住当前播放的位置
+//    void contextMenuEvent(QContextMenuEvent *);
     void playOrPauseAct();    //右键播放
     void playNextSongAct();   //右键下一首
 
@@ -189,21 +185,21 @@ public slots:
     void Music_stateChang(QMediaPlayer::State state);//播放状态改变
     void Music_playlist_stateChang(QMediaPlayer::State state);
     void on_lastBtn_clicked();             //上一首
-    //    void on_playlist_lastBtn_clicked();  //上一首
+//    void on_playlist_lastBtn_clicked();  //上一首
     void on_nextBtn_clicked();             //下一首
-    //    void on_playlist_nextBtn_clicked();  //下一首
+//    void on_playlist_nextBtn_clicked();  //下一首
     void positionChange(qint64 position);  //更新播放位置
     void durationChange(qint64 duration);  //更新播放进度
     void currentMediaChanged(QMediaContent content);  //按播放模式结束一段音乐自动输出封面、正在播放
     void playlist_positionChange(qint64 position);
     void playlist_durationChange(qint64 duration);
-    //    void playlist_currentMediaChanged(QMediaContent content);
+//    void playlist_currentMediaChanged(QMediaContent content);
     void setPosition(int position);
-    //    void playlist_setPosition(int position);
+//    void playlist_setPosition(int position);
     bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击  事件过滤器
     void add_music_to_songlist(QAction *listact);    //添加到歌单
     void deleteMusicFromLocalList(); //从本地音乐删除
-    //    void deleteMusicFromSongList();  //从歌单删除音乐
+//    void deleteMusicFromSongList();  //从歌单删除音乐
     void deleteThisSongList();       //删除歌单弹窗
     void showRenameDlg();
     void renameThisSongList();       //重命名歌单
@@ -213,11 +209,11 @@ public slots:
 
     // 拖动进度条
     void slidePress();
-    //    void slideMove(int position);
+//    void slideMove(int position);
     void slideRelease();
-    //    void playlist_slidePress();
-    ////    void slideMove(int position);
-    //    void playlist_slideRelease();
+//    void playlist_slidePress();
+////    void slideMove(int position);
+//    void playlist_slideRelease();
     void PlayModeChanged(); //播放模式
 
     void showBeforeList();  //显示历史播放列表
@@ -242,7 +238,6 @@ protected:
     // 键盘响应事件
     void keyPressEvent(QKeyEvent *event);
 
-
 private:
     //主界面构造初始化函数
     void Single(QString path);//单例
@@ -254,10 +249,6 @@ private:
     void initDaemonIpcDbus();//用户手册
     void initDataBase();//数据库
 
-
-    //    bool isStartPlay = false;      //默认不播放媒体
-    //    void paintEvent(QPaintEvent *event);
-    //    QString g_file_path;
     // 用户手册功能
     DaemonIpcDbus *mDaemonIpcDbus;
 
@@ -268,7 +259,7 @@ private:
     ChangeListWid *nullMusicWidget;
     PlaySongArea *myPlaySongArea;
     SongInfoWidget *mySongInfoWidget;
-    //    menuModule *menumodule;
+//    menuModule *menumodule;
     //文件拖拽功能
 
     QVBoxLayout *rightlayout;
@@ -280,7 +271,7 @@ private:
     QAction *likeAct;   //右键添加到我喜欢
     QAction *deleAct;   //右键从歌曲列表中删除
     QAction *listAct;   //右键添加到歌单
-    //    QAction *lookAct; //右键查看本地文件
+//    QAction *lookAct; //右键查看本地文件
     QAction *songAct;   //右键歌曲信息
 
     Slider *hSlider;
@@ -290,7 +281,7 @@ private:
     int moved = 0;
 
     miniWidget *m_MiniWidget;
-    //   SongItem *mySongItem;
+//   SongItem *mySongItem;
 
     //侧边栏歌单列表右键
     QMenu *sideMenu;
@@ -298,14 +289,14 @@ private:
     QAction *actionRename;
     QAction *actionDelete;
 
-    //歌曲播放动效和高亮相关
+   //歌曲播放动效和高亮相关
 
-    //   int lastPlayIndex = 0;
+//   int lastPlayIndex = 0;
     void currentPlayHighlight();
     // 判断删除歌曲时跳过高亮
     bool skipPlayHighlight = false;
-    //    // 判断删除歌单歌曲时跳过高亮
-    //    bool skipPlaylistHighlight = false;
+//    // 判断删除歌单歌曲时跳过高亮
+//    bool skipPlaylistHighlight = false;
     AllPupWindow *aboutWidget;
     int playMode = 0;
 
@@ -321,6 +312,5 @@ private:
     QSize m_guiSize;
     QString m_arch;
     QString m_snap;
-
 };
 #endif // MAINWID_H

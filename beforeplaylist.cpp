@@ -34,7 +34,7 @@ BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
                                   "QListWidget::item:selected{background-color:#FFFFFF;color:#FF4848;}"
                                   "QListWidget::item:hover{background-color:#FFFFFF;}"
                                   );
-    ret == g_db->getSongInfoListFromHistoryMusic(resList);
+    ret = g_db->getSongInfoListFromHistoryMusic(resList);
     if(ret == DB_OP_SUCC)
     {
         for (int i = 0; i < resList.size(); i++) {
