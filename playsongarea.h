@@ -67,12 +67,13 @@ public:
 
     BeforePlayList *mybeforeList;
     void playcolor();
+    void songText(QString songName);   // 正在播放
 
 public slots:
 //    void playSong(bool);
     void play_Song();   //播放和暂停
 
-    void songText(QString songName);
+
 private:
     void initWidget();
     QHBoxLayout *h_mainLayout, *m_hControlLayout;

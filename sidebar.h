@@ -95,7 +95,7 @@ public:
     QAction *listDeleAct;
     QAction *listSongAct;
 
-    int currentMusicPlaylist = 0;
+    int currentMusicPlaylist = -2;
 
     // 当前播放列表索引
     int currentPlayList = 0;
@@ -121,7 +121,7 @@ public slots:
 
     void addSongList();
     void initDefaultMusicList();
-    void createSongList();  //新建歌单
+    void createSongList();  //获取歌单
     void addItemToSongList();  //创建歌单
     void deleteSongList();    //删除歌单
 
@@ -132,7 +132,7 @@ public slots:
     void on_musicListChangeWid_customContextMenuRequested(const QPoint &pos);
     void listPlayAct_slot();
     void listNextAct_slot();
-    void deleteMusicFromSongList();    // 从歌单中删除歌曲
+    void deleteMusicFromSongList();
     void listSongAct_slot();           // 歌单中歌曲信息
 
 //    void updataplaylistwidget(int value);//更新playlistWidget

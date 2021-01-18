@@ -67,7 +67,10 @@ void PlaySongArea::playcolor()
 
 //        likeMusicBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/dark/icon_love2_b@2x.png)}");
         likeMusicBtn->setIcon(QIcon(":/img/dark/icon_love2_b@2x.png"));
-
+        playModeBtn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
+        playModeBtn->setStyleSheet("QPushButton{background:transparent;}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/sequence.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/sequence.png);}");
 //        playModeBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/dark/icon_sequence_w@2x.png);}"
 //                                   "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}");
 //        playModeBtn->setIcon(QIcon(":/img/dark/icon_sequence_w@2x.png"));

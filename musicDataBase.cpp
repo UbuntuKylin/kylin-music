@@ -85,7 +85,8 @@ bool MusicDataBase::initDataBase()
                                        ));//创建我喜欢列表
     queryRes &= queryInit.exec(QString("create table if not exists ListOfPlayList (hash varchar primary key)"));//创建播放列表名称列表
 
-    queryRes &= createNewPlayList("我喜欢");
+//    queryRes &= createNewPlayList("我喜欢");
+    qDebug()<<"创建【我喜欢】歌单："<< createNewPlayList(tr("我喜欢"));
     return queryRes;
 }
 
@@ -104,7 +105,7 @@ int MusicDataBase::addMusicToLocalMusic(const musicDataStruct &fileData)
 //            QMutexLocker lockData( &m_mutex);  //加锁，函数执行完后自动解锁
 
             //查询历史列表中是否已有该歌曲，已有的话，返回添加失败
-            int checkLocalRes = checkIfSongExistsInHistoryMusic(fileData.hash);
+            int checkLocalRes = checkIfSongExistsInLocalMusic(fileData.hash);
 
             //历史列表中已经有这首歌，重复添加了
             if(DB_OP_SUCC == checkLocalRes)
@@ -553,16 +554,12 @@ int MusicDataBase::getSongInfoListFromPlayList(QList<musicDataStruct>& resList,c
                 {
                     musicDataStruct temp;
                     temp.hash          = getSongFromLocal.value(0).toString();
-                    int curRes = getSongInfoFromLocalMusic(temp.hash ,temp);
-
-                    if(curRes)
-                    {
-                        resList.append(temp);
-                    }
-                    else
-                    {
-                        return curRes;
-                    }
+                    temp.title         = getSongFromLocal.value(1).toString();
+                    temp.filepath      = getSongFromLocal.value(2).toString();
+                    temp.singer        = getSongFromLocal.value(3).toString();
+                    temp.album         = getSongFromLocal.value(4).toString();
+                    temp.time          = getSongFromLocal.value(7).toString();
+                    resList.append(temp);
                 }
 
                 if(0 == resList.size())

@@ -91,9 +91,10 @@ protected:
 
 private slots:
     //进行最小化、最大化、还原、关闭
-    void onClicked();
+//    void slot_showMaximized();
+//    void slot_quit();
 private:
-    bool Minimize = false;       //最大化和还原俩个状态
+
 
 private:
     void initTitle();

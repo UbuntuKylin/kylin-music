@@ -276,6 +276,7 @@ void MusicListWid::initMusicListWid()
 
 void MusicListWid::on_top_addSongBtn_slot()
 {
+    int ret;
     songFiles = QFileDialog::getOpenFileNames(this, tr("Open the file"),"","音乐文件(*.mp3 *.ogg *.wav *.wma *.spx *.ape *.flac)");  //歌曲文件
     if(!songFiles.isEmpty())
     {
@@ -285,17 +286,19 @@ void MusicListWid::on_top_addSongBtn_slot()
             fileInfo.setFile(musicdataStruct.filepath);
             fileType(fileInfo);          //文件类型
             fileSize(fileInfo);      //文件大小
-            fileInformation(musicdataStruct.filepath);          //获取歌曲文件信息
-            showFileInformation(musicdataStruct.title,musicdataStruct.singer,musicdataStruct.album,musicdataStruct.time);  //显示获取歌曲文件信息
-            filepathHash(musicdataStruct.filepath);                     // 通过路径获取hash
-            allmusic.append(musicdataStruct.filepath);
-            qDebug()<<musicdataStruct.hash;
-            localAllMusicid.append(musicdataStruct.hash);
-            PlayList->addMedia(QUrl::fromLocalFile(musicdataStruct.filepath));
-            qDebug()<<localAllMusicid;
-
-            g_db->addMusicToLocalMusic(musicdataStruct);
-            songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
+            fileInformation(musicdataStruct.filepath);
+            filepathHash(musicdataStruct.filepath); //获取歌曲文件信息
+            ret = g_db->addMusicToLocalMusic(musicdataStruct);
+            if (ret == DB_OP_SUCC) {
+                showFileInformation(musicdataStruct.title,musicdataStruct.singer,musicdataStruct.album,musicdataStruct.time);  //显示获取歌曲文件信息
+                                    // 通过路径获取hash
+                localAllMusicid.append(musicdataStruct.hash);
+                PlayList->addMedia(QUrl::fromLocalFile(musicdataStruct.filepath));
+                qDebug()<<"添加歌曲文件路径 ==== "<<musicdataStruct.filepath;
+                songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
+            } else {
+                qDebug()<<"歌曲已存在";
+            }
         }
     }
 }
@@ -316,7 +319,7 @@ QString MusicListWid::filepathHash(QString filePath)
 QString MusicListWid::filepath(QString filepath)
 {
     musicdataStruct.filepath = filepath;
-    return musicdataStruct.hash;
+    return musicdataStruct.filepath;
 }
 
 QStringList MusicListWid::fileInformation(QString filepath)
@@ -530,30 +533,29 @@ void MusicListWid::get_localmusic_information(QString tableName)
 {
     int ret = -1;
     QList<musicDataStruct> resList;
-    qDebug() << "数据库" << "获取歌曲列表歌曲信息" ;
     if(tableName == "LocalMusic") {
         ret = g_db->getSongInfoListFromLocalMusic(resList);
     } else {
         ret = g_db->getSongInfoListFromPlayList(resList, tableName);
     }
-    qDebug()<<"==================="<<resList.size()<< ",ret = " << ret << "tablename is " \
-           << tableName;
-    this->tableName = tableName;
-    for(int i = 0;i < resList.size(); i++)
+    if(ret == DB_OP_SUCC)
     {
-        if(resList.at(i).hash != "")
+        qDebug()<<"歌单名 ==== "<< tableName;
+        this->tableName = tableName;
+        for(int i = 0;i < resList.size(); i++)
         {
-            QListWidgetItem *item = new QListWidgetItem(this->musicInfoWidget);
-            SongItem *songitem = new SongItem;
-            this->musicInfoWidget->setItemWidget(item,songitem);
-            qDebug()<<resList.at(i).title;
-            this->localAllMusicid.append(resList.at(i).hash);
-            songitem->song_singer_albumText(resList.at(i).title,resList.at(i).singer,resList.at(i).album); //歌曲名称 歌手 专辑
-            songitem->songTimeLabel->setText(resList.at(i).time); //时长
-            this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
+            if(resList.at(i).hash != "")
+            {
+                QListWidgetItem *item = new QListWidgetItem(this->musicInfoWidget);
+                SongItem *songitem = new SongItem;
+                this->musicInfoWidget->setItemWidget(item,songitem);
+                this->localAllMusicid.append(resList.at(i).hash);
+                songitem->song_singer_albumText(resList.at(i).title,resList.at(i).singer,resList.at(i).album); //歌曲名称 歌手 专辑
+                songitem->songTimeLabel->setText(resList.at(i).time); //时长
+                this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
+            }
         }
     }
-    qDebug() << "数据库" << "歌曲信息加载完毕" ;
 }
 
 

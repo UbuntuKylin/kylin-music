@@ -48,6 +48,7 @@
 #include <QByteArray>
 #include <QString>
 #include <QSqlTableModel>
+#include <QMessageBox>
 
 //文件拖拽
 #include <QEvent>
@@ -65,18 +66,6 @@
 
 #include "widgetstyle.h"
 #include "musicDataBase.h"
-
-//struct AllMusic
-//{
-//    QString hash;
-//    QString title;
-//    QString filepath;
-//    QString singer;
-//    QString album;
-//    QString filetype;
-//    QString size;
-//    QString time;
-//};
 
 class ChangeListWid : public QWidget
 {
@@ -129,16 +118,8 @@ public:
     QStringList songFiles;
     QString Dir;
     QStringList matchMp3Files;
-//    QString musicPath;
 
     QFileInfo fileInfo;
-//    QByteArray byteArray;
-//    QString musicName;
-//    QString musicSinger;
-//    QString musicAlbum;
-//    QString musicTime;
-//    QString musicSize;
-//    QString musicType;
     QString MD5Str;
     QStringList MD5List;
     QDir matchDir;
