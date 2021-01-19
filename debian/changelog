@@ -1,3 +1,15 @@
+kylin-music (1.0.39kord) v101; urgency=medium
+
+  * 用户手册新增英文版本.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 18 Jan 2021 20:44:38 +0800
+
+kylin-music (1.0.38kord) v101; urgency=medium
+
+  * 用户手册新增英文版本.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 18 Jan 2021 20:21:25 +0800
+
 kylin-music (1.0.37kord) v101; urgency=medium
 
   * 优化播放逻辑.
