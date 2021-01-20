@@ -23,9 +23,12 @@
 #include "xatom-helper.h"
 #include "musicDataBase.h"
 
+MainWid *MainWid::mutual = nullptr;  //！！！！初始化，非常重要
+
 MainWid::MainWid(QString str, QWidget *parent)
     : QMainWindow(parent)
 {
+    mutual = this;//！！！赋值，非常重要
     Single(str);//单例
     initDaemonIpcDbus();//用户手册
     initDataBase();//数据库
@@ -91,6 +94,9 @@ void MainWid::initStyle()//初始化样式
 
         myTitleBar = new TitleBar(this);
         mySideBar = new SideBar(this);
+
+//        connect(mySideBar,SIGNAL(createNewList()),this,SLOT(connectHandle()));
+
         nullMusicWidget = new ChangeListWid(this);   //空页面
 
         //    myMusicListWid = new MusicListWid(this);
@@ -273,11 +279,12 @@ void MainWid::initAction()//初始化事件
     connect(myPlaySongArea->mybeforeList->emptyBtn,SIGNAL(clicked(bool)),this,SLOT(clear_HistoryPlayList()));
 
     int ret;
-    QStringList playListNameList;
-    ret = g_db->getPlayList(playListNameList);
+
+    mySideBar->playListName.clear();
+    ret = g_db->getPlayList(mySideBar->playListName);
     if(ret == DB_OP_SUCC)
     {
-        for(int i = 0;i< playListNameList.size();i++)
+        for(int i = 0;i < mySideBar->playListName.size();i++)
         {
             connect(mySideBar->musicListChangeWid[i]->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
                 this,SLOT(on_musicListChangeWid_doubleClicked(QListWidgetItem*)));
@@ -313,6 +320,19 @@ void MainWid::initAction()//初始化事件
         connect(mySideBar->newSongListBtn[i], &QToolButton::clicked, this, &MainWid::hideSearchResultWidget);
     }
     qDebug()<<"初始化事件成功";
+}
+
+
+void MainWid::initAddPlayList(int num)
+{
+    connect(mySideBar->musicListChangeWid[num]->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+        this,SLOT(on_musicListChangeWid_doubleClicked(QListWidgetItem*)));
+    connect(mySideBar->musicListChangeWid[num]->PlayList,&QMediaPlaylist::currentIndexChanged,
+        this,&MainWid::updataplaylistwidget);
+    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(positionChanged(qint64)),
+        this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
+    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(durationChanged(qint64)),
+        this,SLOT(playlist_durationChange(qint64)));
 }
 
 void MainWid::initGSettings()//初始化GSettings
@@ -610,8 +630,8 @@ void MainWid::play_Song()
                 return;
             }
 
-            QString fileHash = mySideBar->myMusicListWid->localAllMusicid[currentIndex];
-            ret = g_db->getSongInfoFromLocalMusic(fileHash, fileData);
+            QString filePath = mySideBar->myMusicListWid->localAllMusicid[currentIndex];
+            ret = g_db->getSongInfoFromLocalMusic(filePath, fileData);
             if(ret == DB_OP_SUCC)
             {
                 myPlaySongArea->songText(fileData.title); // 正在播放
@@ -670,9 +690,8 @@ void MainWid::play_Song()
                 return;
             }
 
-            QString fileHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[currentIndex];
-            qDebug() << "fileHash"<<fileHash;
-            ret = g_db->getSongInfoFromPlayList(fileData, fileHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
+            QString filePath = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[currentIndex];
+            ret = g_db->getSongInfoFromPlayList(fileData, filePath, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
             if(ret == DB_OP_SUCC)
             {
                 myPlaySongArea->songText(fileData.title); // 正在播放
@@ -876,14 +895,14 @@ void MainWid::add_music_to_songlist(QAction *listact)   //添加歌曲到歌单
 
     int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
 
-    QString fileHash = mySideBar->myMusicListWid->localAllMusicid[row];
-    ret = g_db->getSongInfoFromLocalMusic(fileHash, musicInfo);
+    QString filePath = mySideBar->myMusicListWid->localAllMusicid[row];
+    ret = g_db->getSongInfoFromLocalMusic(filePath, musicInfo);
     if(ret != DB_OP_SUCC)
     {
         qDebug() << "从歌曲列表中获取歌曲信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
         return;
     }
-    ret = g_db->addMusicToPlayList(fileHash, listact->text());
+    ret = g_db->addMusicToPlayList(filePath, listact->text());
     if(ret == DB_OP_SUCC)
     {
         QListWidgetItem *item1=new QListWidgetItem(mySideBar->musicListChangeWid[listindex]->musicInfoWidget);
@@ -891,7 +910,7 @@ void MainWid::add_music_to_songlist(QAction *listact)   //添加歌曲到歌单
         mySideBar->musicListChangeWid[listindex]->musicInfoWidget->setItemWidget(item1,songitem1);
         songitem1->song_singer_albumText(musicInfo.title,musicInfo.singer,musicInfo.album); //歌曲名称 歌手 专辑
         songitem1->songTimeLabel->setText(musicInfo.time); //时长
-        mySideBar->musicListChangeWid[listindex]->localAllMusicid.append(musicInfo.hash);
+        mySideBar->musicListChangeWid[listindex]->localAllMusicid.append(musicInfo.filepath);
         mySideBar->musicListChangeWid[listindex]->PlayList->addMedia(QUrl::fromLocalFile(musicInfo.filepath));
         mySideBar->musicListChangeWid[listindex]->musicInfoWidget->show();
         mySideBar->musicListChangeWid[listindex]->songNumberLabel->setText(
@@ -987,7 +1006,7 @@ void MainWid::deleteMusicFromLocalList()
     int ret;
     int currPlay;
     int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
-    QString musicHash = mySideBar->myMusicListWid->localAllMusicid[row];
+    QString filePath = mySideBar->myMusicListWid->localAllMusicid[row];
 
     if (mySideBar->currentMusicPlaylist == mySideBar->currentSelectList) {
         currPlay = mySideBar->myMusicListWid->PlayList->currentIndex();
@@ -1018,10 +1037,10 @@ void MainWid::deleteMusicFromLocalList()
     } else {
         mySideBar->myMusicListWid->PlayList->removeMedia(row, row);
     }
-    ret = g_db->delMusicFromLocalMusic(musicHash);
+    ret = g_db->delMusicFromLocalMusic(filePath);
     if(ret == DB_OP_SUCC)
     {
-        mySideBar->myMusicListWid->localAllMusicid.removeOne(musicHash);
+        mySideBar->myMusicListWid->localAllMusicid.removeOne(filePath);
         mySideBar->myMusicListWid->musicInfoWidget->removeItemWidget(mySideBar->myMusicListWid->musicInfoWidget->item(row));
         delete mySideBar->myMusicListWid->musicInfoWidget->item(row);
     }
@@ -1038,9 +1057,9 @@ void MainWid::getSongInfoAct()
 
     int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
 
-    QString musicHash = mySideBar->myMusicListWid->localAllMusicid[row];
+    QString musicPath = mySideBar->myMusicListWid->localAllMusicid[row];
 
-    ret = g_db->getSongInfoFromLocalMusic(musicHash, fileData);
+    ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
     if(ret == DB_OP_SUCC)
     {
         mySongInfoWidget->titleLab ->setText(tr("The song name:"));  //歌曲名称
@@ -1160,37 +1179,13 @@ void MainWid::updataplaylistwidget(int value)//更新playlistWidget
     }
 }
 
-void MainWid::updateSongPlaying()
-{
-    if (mySideBar->currentSelectList == -1)
-    {
-        int row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
-
-        QString mp3Name = model->data(model->index(row, 1)).toString();
-        myPlaySongArea->songNameofNowPlaying->setText(mp3Name);  //正在播放
-
-        //迷你模式正在播放
-        m_MiniWidget->m_songNameLab->setText(mp3Name);
-    }
-    else if (mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->state() == QMediaPlayer::PlayingState)
-    {
-        int row = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
-
-        QString mp3Name = model_1->data(model_1->index(row, 1)).toString();
-        myPlaySongArea->songNameofNowPlaying->setText(mp3Name);  //正在播放
-        //迷你模式正在播放
-        m_MiniWidget->m_songNameLab->setText(mp3Name);
-    }
-}
-
 void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地音乐播放playlist
 {
     int row;
     int ret;
     musicDataStruct fileData;
-    QString musichash;
+    QString musicPath;
 
-    qDebug() << "=================doubleClicked";
     /* default cover */
     QPixmap default_photo = QPixmap(":/img/fengmian.png");
     default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
@@ -1217,8 +1212,9 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
     /* to do */
 
     /* play area info */
-    musichash = mySideBar->myMusicListWid->localAllMusicid[row];
-    ret = g_db->getSongInfoFromLocalMusic(musichash, fileData);
+    qDebug()<<mySideBar->myMusicListWid->localAllMusicid;
+    musicPath = mySideBar->myMusicListWid->localAllMusicid[row];
+    ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
     if(ret == DB_OP_SUCC)
     {
         mySideBar->myMusicListWid->Music->play();
@@ -1232,7 +1228,7 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
     }
 
     /* ===to do: add to history table */
-    ret = g_db->addMusicToHistoryMusic(fileData.hash);
+    ret = g_db->addMusicToHistoryMusic(fileData.filepath);
     if (ret == DB_OP_SUCC) {
         QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
         HistoryListItem *besongitem1 = new HistoryListItem;
@@ -1258,9 +1254,7 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     int row;
     int ret;
     musicDataStruct fileData;
-    QString musichash;
-
-    qDebug() << "=================doubleClicked";
+    QString musicPath;
     /* default cover */
     QPixmap default_photo = QPixmap(":/img/fengmian.png");
     default_photo = default_photo.scaled(40,40,Qt::KeepAspectRatio);
@@ -1294,8 +1288,10 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     /* to do */
 
     /* play area info */
-    musichash = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->localAllMusicid[row];
-    ret = g_db->getSongInfoFromLocalMusic(musichash, fileData);
+    musicPath = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->localAllMusicid[row];
+    qDebug()<< "--------"<<mySideBar->playListName[mySideBar->currentMusicPlaylist];
+    qDebug()<<"******"<< mySideBar->playListName;
+    ret = g_db->getSongInfoFromPlayList(fileData, musicPath, mySideBar->playListName[mySideBar->currentMusicPlaylist]);
     if(ret == DB_OP_SUCC)
     {
         mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
@@ -1309,7 +1305,7 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     }
 
     /* ===to do: add to history table */
-    ret = g_db->addMusicToHistoryMusic(fileData.hash);
+    ret = g_db->addMusicToHistoryMusic(fileData.filepath);
     if (ret == DB_OP_SUCC) {
         QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
         HistoryListItem *besongitem1 = new HistoryListItem;
@@ -1405,7 +1401,7 @@ void MainWid::on_lastBtn_clicked()             //上一首
 {
     int preIndex = 0;
     int ret;
-    QString musicHash;
+    QString musicPath;
     musicDataStruct fileData;
     if (mySideBar->currentMusicPlaylist == -2) {
         QMessageBox::about(this,"提示信息","请选择歌曲后再点击播放");
@@ -1418,14 +1414,14 @@ void MainWid::on_lastBtn_clicked()             //上一首
         mySideBar->myMusicListWid->Music->play();
 
         /* 添加到历史列表 */
-        musicHash = mySideBar->myMusicListWid->localAllMusicid[preIndex];
-        ret = g_db->getSongInfoFromLocalMusic(musicHash, fileData);
+        musicPath = mySideBar->myMusicListWid->localAllMusicid[preIndex];
+        ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
         if(ret != DB_OP_SUCC)
         {
             qDebug() << "从本地歌单中获取歌曲信息失败";
             return;
         }
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+        ret = g_db->addMusicToHistoryMusic(fileData.filepath);
         if (ret == DB_OP_SUCC) {
             QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
             HistoryListItem *besongitem1 = new HistoryListItem;
@@ -1457,15 +1453,15 @@ void MainWid::on_lastBtn_clicked()             //上一首
         mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
 
         /* 添加到历史列表 */
-        musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[preIndex];
-        ret = g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
+        musicPath = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[preIndex];
+        ret = g_db->getSongInfoFromPlayList(fileData, musicPath, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
         if(ret != DB_OP_SUCC)
         {
             qDebug() << "从歌单中获取歌曲信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
             return;
         }
 
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+        ret = g_db->addMusicToHistoryMusic(fileData.filepath);
         if (ret == DB_OP_SUCC) {
             QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
             HistoryListItem *besongitem1 = new HistoryListItem;
@@ -1497,32 +1493,27 @@ void MainWid::on_nextBtn_clicked()      //下一首
 {
     int nextIndex;
     int ret;
-    QString musicHash;
+    QString musicPath;
     musicDataStruct fileData;
     if (mySideBar->currentMusicPlaylist == -2) {
         QMessageBox::about(this,"提示信息","请选择歌曲后再点击播放");
         return;
     }
     if (mySideBar->currentMusicPlaylist == -1) {
-
         /* 歌曲列表下一首 */
         nextIndex = (mySideBar->myMusicListWid->PlayList->currentIndex() + 1)%mySideBar->myMusicListWid->PlayList->mediaCount();
         mySideBar->myMusicListWid->PlayList->setCurrentIndex(nextIndex);
-        if(nextIndex < 0)
-        {
-            return;
-        }
         mySideBar->myMusicListWid->Music->play();
 
         /* 添加到历史列表 */
-        musicHash = mySideBar->myMusicListWid->localAllMusicid[nextIndex];
-        ret = g_db->getSongInfoFromLocalMusic(musicHash, fileData);
+        musicPath = mySideBar->myMusicListWid->localAllMusicid[nextIndex];
+        ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
         if(ret != DB_OP_SUCC)
         {
             qDebug() << "从本地歌单中获取歌曲信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
         }
-        qDebug()<<fileData.title;
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+
+        ret = g_db->addMusicToHistoryMusic(fileData.filepath);
         if (ret == DB_OP_SUCC) {
             QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
             HistoryListItem *besongitem1 = new HistoryListItem;
@@ -1553,15 +1544,14 @@ void MainWid::on_nextBtn_clicked()      //下一首
         mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
 
         /* 添加到历史列表 */
-        musicHash = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[nextIndex];
-        ret = g_db->getSongInfoFromPlayList(fileData, musicHash, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
+        musicPath = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[nextIndex];
+        ret = g_db->getSongInfoFromPlayList(fileData, musicPath, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
         if(ret != DB_OP_SUCC)
         {
             qDebug() << "从本地歌单中获取歌曲信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
             return;
         }
-
-        ret = g_db->addMusicToHistoryMusic(fileData.hash);
+        ret = g_db->addMusicToHistoryMusic(fileData.filepath);
         if (ret == DB_OP_SUCC) {
             QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
             HistoryListItem *besongitem1 = new HistoryListItem;
@@ -2457,10 +2447,10 @@ void MainWid::clear_HistoryPlayList()
     {
         for (int i = 0; i < resList.size(); i++)
         {
-            ret = g_db->delMusicFromHistoryMusic(resList.at(i).hash);
-            if(ret == DB_OP_SUCC)
+            ret = g_db->delMusicFromHistoryMusic(resList.at(i).filepath);
+            if(ret != DB_OP_SUCC)
             {
-                mySideBar->myMusicListWid->localAllMusicid.removeOne(resList.at(i).hash);
+                return;
             }
         }
     }

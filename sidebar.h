@@ -39,6 +39,7 @@
 #include "widgetstyle.h"
 #include "playsongarea.h"
 
+
 struct PlayListNew
 {
     int id;
@@ -114,7 +115,7 @@ public:
 
 public:
     PlayListNew playListNew;
-    QStringList playListName;               //歌单名hash
+    QStringList playListName;               //歌单名
     QString enterLineEdit(QString text);    //获取歌单名的hash
 
 public slots:

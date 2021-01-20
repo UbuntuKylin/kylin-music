@@ -312,13 +312,12 @@ void MusicListWid::on_top_addSongBtn_slot()
             fileInfo.setFile(musicdataStruct.filepath);
             fileType(fileInfo);          //文件类型
             fileSize(fileInfo);      //文件大小
-            fileInformation(musicdataStruct.filepath);
-            filepathHash(musicdataStruct.filepath); //获取歌曲文件信息
+            fileInformation(musicdataStruct.filepath);//获取歌曲文件信息
+//            filepathHash(musicdataStruct.filepath);// 通过路径获取hash
             ret = g_db->addMusicToLocalMusic(musicdataStruct);
             if (ret == DB_OP_SUCC) {
                 showFileInformation(musicdataStruct.title,musicdataStruct.singer,musicdataStruct.album,musicdataStruct.time);  //显示获取歌曲文件信息
-                                    // 通过路径获取hash
-                localAllMusicid.append(musicdataStruct.hash);
+                localAllMusicid.append(musicdataStruct.filepath);
                 PlayList->addMedia(QUrl::fromLocalFile(musicdataStruct.filepath));
                 qDebug()<<"添加歌曲文件路径 ==== "<<musicdataStruct.filepath;
                 songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
@@ -329,18 +328,18 @@ void MusicListWid::on_top_addSongBtn_slot()
     }
 }
 
-QString MusicListWid::filepathHash(QString filePath)
-{
-    QString musicHash;
-    QByteArray qByteArray;
-    QCryptographicHash hash(QCryptographicHash::Md5);
+//QString MusicListWid::filepathHash(QString filePath)
+//{
+//    QString musicHash;
+//    QByteArray qByteArray;
+//    QCryptographicHash hash(QCryptographicHash::Md5);
 
-    qByteArray.append(filePath);
-    hash.addData(qByteArray);
-    musicHash.append(hash.result().toHex());
-    musicdataStruct.hash = musicHash;
-    return musicdataStruct.hash;
-}
+//    qByteArray.append(filePath);
+//    hash.addData(qByteArray);
+//    musicHash.append(hash.result().toHex());
+//    musicdataStruct.hash = musicHash;
+//    return musicdataStruct.hash;
+//}
 
 QString MusicListWid::filepath(QString filepath)
 {
@@ -570,12 +569,12 @@ void MusicListWid::get_localmusic_information(QString tableName)
         this->tableName = tableName;
         for(int i = 0;i < resList.size(); i++)
         {
-            if(resList.at(i).hash != "")
+            if(resList.at(i).filepath != "")
             {
                 QListWidgetItem *item = new QListWidgetItem(this->musicInfoWidget);
                 SongItem *songitem = new SongItem;
                 this->musicInfoWidget->setItemWidget(item,songitem);
-                this->localAllMusicid.append(resList.at(i).hash);
+                this->localAllMusicid.append(resList.at(i).filepath);
                 songitem->song_singer_albumText(resList.at(i).title,resList.at(i).singer,resList.at(i).album); //歌曲名称 歌手 专辑
                 songitem->songTimeLabel->setText(resList.at(i).time); //时长
                 this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));

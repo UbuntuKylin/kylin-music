@@ -1,14 +1,25 @@
+kylin-music (1.0.40kord) v101; urgency=medium
+
+  * 解决禅道BUG#34732 播放列表为空时，切换为mini模式后点击播放按钮后，显示已播放状态.
+  * 解决禅道BUG#34659 删除播放列表，再双击播放歌曲，应用闪退.
+  * 解决禅道BUG#34655 将任意歌单中歌曲全部删除后，点击播放面板下一首按钮，应用闪退.
+  * 解决禅道BUG#34652 新添加至自建歌单中的歌曲无法播放，播放歌曲列表和我喜欢中的歌曲能播放但是终端报错.
+  * 解决禅道BUG#34641 在我喜欢或者其他自建歌单中右键删除歌曲或者查看歌曲信息功能，需要重启应用后才能使用.
+  * 解决禅道BUG#34628 删除歌单后应用闪退，报段错误.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Wed, 20 Jan 2021 09:24:12 +0800
+
 kylin-music (1.0.39kord) v101; urgency=medium
 
   * 用户手册新增英文版本.
 
- -- liujialin <liujialin@kylinos.cn>  Sun, 18 Jan 2021 20:44:38 +0800
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sun, 18 Jan 2021 20:44:38 +0800
 
 kylin-music (1.0.38kord) v101; urgency=medium
 
   * 用户手册新增英文版本.
 
- -- liujialin <liujialin@kylinos.cn>  Sun, 18 Jan 2021 20:21:25 +0800
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sun, 18 Jan 2021 20:21:25 +0800
 
 kylin-music (1.0.37kord) v101; urgency=medium
 

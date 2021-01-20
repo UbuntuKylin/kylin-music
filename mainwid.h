@@ -107,7 +107,7 @@ public:
     void promptMessage();
     void updatalistwidget(int value);//更新listWidget
     void updataplaylistwidget(int value);//更新playlistWidget
-    void updateSongPlaying();
+//    void updateSongPlaying();
     void slot_showMiniWidget();//迷你模式
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
@@ -123,6 +123,9 @@ public:
     void playlist_playInformation();  //歌单播放信息
     void albumCover_local();          //本地专辑
     void albumCover_playlist();       //歌单专辑
+
+    void initAddPlayList(int num);
+    static MainWid *mutual;          //指针类型静态成员变量
 
     QGSettings *themeData = nullptr;
 
