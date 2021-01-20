@@ -151,7 +151,7 @@ public:
     void musiclistcolor();
 
     void on_top_addSongBtn_slot();       //添加歌曲
-    QString filepathHash(QString filePath);      //通过歌曲路径获取歌曲hash
+//    QString filepathHash(QString filePath);      //通过歌曲路径获取歌曲hash
     QString filepath(QString filepath);          //获取文件路径
     QStringList fileInformation(QString filepath);   //获取歌曲信息
     QString fileSize(QFileInfo fileInfo);        //获取文件大小

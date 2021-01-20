@@ -17,6 +17,7 @@
 
 #include "sidebar.h"
 #include "musicDataBase.h"
+#include "mainwid.h"
 #include <QDebug>
 #include <QMessageBox>
 
@@ -379,7 +380,7 @@ void SideBar::listPlayAct_slot()
 //                musicListChangeWid[currentSelectList]->Music->pause();
 //            }
 //            else
-//            {
+//            {#include "mainwid.h"
 //                qDebug()<<"播放";
 //                //                play_pause="暂停";
 //                listPlayAct->setText("播放");
@@ -468,12 +469,12 @@ void SideBar::deleteMusicFromSongList()
     int ret;
     int currPlay;
     int row = musicListChangeWid[currentSelectList]->musicInfoWidget->currentIndex().row();
-    QString musicHash = musicListChangeWid[currentSelectList]->localAllMusicid[row];
+    QString musicPath = musicListChangeWid[currentSelectList]->localAllMusicid[row];
 
-    ret = g_db->delMusicFromPlayList(musicHash, musicListChangeWid[currentSelectList]->tableName);
+    ret = g_db->delMusicFromPlayList(musicPath, playListName[currentSelectList]);
     if(ret == DB_OP_SUCC)
     {
-        musicListChangeWid[currentSelectList]->localAllMusicid.removeOne(musicHash);
+        musicListChangeWid[currentSelectList]->localAllMusicid.removeOne(musicPath);
         musicListChangeWid[currentSelectList]->musicInfoWidget->removeItemWidget(musicListChangeWid[currentSelectList]->musicInfoWidget->item(row));
         delete musicListChangeWid[currentSelectList]->musicInfoWidget->item(row);
 
@@ -518,10 +519,10 @@ void SideBar::listSongAct_slot()
     musicDataStruct fileData;
     SongInfoWidget *mySongInfoWidget = new SongInfoWidget;
     int row = musicListChangeWid[currentSelectList]->musicInfoWidget->currentIndex().row();
-    QString musicHash = musicListChangeWid[currentSelectList]->localAllMusicid[row];
+    QString musicPath = musicListChangeWid[currentSelectList]->localAllMusicid[row];
 
     mySongInfoWidget->songInfoDlg->show();
-    ret = g_db->getSongInfoFromPlayList(fileData, musicHash, musicListChangeWid[currentSelectList]->tableName);
+    ret = g_db->getSongInfoFromPlayList(fileData, musicPath, playListName[currentSelectList]);
     if(ret == DB_OP_SUCC)
     {
         mySongInfoWidget->titleLab ->setText(tr("The song name:"));  //歌曲名称
@@ -571,16 +572,17 @@ void SideBar::addSongList()
 
 QString SideBar::enterLineEdit(QString text)   //获取歌单名的hash
 {
-    QString enterLineEditText;
-    QByteArray qByteArray;
-    QCryptographicHash hash(QCryptographicHash::Md5);
+    return text;
+//    QString enterLineEditText;
+//    QByteArray qByteArray;
+//    QCryptographicHash hash(QCryptographicHash::Md5);
 
-    qByteArray.append(text);
-    hash.addData(qByteArray);
-    enterLineEditText.append(hash.result().toHex());
-    playListNew.hash = enterLineEditText;
+//    qByteArray.append(text);
+//    hash.addData(qByteArray);
+//    enterLineEditText.append(hash.result().toHex());
+//    playListNew.hash = enterLineEditText;
 
-    return playListNew.hash;
+//    return playListNew.hash;
 }
 void SideBar::initDefaultMusicList()
 {
@@ -595,23 +597,22 @@ void SideBar::initDefaultMusicList()
 void SideBar::createSongList()
 {
     int ret;
-    QStringList playListNameList;
     QString listName;
 
     initDefaultMusicList();
 
-    allListName.clear();
-    ret = g_db->getPlayList(playListNameList);
+    playListName.clear();
+    ret = g_db->getPlayList(playListName);
     if(ret != DB_OP_SUCC)
     {
         qDebug() << "获取歌单信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
         return;
     }
-    for(int i = 0;i< playListNameList.size();i++)
+    qDebug()<<playListName<<"  ------  "<<playListName.size();
+    for(int i = 0;i< playListName.size();i++)
     {
         newSongList[i] = new QListWidgetItem(songListWidget);
-        listName = playListNameList.at(i);
-        allListName.append(listName);
+        listName = playListName.at(i);
         newSongListBtn[i] = new QToolButton(this);
         newSongListBtn[i]->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         newSongListBtn[i]->setIcon(QIcon(":/img/default/songlist.png"));
@@ -650,8 +651,6 @@ void SideBar::createSongList()
                                             "QToolButton::pressed{background-color:#EEEEEE;border-radius:16px;}");
         }
         songListWidget->setItemWidget(newSongList[i],newSongListBtn[i]);
-        playListName.append(listName);
-
         musicListChangeWid[i] = new MusicListWid(this);
         musicListChangeWid[i]->top_addSongBtn->hide();
         musicListChangeWid[i]->songListLabel->setText(listName);
@@ -678,15 +677,15 @@ void SideBar::createSongList()
         connect(musicListChangeWid[i],SIGNAL(customContextMenuRequested(const QPoint&)),
             this,SLOT(on_musicListChangeWid_customContextMenuRequested(const QPoint&)));
 
-        newSonglistPup->pupDialog->hide();
     }
+    newSonglistPup->pupDialog->hide();
+
 }
 
 void SideBar::addItemToSongList()
 {
     int ret;
     int i, j;
-    QStringList playListNameList;
     int num = songListWidget->count();   //num为songListWidget页面中当前item索引值
 
     QString listName = newSonglistPup->enterLineEdit->text();
@@ -701,17 +700,13 @@ void SideBar::addItemToSongList()
 
     }
 
-    ret = g_db->getPlayList(playListNameList);
-    if(ret != DB_OP_SUCC)
-    {
-        qDebug() << "添加歌单失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
-        return;
-    }
+    qDebug()<<listName;
+
     if(listName != "")
     {
-        for(int i = 0;i< playListNameList.size();i++)
+        for(int i = 0;i< playListName.size();i++)
         {
-            if(playListNameList.at(i) == listName)
+            if(playListName.at(i) == listName)
             {
                 newSonglistPup->pupDialog->hide();
         //        QMessageBox::about(this,tr("提示信息"),tr("歌单名已存在！！！"));
@@ -722,7 +717,7 @@ void SideBar::addItemToSongList()
     }
     else
     {
-        QStringList filterResult = playListNameList.filter("新建歌单");
+        QStringList filterResult = playListName.filter("新建歌单");
 
         if (filterResult.size() == 0) {
             listName = "新建歌单";
@@ -748,7 +743,7 @@ void SideBar::addItemToSongList()
             }
         }
     }
-    allListName.append(listName);
+
     newSongList[num] = new QListWidgetItem(songListWidget);  //我喜欢 这一item占有一个索引，所以num作为控制新建歌单数组的下标变量时应该减去1
     newSongListBtn[num] = new QToolButton(this);
     newSongListBtn[num]->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -781,18 +776,20 @@ void SideBar::addItemToSongList()
                                         "QToolButton::pressed{background-color:#EEEEEE;border-radius:16px;}");
     }
     songListWidget->setItemWidget(newSongList[num],newSongListBtn[num]);
-//    enterLineEdit(listName);             //获取歌单名的hash
-    playListName.append(listName);
+
+    qDebug() << "listName 是：" << listName <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
     ret = g_db->createNewPlayList(listName);
     if(ret != DB_OP_SUCC)
     {
-        qDebug() << "创建歌单失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
+        qDebug() << "添加歌单失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
         return;
     }
-    qDebug()<<"新建歌单 ==== " <<playListName;
+    playListName.append(listName);
+
     musicListChangeWid[num] = new MusicListWid(this);    //歌曲列表界面占据一个 所以此处应该是num
     musicListChangeWid[num]->top_addSongBtn->hide();
     musicListChangeWid[num]->songListLabel->setText(listName);
+//    musicListChangeWid[num]->tableName = listName;
     musicListChangeWid[num]->musicInfoWidget->clear();
     QString listNameLab = "";
     if(listName.length() > 9)
@@ -812,6 +809,8 @@ void SideBar::addItemToSongList()
     musicListChangeWid[num]->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(musicListChangeWid[num],SIGNAL(customContextMenuRequested(const QPoint&)),
         this,SLOT(on_musicListChangeWid_customContextMenuRequested(const QPoint&)));
+
+    MainWid::mutual->initAddPlayList(num);
 
     newSonglistPup->pupDialog->hide();
 }
@@ -835,6 +834,7 @@ void SideBar::deleteSongList()      //删除歌单提示信息
         return;
     }
     qDebug()<<"--------删除歌单-------"<<playlistName;
+    playListName.removeOne(playlistName);
     delete newSongListBtn[row];
     delete newSongList[row];
     delete musicListChangeWid[row];

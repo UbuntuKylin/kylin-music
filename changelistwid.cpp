@@ -34,6 +34,13 @@ ChangeListWid::ChangeListWid(QWidget *parent):QWidget(parent)
 void ChangeListWid::initStack()
 {
 //    titleFrame = new QFrame(this);
+    QVBoxLayout *vNullMainLayout = new QVBoxLayout(this);
+
+    QHBoxLayout *nullIconLabelLayout = new QHBoxLayout(this);
+    QHBoxLayout *noSongLayout = new QHBoxLayout(this);
+    QHBoxLayout *nullAddSongLayout = new QHBoxLayout(this);
+    QVBoxLayout *vAddSongLayout = new QVBoxLayout(this);
+    QVBoxLayout *vAddFolderLayout = new QVBoxLayout(this);
 
     songListLabel = new QLabel(this);
     songListLabel->setGeometry(30,18,100,30);
@@ -47,29 +54,49 @@ void ChangeListWid::initStack()
     songNumberLabel->setText(tr("A total of 0 first"));
 
     nullMusicIconLabel = new QLabel(this);
-    nullMusicIconLabel->setGeometry(275,122,200,180);
+    nullMusicIconLabel->setFixedSize(200,179);
     nullMusicIconLabel->setStyleSheet("border-image:url(:/img/default/pict1.png)");
 
     nullMusicLabel = new QLabel(this);
-    nullMusicLabel->setGeometry(333,313,84,24);
+    nullMusicLabel->setFixedSize(84,24);
 //    nullMusicLabel->setText("还没有歌曲！");
     nullMusicLabel->setText(tr("There are no songs yet!"));
 
 
     n_addLocalSong = new QPushButton(this);
     n_addLocalFolder = new QPushButton(this);
-
-//    musicListWidChange = new MusicListWid;
-
-    n_addLocalSong->setGeometry(300,357,126,30);
 //    n_addLocalSong->setText("添加本地歌曲");
+    n_addLocalSong->setFixedSize(126,30);
     n_addLocalSong->setText(tr("Add local songs"));
 
-
-    n_addLocalFolder->setGeometry(385,357,126,30);
 //    n_addLocalFolder->setText("添加本地文件夹");
+    n_addLocalFolder->setFixedSize(126,30);
     n_addLocalFolder->setText(tr("Add local folders"));
     n_addLocalFolder->hide();
+
+    nullIconLabelLayout->addWidget(nullMusicIconLabel,0,Qt::AlignHCenter);   //添加空页面默认图片
+    noSongLayout->addWidget(nullMusicLabel,0,Qt::AlignHCenter);     //还没有歌曲！
+
+
+    vAddSongLayout->addWidget(n_addLocalSong,0,Qt::AlignHCenter);
+    vAddFolderLayout->addWidget(n_addLocalFolder,0,Qt::AlignHCenter);
+    nullAddSongLayout->addStretch();
+    nullAddSongLayout->addLayout(vAddSongLayout);
+    nullAddSongLayout->setSpacing(20);
+    nullAddSongLayout->addLayout(vAddFolderLayout);
+    nullAddSongLayout->addStretch();
+
+    vNullMainLayout->addStretch();
+    vNullMainLayout->addLayout(nullIconLabelLayout);
+    vNullMainLayout->setSpacing(12);
+    vNullMainLayout->addLayout(noSongLayout);
+    vNullMainLayout->setSpacing(20);
+    vNullMainLayout->addLayout(nullAddSongLayout);
+    vNullMainLayout->addStretch();
+
+//    vNullMainLayout->setMargin(0);
+//    vNullMainLayout->setSpacing(0);
+    this->setLayout(vNullMainLayout);
 }
 
 void ChangeListWid::nullWidgetColor()
@@ -143,8 +170,7 @@ void ChangeListWid::nullWidgetColor()
 //                                       "QToolButton::pressed{background:#ECEEF5;}");
 
         n_addLocalFolder->setStyleSheet("font-size:14px;color:#303133;border-radius:15px;border:2px solid #DDDFE7;"
-                                        " \
-                                        font-weight: 400;width:84px;height:14px;");
+                                        "font-weight: 400;width:84px;height:14px;");
     }
 
 }
@@ -286,13 +312,12 @@ void MusicListWid::on_top_addSongBtn_slot()
             fileInfo.setFile(musicdataStruct.filepath);
             fileType(fileInfo);          //文件类型
             fileSize(fileInfo);      //文件大小
-            fileInformation(musicdataStruct.filepath);
-            filepathHash(musicdataStruct.filepath); //获取歌曲文件信息
+            fileInformation(musicdataStruct.filepath);//获取歌曲文件信息
+//            filepathHash(musicdataStruct.filepath);// 通过路径获取hash
             ret = g_db->addMusicToLocalMusic(musicdataStruct);
             if (ret == DB_OP_SUCC) {
                 showFileInformation(musicdataStruct.title,musicdataStruct.singer,musicdataStruct.album,musicdataStruct.time);  //显示获取歌曲文件信息
-                                    // 通过路径获取hash
-                localAllMusicid.append(musicdataStruct.hash);
+                localAllMusicid.append(musicdataStruct.filepath);
                 PlayList->addMedia(QUrl::fromLocalFile(musicdataStruct.filepath));
                 qDebug()<<"添加歌曲文件路径 ==== "<<musicdataStruct.filepath;
                 songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
@@ -303,18 +328,18 @@ void MusicListWid::on_top_addSongBtn_slot()
     }
 }
 
-QString MusicListWid::filepathHash(QString filePath)
-{
-    QString musicHash;
-    QByteArray qByteArray;
-    QCryptographicHash hash(QCryptographicHash::Md5);
+//QString MusicListWid::filepathHash(QString filePath)
+//{
+//    QString musicHash;
+//    QByteArray qByteArray;
+//    QCryptographicHash hash(QCryptographicHash::Md5);
 
-    qByteArray.append(filePath);
-    hash.addData(qByteArray);
-    musicHash.append(hash.result().toHex());
-    musicdataStruct.hash = musicHash;
-    return musicdataStruct.hash;
-}
+//    qByteArray.append(filePath);
+//    hash.addData(qByteArray);
+//    musicHash.append(hash.result().toHex());
+//    musicdataStruct.hash = musicHash;
+//    return musicdataStruct.hash;
+//}
 
 QString MusicListWid::filepath(QString filepath)
 {
@@ -544,12 +569,12 @@ void MusicListWid::get_localmusic_information(QString tableName)
         this->tableName = tableName;
         for(int i = 0;i < resList.size(); i++)
         {
-            if(resList.at(i).hash != "")
+            if(resList.at(i).filepath != "")
             {
                 QListWidgetItem *item = new QListWidgetItem(this->musicInfoWidget);
                 SongItem *songitem = new SongItem;
                 this->musicInfoWidget->setItemWidget(item,songitem);
-                this->localAllMusicid.append(resList.at(i).hash);
+                this->localAllMusicid.append(resList.at(i).filepath);
                 songitem->song_singer_albumText(resList.at(i).title,resList.at(i).singer,resList.at(i).album); //歌曲名称 歌手 专辑
                 songitem->songTimeLabel->setText(resList.at(i).time); //时长
                 this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
