@@ -93,7 +93,8 @@ bool MusicDataBase::initDataBase()
                                        ));//创建我喜欢列表
     queryRes &= queryInit.exec(QString("create table if not exists ListOfPlayList (title varchar primary key)"));//创建播放列表名称列表
 
-    queryRes &= createNewPlayList("我喜欢");
+    //解决每次都是初始化数据库失败
+    qDebug()<<"创建<我喜欢>列表状态码："<< createNewPlayList("我喜欢");
     return queryRes;
 }
 

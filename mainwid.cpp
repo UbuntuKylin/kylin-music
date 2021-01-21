@@ -42,11 +42,14 @@ MainWid::MainWid(QString str, QWidget *parent)
     {
         kylin_music_play_request(argName);
     }
+
+    qDebug()<<"--------------------程序初始化完成--------------------";
 }
 
 MainWid::~MainWid()
 {
-    m_MiniWidget->~miniWidget();
+    //原来是直接调用析构函数
+    m_MiniWidget->deleteLater();
 }
 
 void MainWid::Single(QString path)   //单例
@@ -78,6 +81,7 @@ void MainWid::Single(QString path)   //单例
 
 void MainWid::initStyle()//初始化样式
 {
+    setAcceptDrops(true);
     //    promptMessage();  //提示信息
         setMinimumSize(960,640);
     //    setFocus();
@@ -187,6 +191,7 @@ void MainWid::initStyle()//初始化样式
             mainWidget->setStyleSheet("#mainWidget{background:#FFFFFF;}");
             rightWid->setStyleSheet("#rightWid{background:#FFFFFF;}");
         }
+        qDebug()<<"初始化样式表功";
 }
 
 void MainWid::initDbus()//初始化dbus
@@ -326,8 +331,7 @@ void MainWid::initAction()//初始化事件
     qDebug()<<"初始化事件成功";
 }
 
-
-void MainWid::initAddPlayList(int num)
+void MainWid::initAddPlayList(int num)//初始化播放列表
 {
     connect(mySideBar->musicListChangeWid[num]->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
         this,SLOT(on_musicListChangeWid_doubleClicked(QListWidgetItem*)));
@@ -337,6 +341,7 @@ void MainWid::initAddPlayList(int num)
         this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
     connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(durationChanged(qint64)),
         this,SLOT(playlist_durationChange(qint64)));
+    qDebug()<<"初始化播放列表功";
 }
 
 void MainWid::initGSettings()//初始化GSettings
@@ -434,11 +439,11 @@ void MainWid::initSystemTray()//初始化托盘
         m_MiniWidget->playModeMenu->setTitle(tr(" Random broadcast "));
         mySideBar->musicListChangeWid[mySideBar->currentPlayList]->PlayList->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
     });
+    qDebug()<<"初始化托盘成功";
 }
 
 void MainWid::initDaemonIpcDbus()//用户手册
 {
-    setAcceptDrops(true);
     mDaemonIpcDbus = new DaemonIpcDbus();
     qDebug()<<"包含用户手册成功";
 }
@@ -451,6 +456,7 @@ void MainWid::initDataBase()//数据库
     {
         qDebug() << "数据库加载失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
     }
+    qDebug() << "数据库加载成功";
 }
 
 int MainWid::kylin_music_play_request(QString path)
