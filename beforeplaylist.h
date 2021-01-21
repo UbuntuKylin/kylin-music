@@ -26,6 +26,8 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QScrollBar>
+#include <QAction>
+#include <QMenu>
 
 
 #include "songitem.h"
@@ -37,20 +39,27 @@ class BeforePlayList : public QWidget
 public:
 
     explicit BeforePlayList(QWidget *parent = nullptr);
-    void initUi();
-
+    void initUi();   //初始化样式
 
     QListWidget *beforePlayList;
     QLabel *beforeListTitleLabel;
     QLabel *beforeListNumberLabel;
     QToolButton *emptyBtn;
 
-public slots:
+    QMenu *historyMenu;
+    QAction *playAction;
+    QAction *nextAction;
+    QAction *delAction;
+    void historyItemColor();
 
+public slots:
+    void on_historyWidget_customContextMenuRequested(const QPoint &pos);    //历史列表右键菜单
+    void historyPlay();
+    void historyNext();
+    void historyDel();
 
 private:
-
-
+    void initAction(); //初始化连接
 
 };
 

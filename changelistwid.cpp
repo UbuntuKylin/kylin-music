@@ -163,12 +163,6 @@ void ChangeListWid::nullWidgetColor()
                                       "QPushButton::pressed{background:#ECEEF5;}"
                                       );
 
-//        top_addSongBtn->setStyleSheet("QToolButton{font-size: 14px;line-height: 14px;font-weight: 400;\
-//                                       background:#F2F6FD;padding-left:10px;\
-//                                       color:#303133;border-radius:15px;}"
-//                                       "QToolButton::hover{color:#8F9399;}"
-//                                       "QToolButton::pressed{background:#ECEEF5;}");
-
         n_addLocalFolder->setStyleSheet("font-size:14px;color:#303133;border-radius:15px;border:2px solid #DDDFE7;"
                                         "font-weight: 400;width:84px;height:14px;");
     }
@@ -416,10 +410,10 @@ QString MusicListWid::fileType(QFileInfo fileInfo)
 void MusicListWid::showFileInformation(QString musicName,QString musicSinger,QString musicAlbum,QString musicTime)
 {
     QListWidgetItem *listItem = new QListWidgetItem(musicInfoWidget);
-    SongItem *songitem1 = new SongItem;
-    musicInfoWidget->setItemWidget(listItem,songitem1);
-    songitem1->song_singer_albumText(musicName,musicSinger,musicAlbum); //歌曲名称 歌手 专辑
-    songitem1->songTimeLabel->setText(musicTime); //时长
+    SongItem *songitem = new SongItem;
+    musicInfoWidget->setItemWidget(listItem,songitem);
+    songitem->song_singer_albumText(musicName,musicSinger,musicAlbum); //歌曲名称 歌手 专辑
+    songitem->songTimeLabel->setText(musicTime); //时长
 }
 
 void MusicListWid::addFile(const QStringList &addFile)

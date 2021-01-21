@@ -77,6 +77,7 @@ public:
     QLabel *songTimeLabel;
     QLabel *songNameLabel;
 
+    void itemcolor();
     void song_singerText(QString songName,QString singer);  //历史记录label
 
 
