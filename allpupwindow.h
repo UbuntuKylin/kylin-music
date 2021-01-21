@@ -95,12 +95,12 @@ public:
     QLabel *timeLab;
     QLabel *pathLab;
 
-//    QLabel *musicNameLab;
-//    QLabel *singerNameLab;
-//    QLabel *albumNameLab;
-    QLineEdit   *musicNameEdit;
-    QLineEdit   *singerNameEdit;
-    QLineEdit   *albumNameEdit;
+    QLabel *musicNameLab;
+    QLabel *singerNameLab;
+    QLabel *albumNameLab;
+//    QLineEdit   *musicNameEdit;
+//    QLineEdit   *singerNameEdit;
+//    QLineEdit   *albumNameEdit;
     QLabel *fileTypeLab;
     QLabel *fileSizeLab;
     QLabel *fileTimeLab;

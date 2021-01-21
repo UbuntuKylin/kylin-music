@@ -652,15 +652,10 @@ int MusicDataBase::getSongInfoFromHistoryMusic(const QString& filePath, musicDat
             {
                 QSqlQuery getSongInfoFromHistoryPlayList(m_database);
 
-                QString getSongString = QString("select * from HistoryPlayList where title = '%1'").arg(inPutStringHandle(filePath));
+                QString getSongString = QString("select * from HistoryPlayList where filepath = '%1'").arg(inPutStringHandle(filePath));
                 getRes &= getSongInfoFromHistoryPlayList.exec(getSongString);
-                if(getRes)
+                if(!getRes)
                 {
-                    return DB_OP_SUCC;
-                }
-                else
-                {
-                    qDebug() << "数据库打开，删除失败！！！";
                     return DB_OP_GET_FAILED;
                 }
 
@@ -709,7 +704,7 @@ int MusicDataBase::getSongInfoListFromHistoryMusic(QList<musicDataStruct>& resLi
             {
                 musicDataStruct temp;
                 temp.filepath = outPutStringHandle(getSongListFromHistoryMusic.value(0).toString());
-                int curRes = getSongInfoFromLocalMusic(temp.filepath, temp);
+                int curRes = getSongInfoFromHistoryMusic(temp.filepath, temp);
 
                 if(curRes)
                 {

@@ -16,37 +16,19 @@
  */
 #include "musicDataBase.h"
 #include "beforeplaylist.h"
+#include "songitem.h"
 #include <QGraphicsDropShadowEffect>
 
 BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
 {
-    QList<musicDataStruct> resList;
-    int ret;
+
     setGeometry(640,0,320,562);
 //    setAttribute(Qt::WA_TranslucentBackground, true);
     setStyleSheet("background:#FFFFFF;");
 
-    /* 初始化历史列表 */
-    beforePlayList = new QListWidget(this);
-    beforePlayList->setContentsMargins(16,0,16,0);
-    beforePlayList->setStyleSheet("QListWidget{background-color:#FFFFFF;border:0px;}"
-                                  "QListWidget::item{height:40px;}"
-                                  "QListWidget::item:selected{background-color:#FFFFFF;color:#FF4848;}"
-                                  "QListWidget::item:hover{background-color:#FFFFFF;}"
-                                  );
-    ret = g_db->getSongInfoListFromHistoryMusic(resList);
-    if(ret == DB_OP_SUCC)
-    {
-        for (int i = 0; i < resList.size(); i++) {
-            QListWidgetItem *belistItem = new QListWidgetItem(beforePlayList);
-            HistoryListItem *besongitem1 = new HistoryListItem;
-            beforePlayList->setItemWidget(belistItem,besongitem1);
-            besongitem1->song_singerText(resList.at(i).title, resList.at(i).singer); //历史列表
-            besongitem1->songTimeLabel->setText(resList.at(i).time); //时长
-        }
-    }
-    initUi();
-
+    initAction(); //初始化连接
+    initUi();   //初始化样式
+    historyItemColor();
 }
 
 void BeforePlayList::initUi()
@@ -108,5 +90,105 @@ void BeforePlayList::initUi()
 
     this->setLayout(mainLayout);
 //    mainWidget->raise();
-    this->raise();
+//    this->raise();
+}
+
+void BeforePlayList::initAction()
+{
+    /* 初始化历史列表 */
+    beforePlayList = new QListWidget(this);
+    beforePlayList->setContentsMargins(16,0,16,0);
+//    beforePlayList->setStyleSheet("QListWidget{background-color:#FFFFFF;border:0px;}"
+//                                  "QListWidget::item{height:40px;}"
+//                                  "QListWidget::item:selected{background-color:#FFFFFF;color:#FF4848;}"
+//                                  "QListWidget::item:hover{background-color:#FFFFFF;}"
+//                                  );
+    QList<musicDataStruct> resList;
+    int ret;
+    ret = g_db->getSongInfoListFromHistoryMusic(resList);
+    if(ret == DB_OP_SUCC)
+    {
+        for (int i = 0; i < resList.size(); i++)
+        {
+            QListWidgetItem *belistItem = new QListWidgetItem(beforePlayList);
+            HistoryListItem *besongitem1 = new HistoryListItem;
+            beforePlayList->setItemWidget(belistItem,besongitem1);
+            besongitem1->song_singerText(resList.at(i).title, resList.at(i).singer); //历史列表
+            besongitem1->songTimeLabel->setText(resList.at(i).time); //时长
+        }
+    }
+
+    //历史列表右键菜单
+    beforePlayList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(beforePlayList,SIGNAL(customContextMenuRequested(const QPoint&)),this,SLOT(on_historyWidget_customContextMenuRequested(const QPoint&)));
+}
+
+void BeforePlayList::on_historyWidget_customContextMenuRequested(const QPoint &pos)
+{
+    QListWidgetItem *curItem1 = beforePlayList->itemAt(pos);
+
+    if(curItem1 == NULL)
+    {
+        return;
+    }
+    historyMenu = new QMenu(beforePlayList);
+    playAction = new QAction(this);
+    nextAction = new QAction(this);
+    delAction = new QAction(this);
+
+    playAction->setText(tr("paly"));
+    nextAction->setText(tr("next"));
+    delAction->setText(tr("delete"));
+
+    historyMenu->addAction(playAction);
+    historyMenu->addAction(nextAction);
+    historyMenu->addAction(delAction);
+    connect(playAction,&QAction::triggered,this,&BeforePlayList::historyPlay);
+    connect(nextAction,&QAction::triggered,this,&BeforePlayList::historyNext);
+    connect(delAction,&QAction::triggered,this,&BeforePlayList::historyDel);
+    historyMenu->exec(QCursor::pos());
+    delete historyMenu;
+    delete playAction;
+    delete nextAction;
+    delete delAction;
+}
+
+void BeforePlayList::historyPlay()
+{
+
+}
+
+void BeforePlayList::historyNext()
+{
+
+}
+
+void BeforePlayList::historyDel()
+{
+
+}
+
+void BeforePlayList::historyItemColor()
+{
+    if(WidgetStyle::themeColor == 1 )
+    {
+        this->setObjectName("beforeplaylist");
+        this->setStyleSheet("#beforeplaylist{background-color:#252526;}");
+        beforePlayList->setStyleSheet("QListWidget{background-color:#252526;border:0px;}"
+                                      "QListWidget::item{height:40px;}"
+                                      "QListWidget::item:selected{background-color:#303032;}"
+                                      "QListWidget::item:hover{background-color:#303032;}");
+
+    }
+    else if (WidgetStyle::themeColor == 0)
+    {
+        this->setObjectName("beforeplaylist");
+        this->setStyleSheet("#beforeplaylist{background-color:#FFFFFF;}");
+
+        beforePlayList->setStyleSheet("QListWidget{background-color:#FFFFFF;border:0px;}"
+                                      "QListWidget::item{height:40px;}"
+                                      "QListWidget::item:pressed{background-color:#F0F0F0;}"
+                                      "QListWidget::item:selected{background-color:#F0F0F0;}"
+                                      "QListWidget::item:hover{background-color:#F0F0F0;}");
+    }
 }

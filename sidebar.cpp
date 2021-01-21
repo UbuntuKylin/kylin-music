@@ -76,7 +76,7 @@ void SideBar::sidecolor()
                                       "QPushButton::pressed{color:#606265;}");
 
         songListWidget->setStyleSheet("QListWidget{background-color:#1F2022;border:0px;}"
-                                      "QListWidget::item{background-color:#1F2022;}"
+                                      "QListWidget::item:selected{background-color:#1F2022;}"
                                       "QListWidget::item:hover{background-color:#1F2022;}"
                                       "QListWidget::item:pressed{background-color:#1F2022;}");
         songListWidget->setContentsMargins(20,20,20,20);
@@ -123,7 +123,8 @@ void SideBar::sidecolor()
                                       "QListWidget::item:selected{background-color:#FAFAFA;}"
                                       "QListWidget::item:hover{background-color:#FAFAFA;}"
                                       "QListWidget::item:pressed{background-color:#FAFAFA;}");
-    }
+
+        }
 }
 
 void SideBar::initTopWidget()
@@ -247,15 +248,15 @@ void SideBar::initTopWidget()
 
 void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos)
 {
-    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() <= 0)
-    {
-        QListWidgetItem *curItem1 = musicListChangeWid[currentPlayList]->musicInfoWidget->itemAt(pos);
+//    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() > 0)
+//    {
+    QListWidgetItem *curItem1 = musicListChangeWid[currentPlayList]->musicInfoWidget->itemAt(pos);
 
-        if(curItem1 == NULL)
-        {
-            return;
-        }
+    if(curItem1 == NULL)
+    {
+        return;
     }
+//    }
     menu = new QMenu(musicListChangeWid[currentSelectList]->musicInfoWidget);
     listPlayAct = new QAction(this);
     listNextAct = new QAction(this);
@@ -284,7 +285,6 @@ void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos
     delete listNextAct;
     delete listDeleAct;
     delete listSongAct;
-
 }
 
 void SideBar::listPlayAct_slot()
@@ -534,12 +534,12 @@ void SideBar::listSongAct_slot()
         mySongInfoWidget->pathLab  ->setText(tr("File location:"));  //文件位置
 
 
-        mySongInfoWidget->musicNameEdit->setText(fileData.title);
-        mySongInfoWidget->singerNameEdit->setText(fileData.singer);
-        mySongInfoWidget->albumNameEdit->setText(fileData.album);
-        mySongInfoWidget->fileTypeLab->setText(" "+fileData.filetype);
-        mySongInfoWidget->fileSizeLab->setText(" "+fileData.size);
-        mySongInfoWidget->fileTimeLab->setText(" "+fileData.time);
+        mySongInfoWidget->musicNameLab->setText(fileData.title);
+        mySongInfoWidget->singerNameLab->setText(fileData.singer);
+        mySongInfoWidget->albumNameLab->setText(fileData.album);
+        mySongInfoWidget->fileTypeLab->setText(fileData.filetype);
+        mySongInfoWidget->fileSizeLab->setText(fileData.size);
+        mySongInfoWidget->fileTimeLab->setText(fileData.time);
 
         QString showpathStr   = "";
         if(fileData.filepath.length() > 30)

@@ -124,7 +124,7 @@ public:
     void albumCover_local();          //本地专辑
     void albumCover_playlist();       //歌单专辑
 
-    void initAddPlayList(int num);
+    void initAddPlayList(int num);   //新建歌单，把歌单中的歌曲进行初始化
     static MainWid *mutual;          //指针类型静态成员变量
 
     QGSettings *themeData = nullptr;
@@ -177,6 +177,7 @@ public slots:
     void play_Song();   //播放和暂停
     void on_musicInfoWidget_customContextMenuRequested(const QPoint &pos);  //歌曲列表右键菜单
     void on_sidebarWidget_customContextMenuRequested(const QPoint &pos);    //侧边栏歌单区域右键菜单
+//    void on_historyWidget_customContextMenuRequested(const QPoint &pos);    //历史列表右键菜单
 //    void setHsliderPosition();      //添加歌曲时记住当前播放的位置
 //    void contextMenuEvent(QContextMenuEvent *);
     void playOrPauseAct();    //右键播放
@@ -209,6 +210,10 @@ public slots:
     void renameSongListCon();
     void promptRenamePlayList();     //重命名歌单提示信息
     void promptRemovePlayList();     //删除歌单提示信息
+
+//    void historyPlay();
+//    void historyNext();
+//    void historyDel();
 
     // 拖动进度条
     void slidePress();
@@ -276,6 +281,11 @@ private:
     QAction *listAct;   //右键添加到歌单
 //    QAction *lookAct; //右键查看本地文件
     QAction *songAct;   //右键歌曲信息
+
+//    QMenu *historyMenu;
+//    QAction *playAction;
+//    QAction *nextAction;
+//    QAction *delAction;
 
     Slider *hSlider;
     Slider *vSlider;
