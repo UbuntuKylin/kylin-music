@@ -155,22 +155,22 @@ void TitleBar::initTitle()
     }
 
 //    changeThemeColorMenu->setTitle("更换主题颜色");
-    changeThemeColorMenu->setTitle(tr("Change the theme color"));
+//    changeThemeColorMenu->setTitle(tr("Change the theme color"));
 //    darkThemeAct->setText("深色模式");
-    darkThemeAct->setText(tr("Dark mode"));
+//    darkThemeAct->setText(tr("Dark mode"));
 //    lightThemeAct->setText("浅色模式");
-    lightThemeAct->setText(tr("Light color pattern"));
+//    lightThemeAct->setText(tr("Light color pattern"));
 //    aboutAct->setText("关于");
-    aboutAct->setText(tr("about"));
+//    aboutAct->setText(tr("about"));
 
-    settingMenu->addMenu(changeThemeColorMenu);
-    changeThemeColorMenu->addAction(lightThemeAct);
-    changeThemeColorMenu->addAction(darkThemeAct);
+//    settingMenu->addMenu(changeThemeColorMenu);
+//    changeThemeColorMenu->addAction(lightThemeAct);
+//    changeThemeColorMenu->addAction(darkThemeAct);
 //    settingMenu->addAction(aboutAct);
 
     setBtn->setMenu(settingMenu);   //下拉三角图标
 
-    connect(aboutAct,SIGNAL(triggered()),this,SLOT(showAboutWidget()));
+//    connect(aboutAct,SIGNAL(triggered()),this,SLOT(showAboutWidget()));
 
 
     nullLabel = new QLabel;

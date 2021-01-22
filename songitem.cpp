@@ -27,7 +27,6 @@ SongItem::SongItem(QWidget *parent):QWidget(parent)
 //    setStyleSheet("background:red;");
 
     initItem();
-    itemcolor();
 
 }
 
@@ -78,9 +77,9 @@ void SongItem::initItem()
     mainLayout->setContentsMargins(30,0,0,0);
 }
 
-void SongItem::itemcolor()
+void SongItem::itemcolor(int type)
 {
-    if(WidgetStyle::themeColor == 1)
+    if(type == 1)
     {
 
         songNameLabel->setStyleSheet("width: 182px;\
@@ -124,7 +123,7 @@ void SongItem::itemcolor()
                                  "QPushButton::hover{border-image:url(:/img/clicked/love2.png);}"
                                  "QPushButton::pressed{border-image:url(:/img/clicked/love2.png);}");
     }
-    else if(WidgetStyle::themeColor == 0)
+    else if(type==0)
     {
         songNameLabel->setStyleSheet("width: 182px;\
                                      height: 14px;\

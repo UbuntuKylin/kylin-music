@@ -50,16 +50,16 @@ public:
     QPushButton *hoverLike;
     QPushButton *hoverPlay;
 
-    void itemcolor();
+    void itemcolor(int type);
 
     void song_singer_albumText(QString songName,QString singer,QString album); //播放列表label
+
+    QString itemType = "";
 
 public slots:
 
 
 private:
-
-
 
 };
 

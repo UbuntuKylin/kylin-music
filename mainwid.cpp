@@ -33,15 +33,17 @@ MainWid::MainWid(QString str, QWidget *parent)
     initDaemonIpcDbus();//用户手册
     initDataBase();//数据库
     initDbus();//初始化dbus
+    initGSettings();//初始化GSettings
     initStyle();//初始化样式
     initAction();//初始化事件
     initSystemTray();//初始化托盘
-    initGSettings();//初始化GSettings
 
     if(argName != "")
     {
         kylin_music_play_request(argName);
     }
+    //设置初始样式
+    myTitleBar->menumodule->themeUpdate();
 
     qDebug()<<"--------------------程序初始化完成--------------------";
 }
@@ -304,9 +306,10 @@ void MainWid::initAction()//初始化事件
         }
     }
 
-    //深色模式
-    connect(myTitleBar->darkThemeAct,&QAction::triggered,this,&MainWid::changeDarkTheme);
-    connect(myTitleBar->lightThemeAct,&QAction::triggered,this,&MainWid::changeLightTheme);
+    //切换主题
+    connect(myTitleBar->menumodule,&menuModule::menuModuleSetThemeStyle,this,&MainWid::menuModuleSetThemeStyle);
+//    connect(myTitleBar->darkThemeAct,&QAction::triggered,this,&MainWid::changeDarkTheme);
+//    connect(myTitleBar->lightThemeAct,&QAction::triggered,this,&MainWid::changeLightTheme);
 
 //    connect(myTitleBar->darkThemeAct,SIGNAL(triggered(bool)),this,changeDarkTheme());
 //    connect(myTitleBar->lightThemeAct,SIGNAL(triggered(bool)),this,changeLightTheme());
@@ -324,7 +327,18 @@ void MainWid::initAction()//初始化事件
     {
         connect(mySideBar->newSongListBtn[i], &QToolButton::clicked, this, &MainWid::hideSearchResultWidget);
     }
+
+    connect(mySideBar->myMusicListWid->PlayList,&QMediaPlaylist::currentIndexChanged,this,&MainWid::songListOutHightStyle);
     qDebug()<<"初始化事件成功";
+}
+
+void MainWid::songListOutHightStyle(int cur)
+{
+    QWidget *wid = mySideBar->myMusicListWid->musicInfoWidget->itemWidget(mySideBar->myMusicListWid->musicInfoWidget->currentItem());
+    SongItem* item = qobject_cast<SongItem *>(wid);
+    item->itemType = "type";//打上高亮标签
+    changeItemColour();
+    item->itemType = "";//去掉高亮标签
 }
 
 void MainWid::initAddPlayList(int num)//初始化播放列表
@@ -1254,16 +1268,15 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
     /* get music info */
     row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
     mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-
     mySideBar->myMusicListWid->PlayList->setCurrentIndex(row);
     mySideBar->currentMusicPlaylist = -1;
-//    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight);
+    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight,Qt::UniqueConnection);//因为在事件里，所以加一个参数，防止重复绑定
 
     //迷你模式正在播放
     /* to do */
 
     /* play area info */
-    qDebug()<<mySideBar->myMusicListWid->localAllMusicid;
+    qDebug()<<mySideBar->myMusicListWid->localAllMusicid[row];
     musicPath = mySideBar->myMusicListWid->localAllMusicid[row];
     ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
     if(ret == DB_OP_SUCC)
@@ -1976,7 +1989,7 @@ void MainWid::setPosition(int position)
             mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->setPosition(position);
     }
 }
-int i = 0;
+
 bool MainWid::eventFilter(QObject *obj, QEvent *event)   //鼠标滑块点击
 {
     if(obj == hSlider)
@@ -2235,6 +2248,40 @@ void MainWid::showAboutWidget()
 //    aboutWidget->hide();
     aboutWidget->pupDialog->show();
 }
+void MainWid::menuModuleSetThemeStyle(QString str)
+{
+    if("light-theme"==str)
+    {
+        changeItemColour();
+        changeLightTheme();
+    }
+    else if("dark-theme"==str)
+    {
+        changeItemColour();
+        changeDarkTheme();
+    }
+    else
+        qDebug()<<"切换主题样式功能异常:"<<str;
+}
+void MainWid::changeItemColour()
+{
+    QList<SongItem *> list = this->findChildren<SongItem *>();
+    //深色模式 || （跟随主题 && 深色主题）
+    if(myTitleBar->menumodule->themeStatus == 1 || ( myTitleBar->menumodule->themeStatus == 0 && WidgetStyle::themeColor == 1 ))
+    {
+        songListItemColourType = 1 ;//浅色文字
+    }
+    else
+        songListItemColourType = 0 ;
+    //qDebug()<<"设置"<<myTitleBar->menumodule->themeStatus<<"主题"<<WidgetStyle::themeColor<<"字体"<<songListItemColourType;
+    for(SongItem * item : list)
+    {
+        if(item->itemType!="")//跳过高亮
+            continue;
+
+        item->itemcolor(songListItemColourType);
+    }
+}
 
 //切换深色主题
 void MainWid::changeDarkTheme()
@@ -2259,7 +2306,7 @@ void MainWid::changeDarkTheme()
     {
         for (int i = 0; i < playListNameList.size(); i++)
         {
-            qDebug()<<"mySideBar->songListWidget->count() : "<<mySideBar->songListWidget->count();
+    //        qDebug()<<"mySideBar->songListWidget->count() : "<<mySideBar->songListWidget->count();
             mySideBar->musicListChangeWid[i]->musiclistcolor();
             mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
     //        mySideBar->get_listmusic_information(i, playListNameList.at(i));
@@ -2275,6 +2322,7 @@ void MainWid::changeDarkTheme()
     }
     mainWidget->setStyleSheet("#mainWidget{background:#252526;}");
     rightWid->setStyleSheet("#rightWid{background:#252526;}");
+    this->setStyleSheet("*MainWid{background:#252526;}");
 }
 
 //切换浅色主题
@@ -2316,7 +2364,7 @@ void MainWid::changeLightTheme()
     }
     mainWidget->setStyleSheet("#mainWidget{background:#FFFFFF;}");
     rightWid->setStyleSheet("#rightWid{background:#FFFFFF;}");
-
+    this->setStyleSheet("");
 }
 
 // 空页面添加歌曲
@@ -3153,3 +3201,4 @@ void MainWid::processArgs(QStringList args)
         qDebug("MainWid::processArgs: allmusic[%d]: '%s'", n, mySideBar->myMusicListWid->allmusic[n].toUtf8().data());
     }
 }
+
