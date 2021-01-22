@@ -127,12 +127,8 @@ void MainWid::initStyle()//初始化样式
             nullMusicWidget->hide();
         }
 
-        hSlider = new Slider(this);
-        hSlider->installEventFilter(this);
-        hSlider->setOrientation(Qt::Horizontal);
-        hSlider->setStyleSheet("QSlider::groove:horizontal{height: 2px;background:#3790FA;}\
-                                QSlider::add-page:horizontal{background:#ECEEF5;}\
-                                QSlider::handle:horizontal{width: 14px;margin: -5 0 -5 0;border-image:url(:/img/default/point.png);}");
+        //实例化进度条
+        hSlider = new MusicSlider(this);
 
 
         rightlayout->addWidget(hSlider);
@@ -1980,7 +1976,7 @@ void MainWid::setPosition(int position)
             mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->setPosition(position);
     }
 }
-
+int i = 0;
 bool MainWid::eventFilter(QObject *obj, QEvent *event)   //鼠标滑块点击
 {
     if(obj == hSlider)
