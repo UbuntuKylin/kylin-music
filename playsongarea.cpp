@@ -136,6 +136,7 @@ void PlaySongArea::playcolor()
 
 void PlaySongArea::initWidget()
 {
+    this->setFocusPolicy(Qt::NoFocus);
     h_mainLayout = new QHBoxLayout(this);
 
 
