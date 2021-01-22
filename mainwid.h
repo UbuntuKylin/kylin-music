@@ -83,6 +83,8 @@
 #include <exception>
 #include <QDBusInterface>
 #include <QDBusConnection>
+//播放音乐进度条
+#include "musicslider.h"
 
 struct MusicPath
 {
@@ -287,7 +289,7 @@ private:
 //    QAction *nextAction;
 //    QAction *delAction;
 
-    Slider *hSlider;
+    MusicSlider *hSlider;
     Slider *vSlider;
     QWidget *vSliderWid;
     QHBoxLayout *HLayout;
