@@ -109,10 +109,6 @@ int main(int argc, char *argv[])
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     MyApplication a("kylin-music", argc, argv );
-    QStringList args = a.arguments();
-    qDebug()<<"argc : "<<argc;
-    qDebug()<<"argv : "<<argv;
-    qDebug()<<"args : "<<args;
 //    QApplication a(argc, argv);
 //    if(!CreatConnection())
 //    {
@@ -129,7 +125,6 @@ int main(int argc, char *argv[])
         a.installTranslator(&trans_global);
         a.installTranslator(&trans_menu);
     }
-    qDebug() << "=================argc is " <<argc << argv[0] << argv[1];
 
     QString str = "";
     if (argc > 1)

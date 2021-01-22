@@ -248,15 +248,17 @@ void SideBar::initTopWidget()
 
 void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos)
 {
-//    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() > 0)
-//    {
-    QListWidgetItem *curItem1 = musicListChangeWid[currentPlayList]->musicInfoWidget->itemAt(pos);
-
-    if(curItem1 == NULL)
+//    qDebug()<<currentSelectList;
+//    qDebug()<<musicListChangeWid[currentSelectList]->musicInfoWidget->count();
+    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() <= 0)
     {
-        return;
+        QListWidgetItem *curItem1 = musicListChangeWid[currentPlayList]->musicInfoWidget->itemAt(pos);
+
+        if(curItem1 == NULL)
+        {
+            return;
+        }
     }
-//    }
     menu = new QMenu(musicListChangeWid[currentSelectList]->musicInfoWidget);
     listPlayAct = new QAction(this);
     listNextAct = new QAction(this);

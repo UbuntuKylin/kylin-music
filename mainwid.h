@@ -107,7 +107,8 @@ public:
     void promptMessage();
     void updatalistwidget(int value);//更新listWidget
     void updataplaylistwidget(int value);//更新playlistWidget
-//    void updateSongPlaying();
+    void updatehistorywidget(int value);
+    void updateSongPlaying();
     void slot_showMiniWidget();//迷你模式
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
@@ -186,6 +187,7 @@ public slots:
     void getSongInfoAct();    //歌曲信息
     void on_listWidget_doubleClicked(QListWidgetItem *item);         //双击本地音乐播放playlist
     void on_musicListChangeWid_doubleClicked(QListWidgetItem *item); //双击歌单播放
+    void on_historyWidget_doubleClicked(QListWidgetItem *item);      //双击历史列表播放
     void Music_stateChang(QMediaPlayer::State state);//播放状态改变
     void Music_playlist_stateChang(QMediaPlayer::State state);
     void on_lastBtn_clicked();             //上一首
@@ -198,8 +200,7 @@ public slots:
     void playlist_positionChange(qint64 position);
     void playlist_durationChange(qint64 duration);
 //    void playlist_currentMediaChanged(QMediaContent content);
-    void setPosition(int position);
-//    void playlist_setPosition(int position);
+
     bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击  事件过滤器
     void add_music_to_songlist(QAction *listact);    //添加到歌单
     void deleteMusicFromLocalList(); //从本地音乐删除
@@ -217,12 +218,16 @@ public slots:
 
     // 拖动进度条
     void slidePress();
-//    void slideMove(int position);
     void slideRelease();
-//    void playlist_slidePress();
-////    void slideMove(int position);
-//    void playlist_slideRelease();
+    void setPosition(int position);
+
+//    void slideMove(int position);
     void PlayModeChanged(); //播放模式
+    void addLike();
+
+    /* 历史播放列表播放相关的槽函数 */
+    void historyPositionChange(qint64 position);
+    void historyDurationChange(qint64 duration);
 
     void showBeforeList();  //显示历史播放列表
     void show_volumeBtn();  //音量显示

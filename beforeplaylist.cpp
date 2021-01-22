@@ -95,6 +95,8 @@ void BeforePlayList::initUi()
 
 void BeforePlayList::initAction()
 {
+    PlayList = new QMediaPlaylist(this);
+    Music = new QMediaPlayer(this) ;
     /* 初始化历史列表 */
     beforePlayList = new QListWidget(this);
     beforePlayList->setContentsMargins(16,0,16,0);
@@ -105,6 +107,8 @@ void BeforePlayList::initAction()
 //                                  );
     QList<musicDataStruct> resList;
     int ret;
+    historyMusicid.clear();
+
     ret = g_db->getSongInfoListFromHistoryMusic(resList);
     if(ret == DB_OP_SUCC)
     {
@@ -113,11 +117,12 @@ void BeforePlayList::initAction()
             QListWidgetItem *belistItem = new QListWidgetItem(beforePlayList);
             HistoryListItem *besongitem1 = new HistoryListItem;
             beforePlayList->setItemWidget(belistItem,besongitem1);
+            historyMusicid.append(resList.at(i).filepath);
             besongitem1->song_singerText(resList.at(i).title, resList.at(i).singer); //历史列表
             besongitem1->songTimeLabel->setText(resList.at(i).time); //时长
+            PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
         }
     }
-
     //历史列表右键菜单
     beforePlayList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(beforePlayList,SIGNAL(customContextMenuRequested(const QPoint&)),this,SLOT(on_historyWidget_customContextMenuRequested(const QPoint&)));
@@ -140,8 +145,8 @@ void BeforePlayList::on_historyWidget_customContextMenuRequested(const QPoint &p
     nextAction->setText(tr("next"));
     delAction->setText(tr("delete"));
 
-    historyMenu->addAction(playAction);
-    historyMenu->addAction(nextAction);
+//    historyMenu->addAction(playAction);
+//    historyMenu->addAction(nextAction);
     historyMenu->addAction(delAction);
     connect(playAction,&QAction::triggered,this,&BeforePlayList::historyPlay);
     connect(nextAction,&QAction::triggered,this,&BeforePlayList::historyNext);

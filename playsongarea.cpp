@@ -187,9 +187,9 @@ void PlaySongArea::initWidget()
     likeMusicBtn = new QPushButton;
     likeMusicBtn->setFixedSize(16,16);
     likeMusicBtn->setCursor(Qt::PointingHandCursor);
-    likeMusicBtn->setToolTip("我喜欢");
-    likeMusicBtn->hide();
-//    likeMusicBtn->setToolTip("I like");
+//    likeMusicBtn->setToolTip("我喜欢");
+//    likeMusicBtn->hide();
+    likeMusicBtn->setToolTip(tr("I like"));
 //    likeMusicBtn->setToolTip(" 功能未实现");
 //    likeMusicBtn->setToolTip(tr(" Function not implemented"));
 
@@ -239,9 +239,6 @@ void PlaySongArea::initWidget()
     timeAndNameWidget->setFixedHeight(40);
 
     songNameofNowPlaying->setFixedHeight(20);
-
-
-
 
 //    songNameofNowPlaying->hide();
     timeAndNameLayout->addWidget(songNameofNowPlaying,0,Qt::AlignTop);
