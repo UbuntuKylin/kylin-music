@@ -446,7 +446,7 @@ void MainWid::initDaemonIpcDbus()//用户手册
 
 void MainWid::initDataBase()//数据库
 {
-    bool res;
+    int res;
     res = g_db->initDataBase();
     if(res != DB_OP_SUCC)
     {

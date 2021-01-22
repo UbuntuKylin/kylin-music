@@ -11,7 +11,7 @@ MusicDataBase::MusicDataBase(QObject *parent) : QObject(parent)
     qDebug() << QSqlDatabase::drivers();//当前环境支持哪些数据库
     QMutexLocker lockData( &m_mutex);  //加锁，函数执行完后自动解锁
     m_database=QSqlDatabase::addDatabase("QSQLITE");
-    QString dirPath = QString(getenv("HOME")) + "/.kylin_music_ver1.0_";
+    QString dirPath = QString(getenv("HOME")) + "/.config/.kylin_music_ver1.0_";
 //TODO
 //    QFileInfo oldVersion(dirPath + "mymusic.db");
 //    if(oldVersion.exists())
@@ -49,7 +49,7 @@ MusicDataBase* MusicDataBase::getInstance()
     return dbInstance;
 }
 
-bool MusicDataBase::initDataBase()
+int MusicDataBase::initDataBase()
 {
     if(!m_database.open())
     {
@@ -57,7 +57,7 @@ bool MusicDataBase::initDataBase()
 
         QMessageBox::warning(0, QObject::tr("Database Error"),
                                      m_database.lastError().text());
-        return false;
+        return DB_UNCONNECT;
     }
 
     bool queryRes = true;
@@ -82,20 +82,33 @@ bool MusicDataBase::initDataBase()
                                        "size varchar,"
                                        "time varchar)"
                                        ));//创建历史播放列表
-    queryRes &= queryInit.exec(QString("create table if not exists FavorPlayList ("
-                                       "filepath varchar primary key,"
-                                       "title varchar,"
-                                       "singer varchar,"
-                                       "album varchar,"
-                                       "filetype varchar,"
-                                       "size varchar,"
-                                       "time varchar)"
-                                       ));//创建我喜欢列表
+
     queryRes &= queryInit.exec(QString("create table if not exists ListOfPlayList (title varchar primary key)"));//创建播放列表名称列表
 
-    //解决每次都是初始化数据库失败
-    qDebug()<<"创建<我喜欢>列表状态码："<< createNewPlayList("我喜欢");
-    return queryRes;
+    if(queryRes)
+    {
+        qDebug()<<"本地列表，历史列表，歌单表创建成功！";
+
+        //创建我喜欢列表
+        //先检查是否存在
+        int checkRes;
+        checkRes = checkPlayListExist("我喜欢");
+        if(LIST_NOT_FOUND == checkRes)//我喜欢列表不存在才创建
+        {
+            int createRes;
+            createRes = createNewPlayList("我喜欢");
+
+            return createRes;
+        }
+        else
+        {
+            return checkRes;
+        }
+    }
+    else
+    {
+        return CREATE_TABLE_FAILED;
+    }
 }
 
 int MusicDataBase::addMusicToLocalMusic(const musicDataStruct &fileData)
@@ -731,32 +744,6 @@ int MusicDataBase::getSongInfoListFromHistoryMusic(QList<musicDataStruct>& resLi
     }
 }
 
-int MusicDataBase::addMusicToFavorMusic(const QString& filePath)
-{
-//废弃
-    qDebug() << "函数已废弃！！！";
-    return 0;
-}
-
-int MusicDataBase::delMusicFromFavorMusic(const QString& filePath)
-{
-    //废弃
-    qDebug() << "函数已废弃！！！";
-    return 0;
-}
-int MusicDataBase::getSongInfoFromFavorMusic(const QString& filePath, musicDataStruct &fileData)
-{
-    //废弃
-    qDebug() << "函数已废弃！！！";
-    return 0;
-}
-int MusicDataBase::getSongInfoListFromFavorMusic(QList<musicDataStruct>& resList)
-{
-    //废弃
-    qDebug() << "函数已废弃！！！";
-    return 0;
-}
-
 int MusicDataBase::checkIfSongExistsInLocalMusic(const QString& filePath)
 {
     bool queryRes = true;
@@ -810,14 +797,6 @@ int MusicDataBase::checkIfSongExistsInHistoryMusic(const QString& filePath)
         return SONG_NOT_FOUND;
     }
 }
-
-int MusicDataBase::checkIfSongExistsInFavorMusic(const QString& filePath)
-{
-    //废弃
-    qDebug() << "函数已废弃！！！";
-    return 0;
-}
-
 int MusicDataBase::checkIfSongExistsInPlayList(const QString& filePath, const QString& playListName)
 {
     if(filePath.isEmpty() || playListName.isEmpty())
@@ -920,7 +899,7 @@ int MusicDataBase::checkPlayListExist(const QString& playListName)
         }
         else
         {
-            //该列表不存在，数据库与外界已不同步
+            //该列表不存在
             return LIST_NOT_FOUND;
         }
 
