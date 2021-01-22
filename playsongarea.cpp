@@ -136,7 +136,9 @@ void PlaySongArea::playcolor()
 
 void PlaySongArea::initWidget()
 {
+    //不接受焦点高亮。解决点击后有蓝框的问题
     this->setFocusPolicy(Qt::NoFocus);
+
     h_mainLayout = new QHBoxLayout(this);
 
 
