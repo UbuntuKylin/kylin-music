@@ -19,7 +19,7 @@ void menuModule::initAction(){
     m_menu = new QMenu();
     QList<QAction *> actions ;
     QAction *actionTheme = new QAction(m_menu);
-//    actionTheme->setText(tr("Theme"));
+    actionTheme->setText(tr("Theme"));
     QAction *actionHelp = new QAction(m_menu);
     actionHelp->setText(tr("Help"));
     QAction *actionAbout = new QAction(m_menu);
@@ -27,20 +27,23 @@ void menuModule::initAction(){
     QAction *actionQuit = new QAction(m_menu);
 //    actionQuit->setText(tr("Quit"));
 //    actions<<actionTheme<<actionHelp<<actionAbout<<actionQuit;
-    actions<<actionHelp<<actionAbout;
+    actions<<actionTheme<<actionHelp<<actionAbout;
     m_menu->addActions(actions);
 //    互斥按钮组
     QMenu *themeMenu = new QMenu;
     QActionGroup *themeMenuGroup = new QActionGroup(this);
     QAction *autoTheme = new QAction(tr("Auto"),this);
+    autoTheme->setObjectName("Auto");//用TEXT判断有风险
     themeMenuGroup->addAction(autoTheme);
     themeMenu->addAction(autoTheme);
     autoTheme->setCheckable(true);
     QAction *lightTheme = new QAction(tr("Light"),this);
+    lightTheme->setObjectName("Light");//用TEXT判断有风险
     themeMenuGroup->addAction(lightTheme);
     themeMenu->addAction(lightTheme);
     lightTheme->setCheckable(true);
     QAction *darkTheme = new QAction(tr("Dark"),this);
+    darkTheme->setObjectName("Dark");//用TEXT判断有风险
     themeMenuGroup->addAction(darkTheme);
     themeMenu->addAction(darkTheme);
     darkTheme->setCheckable(true);
@@ -117,7 +120,7 @@ void menuModule::triggerThemeMenu(QAction *act){
     {
         m_pGsettingThemeStatus = new QGSettings(confPath.toLocal8Bit());  //m_pGsettingThemeStatus指针重复使用避免占用栈空间
     }
-    QString str = act->text();
+    QString str = act->objectName();
     if("Light" == str){
         themeStatus = themeLightOnly;
         disconnect(m_pGsettingThemeData,&QGSettings::changed,this,&menuModule::dealSystemGsettingChange);
@@ -276,7 +279,7 @@ void menuModule::refreshThemeBySystemConf(){
 }
 
 void menuModule::setThemeDark(){
-    qDebug()<<"set theme dark";
+    //qDebug()<<"set theme dark";
     if(aboutWindow)
     {
         aboutWindow->setStyleSheet("background-color:rgba(31,32,34，1);");
@@ -285,7 +288,7 @@ void menuModule::setThemeDark(){
 }
 
 void menuModule::setThemeLight(){
-//    qDebug()<<"set theme light";
+    //qDebug()<<"set theme light";
     if(aboutWindow)
     {
         aboutWindow->setStyleSheet("background-color:rgba(255，255，255，1);");

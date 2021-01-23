@@ -136,7 +136,7 @@ void BeforePlayList::on_historyWidget_customContextMenuRequested(const QPoint &p
     nextAction = new QAction(this);
     delAction = new QAction(this);
 
-    playAction->setText(tr("paly"));
+    playAction->setText(tr("play"));
     nextAction->setText(tr("next"));
     delAction->setText(tr("delete"));
 
