@@ -18,12 +18,19 @@
 #include <QGSettings>
 #include <QMetaEnum>
 #include "daemonipcdbus.h"
+#include "widgetstyle.h"
 class menuModule : public QWidget
 {
     Q_OBJECT
 public:
     explicit menuModule(QWidget *);
     void themeUpdate();
+
+    enum typeThemeStatus {
+        themeAuto = 0,
+        themeBlackOnly = 1,
+        themeLightOnly = 2
+    } themeStatus;
 
 signals:
     void menuModuleClose();
@@ -48,11 +55,6 @@ private:
     QWidget *aboutWindow = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;
     QGSettings *m_pGsettingThemeStatus = nullptr;
-    enum typeThemeStatus {
-        themeAuto = 0,
-        themeBlackOnly = 1,
-        themeLightOnly = 2
-    } themeStatus;
 public slots:
     void dealSystemGsettingChange(const QString);
 private:

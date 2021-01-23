@@ -83,6 +83,8 @@
 #include <exception>
 #include <QDBusInterface>
 #include <QDBusConnection>
+//播放音乐进度条
+#include "musicslider.h"
 
 struct MusicPath
 {
@@ -173,7 +175,7 @@ public:
     void processArgs(QStringList args);
 
 public slots:
-
+    void menuModuleSetThemeStyle(QString str);//切换主题槽函数
     int kylin_music_play_request(QString path);
     void play_Song();   //播放和暂停
     void on_musicInfoWidget_customContextMenuRequested(const QPoint &pos);  //歌曲列表右键菜单
@@ -223,6 +225,7 @@ public slots:
 
 //    void slideMove(int position);
     void PlayModeChanged(); //播放模式
+//    void getPlayListInformation();
     void addLike();
 
     /* 历史播放列表播放相关的槽函数 */
@@ -292,7 +295,7 @@ private:
 //    QAction *nextAction;
 //    QAction *delAction;
 
-    Slider *hSlider;
+    MusicSlider *hSlider;
     Slider *vSlider;
     QWidget *vSliderWid;
     QHBoxLayout *HLayout;
@@ -330,5 +333,8 @@ private:
     QSize m_guiSize;
     QString m_arch;
     QString m_snap;
+    void changeItemColour();//切换歌曲列表文字颜色
+    int songListItemColourType = 0; //音乐列表内文字颜色标志 0：黑色  1：白色
+    void songListOutHightStyle(int cur);
 };
 #endif // MAINWID_H

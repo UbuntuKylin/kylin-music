@@ -136,6 +136,9 @@ void PlaySongArea::playcolor()
 
 void PlaySongArea::initWidget()
 {
+    //不接受焦点高亮。解决点击后有蓝框的问题
+    this->setFocusPolicy(Qt::NoFocus);
+
     h_mainLayout = new QHBoxLayout(this);
 
 
@@ -188,7 +191,7 @@ void PlaySongArea::initWidget()
     likeMusicBtn->setFixedSize(16,16);
     likeMusicBtn->setCursor(Qt::PointingHandCursor);
 //    likeMusicBtn->setToolTip("我喜欢");
-//    likeMusicBtn->hide();
+    likeMusicBtn->hide();
     likeMusicBtn->setToolTip(tr("I like"));
 //    likeMusicBtn->setToolTip(" 功能未实现");
 //    likeMusicBtn->setToolTip(tr(" Function not implemented"));

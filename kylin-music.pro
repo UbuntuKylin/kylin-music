@@ -66,6 +66,7 @@ SOURCES += \
     mainwid.cpp \
     menumodule.cpp \
     miniwidget.cpp \
+    musicslider.cpp \
     playsongarea.cpp \
     qtsingleapplication/qtlocalpeer.cpp \
     qtsingleapplication/qtsingleapplication.cpp \
@@ -87,6 +88,7 @@ HEADERS += \
     mainwid.h \
     menumodule.h \
     miniwidget.h \
+    musicslider.h \
     myapplication.h \
     playsongarea.h \
     qtsingleapplication/qtlocalpeer.h \

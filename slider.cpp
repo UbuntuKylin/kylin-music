@@ -16,7 +16,7 @@
  */
 
 #include "slider.h"
-
+#include <QPainter>
 Slider::Slider(QWidget *parent)
     :QSlider(parent)
 {
@@ -26,8 +26,4 @@ Slider::~Slider()
 {
 
 }
-void Slider::wheelEvent(QWheelEvent *e)
-{
-//    qDebug()<<"wheelEvent";
-    QWidget::wheelEvent(e);
-}
+

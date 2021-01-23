@@ -13,7 +13,7 @@ const QString HISTORY = "HistoryPlayList";          //历史记录
 const QString FAV = "FavorPlayList";                //我喜欢
 
 enum DB_RETURN_STATUS{              //数据库操作结果返回表
-    DB_OP_SUCC          = 1,        //数据库操作成功
+    DB_OP_SUCC          = (1),        //数据库操作成功
     DB_UNCONNECT        = (-1),     //数据库连接失败导致的错误
     INVALID_INPUT       = (-2),     //无效的输入值
     DB_DISORDERD        = (-3),     //数据库与外界顺序不符导致的失败
@@ -51,7 +51,7 @@ public:
     //单例，初始化返回指针，完成数据库文件建立
     static MusicDataBase* getInstance();
     //open数据库，建立本地，历史，我喜欢及三个列表
-    bool initDataBase();
+    int initDataBase();
     //根据新建的播放列表名的title值创建新建歌单
     int createNewPlayList(const QString& playListName);
     //根据播放列表名的title值删除对应歌单
@@ -113,26 +113,12 @@ private:
     //检查歌单列表是否存在
     int checkPlayListExist(const QString& playListName);
     //检查歌曲是否在歌单列表中存在
-    int checkIfSongExistsInPlayList(const QString& filePath, const QString& PlayListName);
+    int checkIfSongExistsInPlayList(const QString& filePath, const QString& playListName);
 
 
     /**************************字符串转码接口*******************************/
     QString inPutStringHandle(const QString& input);
     QString outPutStringHandle(const QString& output);
-
-    //以下接口已废弃
-    /**************************我喜欢歌单增删改查****************************/
-    //添加歌曲到我喜欢歌单，使用歌曲的filePath值,输入数据必须有效，
-    int addMusicToFavorMusic(const QString& filePath);
-    //从我喜欢歌单中删除歌曲，使用歌曲的filePath值,输入数据必须有效，
-    int delMusicFromFavorMusic(const QString& filePath);
-    //从我喜欢歌单中查询指定歌曲信息，使用歌曲的filePath值,输入数据必须有效，
-    int getSongInfoFromFavorMusic(const QString& filePath, musicDataStruct &fileData);
-    //从数据库中获取我喜欢歌单列表歌曲信息
-    int getSongInfoListFromFavorMusic(QList<musicDataStruct>& resList);
-
-
-
 };
 
 #endif // MUSICDATABASE_H
