@@ -13,7 +13,7 @@ const QString HISTORY = "HistoryPlayList";          //历史记录
 const QString FAV = "FavorPlayList";                //我喜欢
 
 enum DB_RETURN_STATUS{              //数据库操作结果返回表
-    DB_OP_SUCC          = (0),        //数据库操作成功
+    DB_OP_SUCC          = (0),      //数据库操作成功
     DB_UNCONNECT        = (-1),     //数据库连接失败导致的错误
     INVALID_INPUT       = (-2),     //无效的输入值
     DB_DISORDERD        = (-3),     //数据库与外界顺序不符导致的失败

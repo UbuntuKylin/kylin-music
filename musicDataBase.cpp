@@ -24,7 +24,7 @@ MusicDataBase::MusicDataBase(QObject *parent) : QObject(parent)
 MusicDataBase::~MusicDataBase()
 {
     qDebug() << "析构";
-    if(m_databaseOpenFlag)
+    if(true == m_databaseOpenFlag)
     {
         m_database.close();
     }
@@ -85,7 +85,7 @@ int MusicDataBase::initDataBase()
 
     queryRes &= queryInit.exec(QString("create table if not exists ListOfPlayList (title varchar primary key)"));//创建播放列表名称列表
 
-    if(queryRes)
+    if(true == queryRes)
     {
         qDebug()<<"本地列表，历史列表，歌单表创建成功！";
 
@@ -121,7 +121,7 @@ int MusicDataBase::addMusicToLocalMusic(const musicDataStruct &fileData)
     }
     else
     {
-        if(m_database.isValid())
+        if(true == m_database.isValid())
         {
             //查询历史列表中是否已有该歌曲，已有的话，返回添加失败
             int checkLocalRes = checkIfSongExistsInLocalMusic(fileData.filepath);
@@ -143,7 +143,7 @@ int MusicDataBase::addMusicToLocalMusic(const musicDataStruct &fileData)
                     arg(inPutStringHandle(fileData.time));
             queryRes &= addSongToLocal.exec(addSongString);
 
-            if(queryRes)
+            if(true == queryRes)
             {
                 return DB_OP_SUCC;
             }
@@ -173,7 +173,7 @@ int MusicDataBase::delMusicFromLocalMusic(const QString& filePath)
     }
     else
     {
-        if(m_database.isValid())
+        if(true == m_database.isValid())
         {
             int checkRes = checkIfSongExistsInLocalMusic(filePath);
             if(checkRes == DB_OP_SUCC)
@@ -183,7 +183,7 @@ int MusicDataBase::delMusicFromLocalMusic(const QString& filePath)
                         arg(inPutStringHandle(filePath));
                 queryRes = delSongFromLocal.exec(delSongString);
 
-                if(queryRes)
+                if(true == queryRes)
                 {
                     return DB_OP_SUCC;
                 }
@@ -217,7 +217,7 @@ int MusicDataBase::createNewPlayList(const QString& playListName)
         return INVALID_INPUT;
     }
 
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
         bool createRes = true;
 
@@ -244,7 +244,7 @@ int MusicDataBase::createNewPlayList(const QString& playListName)
                 arg(inPutStringHandle(playListName));
         createRes &= addPlayListToList.exec(addPlayListToListString);
 
-        if(createRes)
+        if(true == createRes)
         {
             return DB_OP_SUCC;
         }
@@ -269,7 +269,7 @@ int MusicDataBase::delPlayList(const QString& playListName)
         return INVALID_INPUT;
     }
 
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
         bool delRes = true;
         QSqlQuery delPlayListFromList(m_database);
@@ -282,7 +282,7 @@ int MusicDataBase::delPlayList(const QString& playListName)
                                     ).arg(inPutStringHandle(playListName));
         delRes &= delPlayList.exec(delPlayListString);
 
-        if(delRes)
+        if(true == delRes)
         {
             return DB_OP_SUCC;
         }
@@ -307,14 +307,14 @@ int MusicDataBase::getSongInfoFromLocalMusic(const QString& filePath, musicDataS
         return INVALID_INPUT;
     }
 
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
         bool getRes = true;
         QSqlQuery getSongFromLocalMusic(m_database);
         QString getSongString = QString("select * from LocalMusic where filepath = '%1'").arg(inPutStringHandle(filePath));
         getRes = getSongFromLocalMusic.exec(getSongString);
 
-        if(getRes)
+        if(true == getRes)
         {
             if(getSongFromLocalMusic.next())
             {
@@ -348,7 +348,7 @@ int MusicDataBase::getSongInfoFromLocalMusic(const QString& filePath, musicDataS
 int MusicDataBase::getSongInfoListFromLocalMusic(QList<musicDataStruct>& resList)
 {
 
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
         bool getRes = true;
 
@@ -356,7 +356,7 @@ int MusicDataBase::getSongInfoListFromLocalMusic(QList<musicDataStruct>& resList
         QString getSongListString = QString("select * from LocalMusic");
         getRes = getSongListFromLocalMusic.exec(getSongListString);
 
-        if(getRes)
+        if(true == getRes)
         {
             while(getSongListFromLocalMusic.next())
             {
@@ -364,7 +364,7 @@ int MusicDataBase::getSongInfoListFromLocalMusic(QList<musicDataStruct>& resList
                 temp.filepath = outPutStringHandle(getSongListFromLocalMusic.value(0).toString());
                 int curRes = getSongInfoFromLocalMusic(temp.filepath, temp);
 
-                if(curRes)
+                if(DB_OP_SUCC == curRes)
                 {
                     resList.append(temp);
                 }
@@ -396,7 +396,7 @@ int MusicDataBase::getSongInfoFromPlayList(musicDataStruct &fileData, const QStr
         return INVALID_INPUT;
     }
 
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
         int checkRes = checkPlayListExist(playListName);
         if(checkRes == DB_OP_SUCC)
@@ -407,7 +407,7 @@ int MusicDataBase::getSongInfoFromPlayList(musicDataStruct &fileData, const QStr
                     arg(inPutStringHandle(playListName));
             getRes = getplayList.exec(getplayListString);
 
-            if(!getRes)
+            if(false == getRes)
             {
                 return DB_OP_GET_FAILED;
             }
@@ -419,7 +419,7 @@ int MusicDataBase::getSongInfoFromPlayList(musicDataStruct &fileData, const QStr
                         arg(inPutStringHandle(playListName)).arg(inPutStringHandle(filePath));
                 getRes = getSongFromPlayList.exec(getSongFromPlayListString);
 
-                if(!getRes)
+                if(false == getRes)
                 {
                     return DB_OP_GET_FAILED;
                 }
@@ -463,7 +463,7 @@ int MusicDataBase::getSongInfoListFromPlayList(QList<musicDataStruct>& resList,c
         return INVALID_INPUT;
     }
 
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
         int checkRes = checkPlayListExist(playListName);
         if(checkRes == DB_OP_SUCC)
@@ -476,7 +476,7 @@ int MusicDataBase::getSongInfoListFromPlayList(QList<musicDataStruct>& resList,c
                     arg(inPutStringHandle(playListName));
             getRes = getplayList.exec(getplayListString);
 
-            if(!getRes)
+            if(false == getRes)
             {
                 return DB_OP_GET_FAILED;
             }
@@ -488,7 +488,7 @@ int MusicDataBase::getSongInfoListFromPlayList(QList<musicDataStruct>& resList,c
                         arg(inPutStringHandle(playListName));
                 getRes = getSongFromPlayList.exec(getSongFromPlayListString);
 
-                if(getRes)
+                if(true == getRes)
                 {
                     while(getSongFromPlayList.next())
                     {
@@ -546,7 +546,7 @@ int MusicDataBase::addMusicToHistoryMusic(const QString& filePath)
     {
 
         musicDataStruct temp;
-        if(m_database.isValid())
+        if(true == m_database.isValid())
         {
             bool queryRes = true;
             //检查歌曲在总表中是否存在
@@ -578,7 +578,7 @@ int MusicDataBase::addMusicToHistoryMusic(const QString& filePath)
                     arg(inPutStringHandle(temp.time));
             queryRes = addSongToHistory.exec(addSongString);
 
-            if(queryRes)
+            if(true == queryRes)
             {
                 return DB_OP_SUCC;
             }
@@ -621,7 +621,7 @@ int MusicDataBase::delMusicFromHistoryMusic(const QString& filePath)
                         arg(inPutStringHandle(filePath));
                 delRes &= delSongFromHistoryPlayList.exec(delSongString);
 
-                if(delRes)
+                if(true == delRes)
                 {
                     return DB_OP_SUCC;
                 }
@@ -654,7 +654,7 @@ int MusicDataBase::getSongInfoFromHistoryMusic(const QString& filePath, musicDat
     }
     else
     {
-        if(m_database.isValid())
+        if(true == m_database.isValid())
         {
             int checkRes = checkIfSongExistsInHistoryMusic(filePath);
 
@@ -668,7 +668,7 @@ int MusicDataBase::getSongInfoFromHistoryMusic(const QString& filePath, musicDat
 
                 QString getSongString = QString("select * from HistoryPlayList where filepath = '%1'").arg(inPutStringHandle(filePath));
                 getRes &= getSongInfoFromHistoryPlayList.exec(getSongString);
-                if(!getRes)
+                if(false == getRes)
                 {
                     return DB_OP_GET_FAILED;
                 }
@@ -705,14 +705,14 @@ int MusicDataBase::getSongInfoFromHistoryMusic(const QString& filePath, musicDat
 
 int MusicDataBase::getSongInfoListFromHistoryMusic(QList<musicDataStruct>& resList)
 {
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
         bool getRes = true;
         QSqlQuery getSongListFromHistoryMusic(m_database);
         QString getSongListString = QString("select * from HistoryPlayList");
         getRes = getSongListFromHistoryMusic.exec(getSongListString);
 
-        if(getRes)
+        if(true == getRes)
         {
             while(getSongListFromHistoryMusic.next())
             {
@@ -720,7 +720,7 @@ int MusicDataBase::getSongInfoListFromHistoryMusic(QList<musicDataStruct>& resLi
                 temp.filepath = outPutStringHandle(getSongListFromHistoryMusic.value(0).toString());
                 int curRes = getSongInfoFromHistoryMusic(temp.filepath, temp);
 
-                if(curRes)
+                if(DB_OP_SUCC == curRes)
                 {
                     resList.append(temp);
                 }
@@ -844,7 +844,7 @@ int MusicDataBase::getPlayList(QStringList& playListNameList)
 {
     bool getRes = true;
 
-    if(m_database.isValid())
+    if(true == m_database.isValid())
     {
 //        QMutexLocker lockData( &m_mutex);  //加锁，函数执行完后自动解锁
 
@@ -852,7 +852,7 @@ int MusicDataBase::getPlayList(QStringList& playListNameList)
         QString getplayListFromLocalMusicString = QString("select * from ListOfPlayList");
         getRes = getplayListFromLocalMusic.exec(getplayListFromLocalMusicString);
 
-        if(!getRes)
+        if(false == getRes)
         {
             return DB_OP_GET_FAILED;
         }
@@ -882,7 +882,7 @@ int MusicDataBase::checkPlayListExist(const QString& playListName)
         QString getplayListFromLocalMusicString = QString("select * from ListOfPlayList");
         getRes = getplayListFromLocalMusic.exec(getplayListFromLocalMusicString);
 
-        if(!getRes)
+        if(false == getRes)
         {
             return DB_OP_GET_FAILED;
         }
@@ -928,7 +928,7 @@ int MusicDataBase::addMusicToPlayList(const QString& filePath,const QString& pla
         if(DB_OP_SUCC == checkLocalRes)
         {
             musicDataStruct temp;
-            if(m_database.isValid())
+            if(true == m_database.isValid())
             {
                 //从总表中添加的，故要从总表中取歌曲信息！！！
                 //TODO缺少直接添加文件到播放列表的接口
@@ -947,7 +947,7 @@ int MusicDataBase::addMusicToPlayList(const QString& filePath,const QString& pla
                     return DB_OP_ADD_REPEAT;
                 }
 
-                int addRes;
+                bool addRes;
                 //歌单列表中不存在该歌曲，添加该歌曲
                 QSqlQuery addSongToHistory(m_database);
                 QString addSongString = QString("insert into 'playlist_%1' values('%2','%3','%4','%5','%6','%7','%8')").
@@ -961,7 +961,7 @@ int MusicDataBase::addMusicToPlayList(const QString& filePath,const QString& pla
                         arg(inPutStringHandle(temp.time));
                 addRes = addSongToHistory.exec(addSongString);
 
-                if(addRes)
+                if(true == addRes)
                 {
                     return DB_OP_SUCC;
                 }
@@ -1019,7 +1019,7 @@ int MusicDataBase::delMusicFromPlayList(const QString& filePath,const QString& p
                 //歌单列表中已经有这首歌，可以删除
                 if(DB_OP_SUCC == checkPlayListRes)
                 {
-                    int delRes;
+                    bool delRes;
                     //歌单列表中存在该歌曲，删除该歌曲
                     QSqlQuery delSongToHistory(m_database);
                     QString delSongString = QString("delete from 'playlist_%1' where filepath = '%2'").
@@ -1027,7 +1027,7 @@ int MusicDataBase::delMusicFromPlayList(const QString& filePath,const QString& p
                             arg(inPutStringHandle(filePath));
                     delRes = delSongToHistory.exec(delSongString);
 
-                    if(delRes)
+                    if(true == delRes)
                     {
                         return DB_OP_SUCC;
                     }
