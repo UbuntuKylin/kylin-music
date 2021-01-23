@@ -336,9 +336,9 @@ void MainWid::songListOutHightStyle(int cur)
 {
     QWidget *wid = mySideBar->myMusicListWid->musicInfoWidget->itemWidget(mySideBar->myMusicListWid->musicInfoWidget->currentItem());
     SongItem* item = qobject_cast<SongItem *>(wid);
-    item->itemType = "type";//打上高亮标签
+    item->itemType = SongItem::highlightType;//打上高亮标签
     changeItemColour();
-    item->itemType = "";//去掉高亮标签
+    item->itemType = SongItem::defaultType;;//去掉高亮标签
 }
 
 void MainWid::initAddPlayList(int num)//初始化播放列表
@@ -2276,7 +2276,7 @@ void MainWid::changeItemColour()
     //qDebug()<<"设置"<<myTitleBar->menumodule->themeStatus<<"主题"<<WidgetStyle::themeColor<<"字体"<<songListItemColourType;
     for(SongItem * item : list)
     {
-        if(item->itemType!="")//跳过高亮
+        if(item->itemType==SongItem::highlightType)//跳过高亮
             continue;
 
         item->itemcolor(songListItemColourType);

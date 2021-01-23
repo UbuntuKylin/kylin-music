@@ -54,7 +54,11 @@ public:
 
     void song_singer_albumText(QString songName,QString singer,QString album); //播放列表label
 
-    QString itemType = "";
+    enum TypeitemType {
+        defaultType = 0,
+        highlightType = 1
+    } itemType;
+
 
 public slots:
 
