@@ -3107,7 +3107,7 @@ void MainWid::currentPlayHighlight()
 //    QList<QLabel*> songItemList = itemWid->findChildren<QLabel*>();
 //    songItemList[0]->setStyleSheet("color:red;");
 
-//    qDebug() << "songItemList[0]->songNameLabel" << songItemList[0]->songNameLabel->text();
+    //    qDebug() << "songItemList[0]->songNameLabel" << songItemList[0]->songNameLabel->text();
 }
 
 void MainWid::local_Music()

@@ -103,7 +103,8 @@ void TitleBar::initTitle()
     LayoutLeft->addSpacing(16);
     LayoutLeft->addWidget(rightBtn);
     LayoutLeft->addSpacing(30);
-    LayoutLeft->addWidget(searchEdit);
+    //搜索框暂时隐藏
+    //LayoutLeft->addWidget(searchEdit);
     LayoutLeft->setSpacing(8);
     LayoutLeft->setContentsMargins(30,0,0,0);
 
