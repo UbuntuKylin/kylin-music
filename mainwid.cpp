@@ -2308,7 +2308,7 @@ void MainWid::changeDarkTheme()
         {
     //        qDebug()<<"mySideBar->songListWidget->count() : "<<mySideBar->songListWidget->count();
             mySideBar->musicListChangeWid[i]->musiclistcolor();
-            mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
+//            mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
     //        mySideBar->get_listmusic_information(i, playListNameList.at(i));
             mySideBar->newSongListBtn[i]->setIcon(QIcon(":/img/default/songlist_w .png"));
 
@@ -2347,7 +2347,7 @@ void MainWid::changeLightTheme()
     {
         for (int i = 0; i < playListNameList.size(); i++)
         {
-            mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
+//            mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
     //        mySideBar->get_listmusic_information(i, playListNameList.at(i));
             mySideBar->musicListChangeWid[i]->musiclistcolor();
 
