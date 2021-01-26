@@ -34,7 +34,7 @@ MainWid::MainWid(QString str, QWidget *parent)
     initDataBase();//数据库
     initDbus();//初始化dbus
     initGSettings();//初始化GSettings
-    initStyle();//初始化样式
+    initControlse();//初始化控件
     initAction();//初始化事件
     initSystemTray();//初始化托盘
 
@@ -42,8 +42,7 @@ MainWid::MainWid(QString str, QWidget *parent)
     {
         kylin_music_play_request(argName);
     }
-    //设置初始样式
-    myTitleBar->menumodule->themeUpdate();
+    initStyle();//初始化样式
 
     qDebug()<<"--------------------程序初始化完成--------------------";
 }
@@ -61,7 +60,6 @@ void MainWid::Single(QString path)   //单例
     int fd = open(lockPath.toUtf8().data(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 
     if (fd < 0) { exit(1); }
-    qDebug()<<"kylin-music is already running!";
     if (lockf(fd, F_TLOCK, 0))
     {
         QDBusInterface interface( "org.ukui.kylin_music", "/org/ukui/kylin_music","org.ukui.kylin_music.play", QDBusConnection::sessionBus());
@@ -82,6 +80,19 @@ void MainWid::Single(QString path)   //单例
 }
 
 void MainWid::initStyle()//初始化样式
+{
+    //设置初始样式
+    myTitleBar->menumodule->themeUpdate();
+
+    //不接受焦点高亮。解决点击后有蓝框的问题
+    QList<QPushButton*> list = this->findChildren<QPushButton*>();
+    for(QPushButton *btn :list)
+        btn->setFocusPolicy(Qt::NoFocus);
+
+    qDebug()<<"初始化样式成功";
+}
+
+void MainWid::initControlse()//初始化控件
 {
     setAcceptDrops(true);
     //    promptMessage();  //提示信息
@@ -189,7 +200,7 @@ void MainWid::initStyle()//初始化样式
             mainWidget->setStyleSheet("#mainWidget{background:#FFFFFF;}");
             rightWid->setStyleSheet("#rightWid{background:#FFFFFF;}");
         }
-        qDebug()<<"初始化样式表功";
+        qDebug()<<"初始化控件成功";
 }
 
 void MainWid::initDbus()//初始化dbus

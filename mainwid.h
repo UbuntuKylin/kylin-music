@@ -252,6 +252,7 @@ private:
     //主界面构造初始化函数
     void Single(QString path);//单例
     void initStyle();//初始化样式
+    void initControlse();//初始化控件
     void initDbus();//初始化dbus
     void initAction();//初始化事件
     void initGSettings();//初始化GSettings
