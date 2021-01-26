@@ -477,7 +477,6 @@ void MainWid::initDataBase()//数据库
 int MainWid::kylin_music_play_request(QString path)
 {
     qDebug()<<"外部打开音乐文件 : "<<path;
-    outPlayMusic = path;
     QStringList qStringListPath ;
     qStringListPath << path;
     //qDebug()<<"qStringListPath : "<<qStringListPath;
