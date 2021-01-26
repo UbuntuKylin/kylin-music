@@ -101,6 +101,10 @@ void MainWid::initStyle()//初始化样式
         myTitleBar = new TitleBar(this);
         mySideBar = new SideBar(this);
 
+        //排查段错误原因时发现这两个对象没实例化，不知道用途，先实例化，其他事情以后讨论
+        model=new QSqlTableModel();
+        model_1=new QSqlTableModel();
+
 //        connect(mySideBar,SIGNAL(createNewList()),this,SLOT(connectHandle()));
 
         nullMusicWidget = new ChangeListWid(this);   //空页面
@@ -335,6 +339,7 @@ void MainWid::initAction()//初始化事件
 void MainWid::songListOutHightStyle(int cur)
 {
     QWidget *wid = mySideBar->myMusicListWid->musicInfoWidget->itemWidget(mySideBar->myMusicListWid->musicInfoWidget->currentItem());
+    if(wid==nullptr)return;
     SongItem* item = qobject_cast<SongItem *>(wid);
     item->itemType = SongItem::highlightType;//打上高亮标签
     changeItemColour();
@@ -471,12 +476,13 @@ void MainWid::initDataBase()//数据库
 
 int MainWid::kylin_music_play_request(QString path)
 {
-    qDebug()<<"path : "<<path;
+    qDebug()<<"外部打开音乐文件 : "<<path;
+    outPlayMusic = path;
     QStringList qStringListPath ;
     qStringListPath << path;
-    qDebug()<<"qStringListPath : "<<qStringListPath;
+    //qDebug()<<"qStringListPath : "<<qStringListPath;
     processArgs(qStringListPath);
-    qDebug()<<"qStringListPath : "<<qStringListPath;
+    //qDebug()<<"qStringListPath : "<<qStringListPath;
     if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
     {
         rightlayout->replaceWidget(nullMusicWidget,mySideBar->rightChangeWid);
@@ -3065,7 +3071,7 @@ void MainWid::dropEvent(QDropEvent *event)    //放下事件
 
 void MainWid::processArgs(QStringList args)
 {
-    qDebug()<<args;
+    //qDebug()<<args;
     QSqlQuery query;
     for(int i = 0; i < args.count(); i++)
     {
@@ -3158,6 +3164,7 @@ void MainWid::processArgs(QStringList args)
 
             query.exec(QString("insert into LocalMusic (id,musicname,filepath,singer,album,type,size,time) values (%1,'%2','%3','%4','%5','%6','%7','%8')")
                        .arg(id).arg(musicName).arg(musicPath).arg(musicSinger).arg(musicAlbum).arg(musicType).arg(musicSize).arg(musicTime));
+            qDebug()<<"==================这里并没有成功写入数据库，使用新接口！==================";
 
             mySideBar->myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
         }
@@ -3167,17 +3174,23 @@ void MainWid::processArgs(QStringList args)
     {
         if(mySideBar->myMusicListWid->allmusic[i] == musicPath)
         {
-            qDebug()<<"musicPath : "<<musicPath;
+            qDebug()<<"即将播放外部音乐 : "<<musicPath<<"在歌单中的位置："<<i;
             mySideBar->myMusicListWid->PlayList->setCurrentIndex(i);
             int music = mySideBar->myMusicListWid->localAllMusicid[i].toInt();
-            qDebug()<<"i : "<<i;
+            //qDebug()<<"i : "<<i;
             model->setTable("LocalMusic");
             model->select();
             QString Name = model->data(model->index(music, 1)).toString();
-            mySideBar->myMusicListWid->Music->play();
+            //直接play能播放，但界面不会有反应
+            //mySideBar->myMusicListWid->Music->play();
+            mySideBar->currentMusicPlaylist = -1;
+            //如果已经有正在播放的歌曲则不会播放，原因不明，暂时调用两次播放事件作为临时方案
+            if(mySideBar->myMusicListWid->Music->isAudioAvailable())
+                play_Song();
+            play_Song();
             myPlaySongArea->songText(Name); // 正在播放
             m_MiniWidget->m_songNameLab->setText(Name);
-
+            return;
         }
     }
     if(mySideBar->myMusicListWid->allmusic.indexOf(musicPath) == -1 && musicPath != "")
@@ -3196,9 +3209,9 @@ void MainWid::processArgs(QStringList args)
             m_MiniWidget->m_songNameLab->setText(Name);
         }
     }
-    for (int n=0; n < mySideBar->myMusicListWid->allmusic.count(); n++)
-    {
-        qDebug("MainWid::processArgs: allmusic[%d]: '%s'", n, mySideBar->myMusicListWid->allmusic[n].toUtf8().data());
-    }
+//    for (int n=0; n < mySideBar->myMusicListWid->allmusic.count(); n++)
+//    {
+//        qDebug("MainWid::processArgs: allmusic[%d]: '%s'", n, mySideBar->myMusicListWid->allmusic[n].toUtf8().data());
+//    }
 }
 

@@ -329,6 +329,7 @@ private:
     QString m_snap;
     void changeItemColour();//切换歌曲列表文字颜色
     int songListItemColourType = 0; //音乐列表内文字颜色标志 0：黑色  1：白色
-    void songListOutHightStyle(int cur);
+    void songListOutHightStyle(int cur);//歌曲列表去除高亮标签
+    QString outPlayMusic = "";//外部打开自动播放标志（用来保存路径）
 };
 #endif // MAINWID_H
