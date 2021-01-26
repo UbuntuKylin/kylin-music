@@ -85,6 +85,7 @@ int MusicDataBase::initDataBase()
 
     queryRes &= queryInit.exec(QString("create table if not exists ListOfPlayList (title varchar primary key)"));//创建播放列表名称列表
 
+
     if(true == queryRes)
     {
         qDebug()<<"本地列表，历史列表，歌单表创建成功！";

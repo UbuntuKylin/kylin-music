@@ -109,10 +109,6 @@ int main(int argc, char *argv[])
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     MyApplication a("kylin-music", argc, argv );
-    QStringList args = a.arguments();
-    qDebug()<<"argc : "<<argc;
-    qDebug()<<"argv : "<<argv;
-    qDebug()<<"args : "<<args;
 //    QApplication a(argc, argv);
 //    if(!CreatConnection())
 //    {

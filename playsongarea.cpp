@@ -115,7 +115,9 @@ void PlaySongArea::playcolor()
 
         volumeBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;}");
 
-        likeMusicBtn->setStyleSheet("QPushButton{background:transparent;border-image:url(:/img/default/loveblack.png);}");
+        likeMusicBtn->setStyleSheet("QPushButton{border-image:url(:/img/default/loveblack2.png);}"
+                                    "QPushButton::hover{border-image:url(:/img/clicked/love2.png);}"
+                                    "QPushButton::pressed{border-image:url(:/img/clicked/love1h.png);}");
 
         playModeBtn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
         playModeBtn->setStyleSheet("QPushButton{background:transparent;}"
@@ -190,9 +192,9 @@ void PlaySongArea::initWidget()
     likeMusicBtn = new QPushButton;
     likeMusicBtn->setFixedSize(16,16);
     likeMusicBtn->setCursor(Qt::PointingHandCursor);
-    likeMusicBtn->setToolTip("我喜欢");
-    likeMusicBtn->hide();
-//    likeMusicBtn->setToolTip("I like");
+//    likeMusicBtn->setToolTip("我喜欢");
+//    likeMusicBtn->hide();
+    likeMusicBtn->setToolTip(tr("I like"));
 //    likeMusicBtn->setToolTip(" 功能未实现");
 //    likeMusicBtn->setToolTip(tr(" Function not implemented"));
 
@@ -243,9 +245,6 @@ void PlaySongArea::initWidget()
 
     songNameofNowPlaying->setFixedHeight(20);
 
-
-
-
 //    songNameofNowPlaying->hide();
     timeAndNameLayout->addWidget(songNameofNowPlaying,0,Qt::AlignTop);
     timeAndNameLayout->addWidget(bottomLeftLabel,Qt::AlignTop);
@@ -271,6 +270,7 @@ void PlaySongArea::initWidget()
     bottmRightLayout->addSpacing(6);
     bottmRightLayout->addWidget(playModeBtn,Qt::AlignRight);
     bottmRightLayout->addSpacing(6);
+    //暂时隐藏历史播放列表
     bottmRightLayout->addWidget(listBtn,Qt::AlignRight);
 
     bottomLeftWid->setLayout(bottomLeftLayout);

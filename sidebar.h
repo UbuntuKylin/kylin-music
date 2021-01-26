@@ -133,6 +133,7 @@ public slots:
     void on_musicListChangeWid_customContextMenuRequested(const QPoint &pos);
     void listPlayAct_slot();
     void listNextAct_slot();
+    void addMusicToPlayList(QAction *listact);
     void deleteMusicFromSongList();
     void listSongAct_slot();           // 歌单中歌曲信息
 

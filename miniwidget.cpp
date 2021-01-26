@@ -132,7 +132,7 @@ void miniWidget::minicolor()
         m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
                                       "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
                                       "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
-        m_loveBtn->setIcon(QIcon(":/img/default/loveblack2.png"));
+        m_loveBtn->setIcon(QIcon(":/img/dark/icon_love2_b@2x.png"));
 
         m_orderBtn->setStyleSheet("QPushButton{background:transparent;}"
                                   "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}"
@@ -173,7 +173,11 @@ void miniWidget::minicolor()
         m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
                                       "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
                                       "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
-        m_loveBtn->setIcon(QIcon(":/img/default/loveblack2.png"));
+
+        m_loveBtn->setStyleSheet("QPushButton{border-image:url(:/img/default/loveblack2.png);}"
+                                 "QPushButton::hover{border-image:url(:/img/clicked/love2.png);}"
+                                 "QPushButton::pressed{border-image:url(:/img/clicked/love1h.png);}");
+
         m_orderBtn->setStyleSheet("QPushButton{background:transparent;}"
                                   "QPushButton::hover{border-image:url(:/img/clicked/sequence.png);}"
                                   "QPushButton::pressed{border-image:url(:/img/clicked/sequence.png);}");
@@ -264,7 +268,7 @@ void miniWidget::init_miniWidget()
     m_loveBtn = new QPushButton;
     m_loveBtn->setFixedSize(16,16);
     m_loveBtn->setCursor(Qt::PointingHandCursor);
-    m_loveBtn->hide();
+//    m_loveBtn->hide();
 //    m_loveBtn->setStyleSheet("QPushButton{background:transparent;\
 //                             border-image:url(:/img/default/loveback2.png);}");
 
