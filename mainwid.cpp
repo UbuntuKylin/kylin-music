@@ -1723,15 +1723,15 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
     /* get music info */
     row = mySideBar->myMusicListWid->musicInfoWidget->currentIndex().row();
     mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-
     mySideBar->myMusicListWid->PlayList->setCurrentIndex(row);
     mySideBar->currentMusicPlaylist = -1;
-//    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight);
+    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight,Qt::UniqueConnection);//因为在事件里，所以加一个参数，防止重复绑定
 
     //迷你模式正在播放
     /* to do */
 
     /* play area info */
+
     musicPath = mySideBar->myMusicListWid->localAllMusicid[row];
     ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
     if(ret == DB_OP_SUCC)
@@ -3045,6 +3045,7 @@ void MainWid::changeDarkTheme()
     {
         for (int i = 0; i < playListNameList.size(); i++)
         {
+
             mySideBar->musicListChangeWid[i]->musiclistcolor();
 //            mySideBar->musicListChangeWid[i]->musicInfoWidget->clear();
     //        mySideBar->get_listmusic_information(i, playListNameList.at(i));

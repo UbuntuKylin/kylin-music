@@ -218,14 +218,14 @@
         <translation>文件位置:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="3583"/>
-        <location filename="../mainwid.cpp" line="3615"/>
+        <location filename="../mainwid.cpp" line="3584"/>
+        <location filename="../mainwid.cpp" line="3616"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="3583"/>
-        <location filename="../mainwid.cpp" line="3615"/>
+        <location filename="../mainwid.cpp" line="3584"/>
+        <location filename="../mainwid.cpp" line="3616"/>
         <source>暂无法打开文件，请检查路径和文件名称</source>
         <translation type="unfinished"></translation>
     </message>
@@ -278,11 +278,11 @@
         <location filename="../mainwid.cpp" line="2146"/>
         <location filename="../mainwid.cpp" line="2229"/>
         <location filename="../mainwid.cpp" line="2271"/>
-        <location filename="../mainwid.cpp" line="3326"/>
-        <location filename="../mainwid.cpp" line="3364"/>
-        <location filename="../mainwid.cpp" line="3667"/>
-        <location filename="../mainwid.cpp" line="3701"/>
-        <location filename="../mainwid.cpp" line="3915"/>
+        <location filename="../mainwid.cpp" line="3327"/>
+        <location filename="../mainwid.cpp" line="3365"/>
+        <location filename="../mainwid.cpp" line="3668"/>
+        <location filename="../mainwid.cpp" line="3702"/>
+        <location filename="../mainwid.cpp" line="3916"/>
         <source>A total of</source>
         <translation>共</translation>
     </message>
@@ -302,11 +302,11 @@
         <location filename="../mainwid.cpp" line="2146"/>
         <location filename="../mainwid.cpp" line="2229"/>
         <location filename="../mainwid.cpp" line="2271"/>
-        <location filename="../mainwid.cpp" line="3326"/>
-        <location filename="../mainwid.cpp" line="3364"/>
-        <location filename="../mainwid.cpp" line="3667"/>
-        <location filename="../mainwid.cpp" line="3701"/>
-        <location filename="../mainwid.cpp" line="3915"/>
+        <location filename="../mainwid.cpp" line="3327"/>
+        <location filename="../mainwid.cpp" line="3365"/>
+        <location filename="../mainwid.cpp" line="3668"/>
+        <location filename="../mainwid.cpp" line="3702"/>
+        <location filename="../mainwid.cpp" line="3916"/>
         <source>The first</source>
         <translation>首</translation>
     </message>
@@ -728,8 +728,8 @@
         <translation>未登录</translation>
     </message>
     <message>
-        <source>Change the theme color</source>
-        <translation type="vanished">更换主题颜色</translation>
+        <source>Theme</source>
+        <translation type="vanished">主题</translation>
     </message>
     <message>
         <source>Dark mode</source>
@@ -801,12 +801,12 @@
     <message>
         <location filename="../menumodule.cpp" line="40"/>
         <source>Light</source>
-        <translation>浅色系统</translation>
+        <translation>浅色主题</translation>
     </message>
     <message>
         <location filename="../menumodule.cpp" line="45"/>
         <source>Dark</source>
-        <translation>深色系统</translation>
+        <translation>深色主题</translation>
     </message>
     <message>
         <location filename="../menumodule.cpp" line="232"/>
