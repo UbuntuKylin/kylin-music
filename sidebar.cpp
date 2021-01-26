@@ -248,6 +248,7 @@ void SideBar::initTopWidget()
 
 void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos)
 {
+    int ret;
 //    qDebug()<<currentSelectList;
 //    qDebug()<<musicListChangeWid[currentSelectList]->musicInfoWidget->count();
     if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() <= 0)
@@ -265,20 +266,36 @@ void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos
     listDeleAct = new QAction(this);
     listSongAct = new QAction(this);
 
-//    listPlayAct->setText("播放");
-    listPlayAct->setText(tr("play"));
-//    listNextAct->setText("下一首");
-    listNextAct->setText(tr("The following piece"));
-//    listDeleAct->setText("从歌单中删除");
-    listDeleAct->setText(tr("Delete the next song from the playlist"));
-//    listSongAct->setText("歌曲信息");
-    listSongAct->setText(tr("Song information"));
+    listPlayAct->setText(tr("play"));   //播放
+    listNextAct->setText(tr("The following piece"));   //下一首
+    listDeleAct->setText(tr("Delete the next song from the playlist"));  //从歌单中删除
+    listSongAct->setText(tr("Song information")); //歌曲信息
+
+    QMenu *menu5 = new QMenu(this);
+    menu5->setTitle(tr("Add to playlist"));    //添加到歌单
+    QStringList playListNameList;
+
+    ret = g_db->getPlayList(playListNameList);
+    if(ret == DB_OP_SUCC)
+    {
+        for(int i = 0;i< playListNameList.size();i++)
+        {
+
+            QString listName = playListNameList.at(i);
+            QAction *listaction = new QAction(this);
+            listaction->setData(i);
+            listaction->setText(listName);
+            menu5->addAction(listaction);
+        }
+    }
 //    menu->addAction(listPlayAct);
 //    menu->addAction(listNextAct);
+    menu->addMenu(menu5);
     menu->addAction(listDeleAct);
     menu->addAction(listSongAct);
 //    connect(listPlayAct,&QAction::triggered,this,&SideBar::listPlayAct_slot);   //jialin
 //    connect(listNextAct,&QAction::triggered,this,&SideBar::listNextAct_slot);
+    connect(menu5,SIGNAL(triggered(QAction*)),this,SLOT(addMusicToPlayList(QAction*)));
     connect(listDeleAct,&QAction::triggered,this,&SideBar::deleteMusicFromSongList);
     connect(listSongAct,&QAction::triggered,this,&SideBar::listSongAct_slot);
     menu->exec(QCursor::pos());
@@ -464,6 +481,42 @@ void SideBar::listNextAct_slot()
         }
         musicListChangeWid[currentSelectList]->Music->play();
 //    }
+}
+
+void SideBar::addMusicToPlayList(QAction *listact)
+{
+    int ret;
+    musicDataStruct musicInfo;
+    int listIndex = listact->data().toInt();
+
+    int row = musicListChangeWid[currentSelectList]->musicInfoWidget->currentIndex().row();
+
+    QString filePath = musicListChangeWid[currentSelectList]->localAllMusicid[row];
+    ret = g_db->getSongInfoFromPlayList(musicInfo, filePath, playListName[currentSelectList]);
+    if(ret != DB_OP_SUCC)
+    {
+        qDebug() << "从歌单中获取歌曲信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
+        return;
+    }
+    ret = g_db->addMusicToPlayList(filePath, listact->text());
+    if(ret == DB_OP_SUCC)
+    {
+        QListWidgetItem *item = new QListWidgetItem(musicListChangeWid[listIndex]->musicInfoWidget);
+        SongItem *songitem = new SongItem;
+        musicListChangeWid[listIndex]->musicInfoWidget->setItemWidget(item, songitem);
+        songitem->song_singer_albumText(musicInfo.title,musicInfo.singer,musicInfo.album); //歌曲名称 歌手 专辑
+        songitem->songTimeLabel->setText(musicInfo.time); //时长
+        musicListChangeWid[listIndex]->localAllMusicid.append(musicInfo.filepath);
+        musicListChangeWid[listIndex]->PlayList->addMedia(QUrl::fromLocalFile(musicInfo.filepath));
+        musicListChangeWid[listIndex]->musicInfoWidget->show();
+        musicListChangeWid[listIndex]->songNumberLabel->setText(
+                    tr("A total of")+QString::number(musicListChangeWid[listIndex]->musicInfoWidget->count())+tr("The first"));
+    }
+
+    else
+    {
+        QMessageBox::about(this,"提示信息","歌曲已存在");
+    }
 }
 
 void SideBar::deleteMusicFromSongList()

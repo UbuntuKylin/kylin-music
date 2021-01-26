@@ -225,8 +225,7 @@ public slots:
 
 //    void slideMove(int position);
     void PlayModeChanged(); //播放模式
-//    void getPlayListInformation();
-    void addLike();
+    void addLike();          //我喜欢按钮
 
     /* 历史播放列表播放相关的槽函数 */
     void historyPositionChange(qint64 position);
@@ -246,6 +245,9 @@ public slots:
     void showSearchResultWidget(); //显示搜索页面
     void hideSearchResultWidget(); //隐藏搜索页面
 
+    void local_currentIndexChanged(int currentIndex);    //获取歌曲列表正在播放title
+    void playlist_currentIndexChanged(int currentIndex); //获取歌单列表正在播放title
+    void history_currentIndexChanged(int currentIndex);  //获取历史列表正在播放title
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
