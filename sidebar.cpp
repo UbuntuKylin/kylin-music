@@ -539,8 +539,23 @@ void SideBar::deleteMusicFromSongList()
                 musicListChangeWid[currentSelectList]->Music->stop();
                 musicListChangeWid[currentSelectList]->PlayList->removeMedia(row);
                 musicListChangeWid[currentSelectList]->Music->setPlaylist(musicListChangeWid[currentSelectList]->PlayList);
+
+                if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() > 0)
+                {
+                    if(row == musicListChangeWid[currentSelectList]->musicInfoWidget->count())
+                    {
+                        musicListChangeWid[currentSelectList]->PlayList->setCurrentIndex(0);
+                        MainWid::mutual->playlist_currentIndexChanged(0);
+                    }
+                    else
+                    {
+                        musicListChangeWid[currentSelectList]->PlayList->setCurrentIndex(row);
+                        MainWid::mutual->playlist_currentIndexChanged(row);
+                    }
+                }
                 musicListChangeWid[currentSelectList]->Music->play();
-                if (musicListChangeWid[currentSelectList]->musicInfoWidget->count() == 0) {
+                if (musicListChangeWid[currentSelectList]->musicInfoWidget->count() == 0)
+                {
                     musicListChangeWid[currentSelectList]->Music->stop();
                     /* 隐藏图标 */
                 }

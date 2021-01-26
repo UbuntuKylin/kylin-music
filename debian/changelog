@@ -1,3 +1,10 @@
+kylin-music (1.0.43kord) v101; urgency=medium
+
+  * 实现历史歌单双击播放、播放/暂停、上一首、下一首的功能.
+  * 实现按钮将歌曲添加到我喜欢列表.
+
+ -- liujialin <liujialin@kylinos.cn>  Tue, 26 Jan 2021 16:17:58 +0800
+
 kylin-music (1.0.42kord) v101; urgency=medium
 
   * 实现历史歌单双击播放、播放/暂停、上一首、下一首的功能.
