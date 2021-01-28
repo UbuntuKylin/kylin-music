@@ -370,11 +370,11 @@ void MainWid::initAction()//初始化事件
 
 void MainWid::songListOutHightStyle(int cur)
 {
-    QWidget *wid = mySideBar->myMusicListWid->musicInfoWidget->itemWidget(mySideBar->myMusicListWid->musicInfoWidget->currentItem());
-    SongItem* item = qobject_cast<SongItem *>(wid);
-    item->itemType = SongItem::highlightType;//打上高亮标签
-    changeItemColour();
-    item->itemType = SongItem::defaultType;;//去掉高亮标签
+//    QWidget *wid = mySideBar->myMusicListWid->musicInfoWidget->itemWidget(mySideBar->myMusicListWid->musicInfoWidget->currentItem());
+//    SongItem* item = qobject_cast<SongItem *>(wid);
+//    item->itemType = SongItem::highlightType;//打上高亮标签
+//    changeItemColour();
+//    item->itemType = SongItem::defaultType;;//去掉高亮标签
 }
 
 void MainWid::initAddPlayList(int num)//初始化播放列表
@@ -590,7 +590,10 @@ void MainWid::slot_showMaximized()
         Minimize = false;
         myTitleBar->maximumBtn->setIcon(QIcon::fromTheme("window-maximize-symbolic"));
         myTitleBar->maximumBtn->setToolTip(tr("maximize"));
-        qDebug()<<"最大化";
+        myTitleBar->maximumBtn->setProperty("isWindowButton", 0x1);
+        myTitleBar->maximumBtn->setProperty("useIconHighlightEffect", 0x2);
+        myTitleBar->maximumBtn->setFlat(true);
+
     }
     else
     {
@@ -600,7 +603,9 @@ void MainWid::slot_showMaximized()
         myTitleBar->maximumBtn->setIcon(QIcon::fromTheme("window-restore-symbolic"));
 //                maximumBtn->setToolTip(tr("还原"));
         myTitleBar->maximumBtn->setToolTip(tr("reduction"));
-        qDebug()<<"还原";
+        myTitleBar->maximumBtn->setProperty("isWindowButton", 0x1);
+        myTitleBar->maximumBtn->setProperty("useIconHighlightEffect", 0x2);
+        myTitleBar->maximumBtn->setFlat(true);
     }
 }
 
@@ -849,7 +854,7 @@ void MainWid::on_sidebarWidget_customContextMenuRequested(const QPoint &pos)    
     actionDelete->setText(tr("Delete the playlist"));
 
 //    sideMenu->addAction(actionPlay);
-    sideMenu->addAction(actionRename);
+//    sideMenu->addAction(actionRename);
     sideMenu->addAction(actionDelete);
 
     connect(actionDelete,SIGNAL(triggered(bool)),this,SLOT(deleteThisSongList()));
@@ -1478,6 +1483,19 @@ void MainWid::promptRemovePlayList()
 void MainWid::promptRenamePlayList()
 {
     mySideBar->promptRenamePlayList->pupDialog->hide();
+}
+
+void MainWid::getPlayListStop()
+{
+    myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                           "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                           "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+    m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                                "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                                "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+    myPlaySongArea->mybeforeList->isStartPlay = false;
+    myPlaySongArea->songText("");
+    myPlaySongArea->bottomLeftLabel->setText("");
 }
 
 // 从歌曲列表里删除
@@ -2343,7 +2361,6 @@ void MainWid::on_nextBtn_clicked()      //下一首
             {
                 qDebug() << "从本地歌单中获取歌曲信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
             }
-            qDebug()<< " 正在播放 " << fileData.title;
             myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
@@ -3876,140 +3893,76 @@ void MainWid::dropEvent(QDropEvent *event)    //放下事件
 
 void MainWid::processArgs(QStringList args)
 {
-    qDebug()<<args;
-    QSqlQuery query;
-    for(int i = 0; i < args.count(); i++)
+
+    if(mySideBar->currentMusicPlaylist >= 0 && mySideBar->currentMusicPlaylist < 20)
     {
-        Dir = QDir::toNativeSeparators(args.at(i));
-        musicPath = args[i];
-        if(!musicPath.isEmpty())
+        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->stop();
+    }
+    if(myPlaySongArea->mybeforeList->currentMusicPlaylist == 20)
+    {
+        myPlaySongArea->mybeforeList->Music->stop();
+    }
+    mySideBar->currentMusicPlaylist = -1;
+    if(mySideBar->currentMusicPlaylist == -1)
+    {
+        int ret;
+        if(!args.isEmpty())
         {
-            bool songExists = false;
-            for(QString &songPlaylist:mySideBar->myMusicListWid->allmusic)
+            qDebug()<<args;
+            for(int i = 0; i < args.size(); i++)
             {
-                if(musicPath == songPlaylist)    //通过路径判断歌曲是否存在
+                if(args.at(i) == "")
                 {
-                    qDebug()<<"歌曲已存在 (通过路径判断歌曲是否存在)";
-                    songExists = true;
-                    break;
+                    return ;
+                }
+                mySideBar->myMusicListWid->filepath(args.at(i));
+                myPlaySongArea->fileData.filepath = args[i];
+                mySideBar->myMusicListWid->fileInfo.setFile(mySideBar->myMusicListWid->musicdataStruct.filepath);
+                mySideBar->myMusicListWid->fileType(mySideBar->myMusicListWid->fileInfo);          //文件类型
+                mySideBar->myMusicListWid->fileSize(mySideBar->myMusicListWid->fileInfo);      //文件大小
+                mySideBar->myMusicListWid->fileInformation(mySideBar->myMusicListWid->musicdataStruct.filepath);//获取歌曲文件信息
+                ret = g_db->addMusicToLocalMusic(mySideBar->myMusicListWid->musicdataStruct);
+                if (ret == DB_OP_SUCC) {
+                    mySideBar->myMusicListWid->showFileInformation(mySideBar->myMusicListWid->musicdataStruct.title,mySideBar->myMusicListWid->musicdataStruct.singer,mySideBar->myMusicListWid->musicdataStruct.album,mySideBar->myMusicListWid->musicdataStruct.time);  //显示获取歌曲文件信息
+                    mySideBar->myMusicListWid->localAllMusicid.append(mySideBar->myMusicListWid->musicdataStruct.filepath);
+                    mySideBar->myMusicListWid->PlayList->addMedia(QUrl::fromLocalFile(mySideBar->myMusicListWid->musicdataStruct.filepath));
+                    mySideBar->myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
+                } else {
+                    qDebug()<<"歌曲已存在";
                 }
             }
-            if(songExists)
-            {
-                continue;
-            }
-
-            fileInfo.setFile(musicPath);
-
-            musicType = fileInfo.suffix();        //文件类型
-
-            qint64 musicFileSize = fileInfo.size();
-            if(musicFileSize/1024)
-            {
-                if(musicFileSize/1024/1024)
-                {
-                    if(musicFileSize/1024/1024/1024)
-                    {
-                        musicSize = QString::number(musicFileSize/1024/1024/1024,10)+"GB";
-                    }
-                    else
-                        musicSize = QString::number(musicFileSize/1024/1024,10)+"MB";
-                }
-                else
-                    musicSize = QString::number(musicFileSize/1024,10)+"KB";
-            }
-            else
-                musicSize = QString::number(musicFileSize,10)+"B";
-            byteArray = musicPath.toLocal8Bit();
-
-            if(musicPath.split(".").last() != "amr" && musicPath.split(".").last() != "mmf")
-            {
-                TagLib::FileRef f(byteArray.data());
-                if(f.isNull())
-                {
-                    //can't read this music;
-                    continue;
-                }
-                TagLib::PropertyMap propertyMap = f.file() ->properties();
-
-                musicName = propertyMap["TITLE"].toString().toCString(true);
-                if(musicName.isEmpty())
-                    musicName = fileInfo.baseName();
-                musicSinger = propertyMap["ARTIST"].toString().toCString(true);
-                if(musicSinger.isEmpty())
-                    musicSinger = "未知歌手";
-                musicAlbum = propertyMap["ALBUM"].toString().toCString(true);
-                if(musicAlbum.isEmpty())
-                    musicAlbum = "未知专辑";
-                TagLib::AudioProperties *properties = f.audioProperties();
-
-                int seconds = properties->length() % 60;
-                int minutes = (properties->length() - seconds) / 60;
-                musicTime = QString::number(minutes)+":"+QString("%1").arg(seconds, 2, 10, QChar('0'));
-            }
-            QListWidgetItem *listItem = new QListWidgetItem(mySideBar->myMusicListWid->musicInfoWidget);
-            SongItem *songitem1 = new SongItem;
-            mySideBar->myMusicListWid->musicInfoWidget->setItemWidget(listItem,songitem1);
-            songitem1->song_singer_albumText(musicName,musicSinger,musicAlbum); //歌曲名称 歌手 专辑
-            songitem1->songTimeLabel->setText(musicTime); //时长
-
-            mySideBar->myMusicListWid->localModel->setTable("LocalMusic");
-            mySideBar->myMusicListWid->localModel->select();
-
-            int id = 0;
-            if (mySideBar->myMusicListWid->localModel->rowCount() != 0)
-            {
-                int num = mySideBar->myMusicListWid->localModel->data(mySideBar->myMusicListWid->localModel->index(mySideBar->myMusicListWid->localModel->rowCount()-1,0)).toInt();
-                id = num + 1;
-            }
-
-            mySideBar->myMusicListWid->allmusic.append(musicPath);
-            mySideBar->myMusicListWid->localAllMusicid.append(QString::number(id));
-            mySideBar->myMusicListWid->PlayList->addMedia(QUrl::fromLocalFile(musicPath));
-
-            query.exec(QString("insert into LocalMusic (id,musicname,filepath,singer,album,type,size,time) values (%1,'%2','%3','%4','%5','%6','%7','%8')")
-                       .arg(id).arg(musicName).arg(musicPath).arg(musicSinger).arg(musicAlbum).arg(musicType).arg(musicSize).arg(musicTime));
-
-            mySideBar->myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
         }
-    }
-    mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
-    for(int i = 0;i < mySideBar->myMusicListWid->allmusic.count();i++)
-    {
-        if(mySideBar->myMusicListWid->allmusic[i] == musicPath)
+
+        qDebug()<<"myPlaySongArea->fileData.filepath : "<<myPlaySongArea->fileData.filepath;
+        for(int i = 0;i < mySideBar->myMusicListWid->localAllMusicid.count();i++)
         {
-            qDebug()<<"musicPath : "<<musicPath;
-            mySideBar->myMusicListWid->PlayList->setCurrentIndex(i);
-            int music = mySideBar->myMusicListWid->localAllMusicid[i].toInt();
-            qDebug()<<"i : "<<i;
-            model->setTable("LocalMusic");
-            model->select();
-            QString Name = model->data(model->index(music, 1)).toString();
-            mySideBar->myMusicListWid->Music->play();
-            myPlaySongArea->songText(Name); // 正在播放
-            m_MiniWidget->m_songNameLab->setText(Name);
+            if(mySideBar->myMusicListWid->localAllMusicid[i] == myPlaySongArea->fileData.filepath)
+            {
+                mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
+                mySideBar->myMusicListWid->PlayList->setCurrentIndex(i);
+                mySideBar->myMusicListWid->Music->play();
+                myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                       "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                       "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
+                m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                            "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                            "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+                mySideBar->myMusicListWid->isStartPlay = true;
+            }
         }
-    }
-    if(mySideBar->myMusicListWid->allmusic.indexOf(musicPath) == -1 && musicPath != "")
-    {
-        if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
+        if(mySideBar->myMusicListWid->localAllMusicid.indexOf(myPlaySongArea->fileData.filepath) == -1 && myPlaySongArea->fileData.filepath != "")
         {
-            qDebug()<<"musicPath : "<<musicPath;
-            int addMusicId = mySideBar->myMusicListWid->musicInfoWidget->count() - 1;
-            mySideBar->myMusicListWid->PlayList->setCurrentIndex(addMusicId);
-            int music = mySideBar->myMusicListWid->localAllMusicid[addMusicId].toInt();
-            model->setTable("LocalMusic");
-            model->select();
-            QString Name = model->data(model->index(music, 1)).toString();
-            mySideBar->myMusicListWid->Music->play();
-            myPlaySongArea->songText(Name); // 正在播放
-            m_MiniWidget->m_songNameLab->setText(Name);
+            if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
+            {
+                qDebug()<<"myPlaySongArea->fileData.filepath : "<<myPlaySongArea->fileData.filepath;
+                int addMusicId = mySideBar->myMusicListWid->musicInfoWidget->count() - 1;
+                mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
+                mySideBar->myMusicListWid->PlayList->setCurrentIndex(addMusicId);
+                local_currentIndexChanged(addMusicId);
+                mySideBar->myMusicListWid->Music->play();
+            }
         }
-    }
-    for (int n=0; n < mySideBar->myMusicListWid->allmusic.count(); n++)
-    {
-        qDebug("MainWid::processArgs: allmusic[%d]: '%s'", n, mySideBar->myMusicListWid->allmusic[n].toUtf8().data());
     }
 }
 

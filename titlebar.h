@@ -61,9 +61,9 @@ public:
 
     QPushButton *setBtn;
     QPushButton *miniBtn;
-    QToolButton *minimumBtn;
-    QToolButton *maximumBtn;
-    QToolButton *closeBtn;
+    QPushButton *minimumBtn;
+    QPushButton *maximumBtn;
+    QPushButton *closeBtn;
 
     //搜索相关
     QSqlTableModel *searchModel;

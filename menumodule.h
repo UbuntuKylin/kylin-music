@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QMenu>
 #include <QPushButton>
+#include <QToolButton>
 #include <QDebug>
 #include <QString>
 #include <QLabel>
@@ -17,6 +18,8 @@
 #include <QScreen>
 #include <QGSettings>
 #include <QMetaEnum>
+#include <QDesktopServices>
+#include <QUrl>
 #include "daemonipcdbus.h"
 #include "widgetstyle.h"
 class menuModule : public QWidget
@@ -36,13 +39,13 @@ signals:
     void menuModuleClose();
     void menuModuleSetThemeStyle(QString);
 public:
-    QPushButton *menuButton = nullptr;
+    QToolButton *menuButton = nullptr;
 
 public:
 //    程序在实例化的时候需要传递的信息字段,打开debug开关后这些字段会被自动填充
     QString appName = "kylin-music"; //格式kylin-usb-creator
-    QString appShowingName = tr("kylin music"); //格式kylin usb creator ,用来在前端展示
-    QString appVersion = "kylin-music 1.0.40kord";
+//    QString appShowingName = tr("kylin music"); //格式kylin usb creator ,用来在前端展示
+    QString appVersion = "1.0.0";
     QString appDesc = "2020.01.08";
     QString iconPath = ":/img/kylin-music.png";
     QString confPath = "org.kylin-music-data.settings";
@@ -74,7 +77,12 @@ private:
     void setThemeStyle();
     void setThemeLight();
     void setThemeDark();
+    QLabel* titleText = nullptr;
+    QLabel* bodyAppName = nullptr;
+    QLabel* bodyAppVersion = nullptr;
+    QLabel* bodySupport = nullptr;
 //    void updateTheme(); //点击菜单中的主题设置后更新一次主题
+    QVBoxLayout *mainlyt = nullptr;
 
     void refreshThemeBySystemConf();    //通过系统配置更改主题
 };

@@ -161,9 +161,6 @@ public:
 
     QList<MusicPath> MusicPathList;
 
-    QString Dir;
-    QString musicPath;
-
     QByteArray byteArray;
     QString musicName;
     QString musicSinger;
@@ -213,7 +210,7 @@ public slots:
     void renameSongListCon();
     void promptRenamePlayList();     //重命名歌单提示信息
     void promptRemovePlayList();     //删除歌单提示信息
-
+    void getPlayListStop();
 //    void historyPlay();
 //    void historyNext();
 //    void historyDel();
