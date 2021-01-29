@@ -145,10 +145,6 @@ void AllPupWindow::dlgcolor()
                                 border:none;\
                                 color: #F9F9F9;\
                                 line-height:14px;");
-
-        closeBtn->setStyleSheet("QPushButton{border-radius:4px;}\
-                                 QPushButton::hover{background:#FD9595;opacity:0.04}\
-                                 QPushButton::pressed{background:#ED6464;}");
     }
     else if(WidgetStyle::themeColor == 0)
     {
@@ -169,9 +165,6 @@ void AllPupWindow::dlgcolor()
                                 border:none;\
                                 color: #1B1B1B;\
                                 line-height:14px;");
-        closeBtn->setStyleSheet("QToolButton{border-radius:4px;}"
-                                "QToolButton::hover{background-color:#F86457;}"
-                                "QToolButton::pressed{background-color:#E44C50;}");
     }
 
 }

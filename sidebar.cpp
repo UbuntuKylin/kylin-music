@@ -557,6 +557,7 @@ void SideBar::deleteMusicFromSongList()
                 if (musicListChangeWid[currentSelectList]->musicInfoWidget->count() == 0)
                 {
                     musicListChangeWid[currentSelectList]->Music->stop();
+                    MainWid::mutual->getPlayListStop();
                     /* 隐藏图标 */
                 }
             } else if (currPlay > row) {
@@ -903,7 +904,6 @@ void SideBar::deleteSongList()      //删除歌单提示信息
         qDebug() << "删除歌单失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
         return;
     }
-    qDebug()<<"--------删除歌单-------"<<playlistName;
     playListName.removeOne(playlistName);
     delete newSongListBtn[row];
     delete newSongList[row];

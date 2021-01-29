@@ -1,9 +1,17 @@
+kylin-music (1.0.44kord) v101; urgency=medium
+
+  * 实现歌曲列表拖拽添加歌曲.
+  * 更改三联按钮的样式.
+  * 更改关于界面.
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 27 Jan 2021 20:32:38 +0800
+
 kylin-music (1.0.43kord) v101; urgency=medium
 
-  * 实现历史歌单双击播放、播放/暂停、上一首、下一首的功能.
-  * 实现按钮将歌曲添加到我喜欢列表.
+  * 解决我喜欢按钮添加歌曲遗留的问题.
+  * 增加歌单右键.
 
- -- liujialin <liujialin@kylinos.cn>  Tue, 26 Jan 2021 16:17:58 +0800
+ -- liujialin <liujialin@kylinos.cn>  Tue, 26 Jan 2021 20:59:44 +0800
 
 kylin-music (1.0.42kord) v101; urgency=medium
 

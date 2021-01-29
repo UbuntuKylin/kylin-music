@@ -296,13 +296,40 @@ void MusicListWid::initMusicListWid()
 
 void MusicListWid::on_top_addSongBtn_slot()
 {
-    int ret;
     songFiles = QFileDialog::getOpenFileNames(this, tr("Open the file"),"","音乐文件(*.mp3 *.ogg *.wav *.wma *.spx *.ape *.flac)");  //歌曲文件
-    if(!songFiles.isEmpty())
+//    if(!songFiles.isEmpty())
+//    {
+//        for(int i = 0; i < songFiles.size(); i++)
+//        {
+//            filepath(songFiles.at(i));
+//            fileInfo.setFile(musicdataStruct.filepath);
+//            fileType(fileInfo);          //文件类型
+//            fileSize(fileInfo);      //文件大小
+//            fileInformation(musicdataStruct.filepath);//获取歌曲文件信息
+////            filepathHash(musicdataStruct.filepath);// 通过路径获取hash
+//            ret = g_db->addMusicToLocalMusic(musicdataStruct);
+//            if (ret == DB_OP_SUCC) {
+//                showFileInformation(musicdataStruct.title,musicdataStruct.singer,musicdataStruct.album,musicdataStruct.time);  //显示获取歌曲文件信息
+//                localAllMusicid.append(musicdataStruct.filepath);
+//                PlayList->addMedia(QUrl::fromLocalFile(musicdataStruct.filepath));
+//                qDebug()<<"添加歌曲文件路径 ==== "<<musicdataStruct.filepath;
+//                songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
+//            } else {
+//                qDebug()<<"歌曲已存在";
+//            }
+//        }
+//    }
+    addFile(songFiles);
+}
+
+void MusicListWid::addFile(const QStringList &addFile)
+{
+    int ret;
+    if(!addFile.isEmpty())
     {
-        for(int i = 0; i < songFiles.size(); i++)
+        for(int i = 0; i < addFile.size(); i++)
         {
-            filepath(songFiles.at(i));
+            filepath(addFile.at(i));
             fileInfo.setFile(musicdataStruct.filepath);
             fileType(fileInfo);          //文件类型
             fileSize(fileInfo);      //文件大小
@@ -416,138 +443,6 @@ void MusicListWid::showFileInformation(QString musicName,QString musicSinger,QSt
     songitem->songTimeLabel->setText(musicTime); //时长
 }
 
-void MusicListWid::addFile(const QStringList &addFile)
-{
-//    QSqlQuery query;
-//    if(!addFile.isEmpty())
-//    {
-//        for(int i = 0; i < addFile.size(); i++)
-//        {
-//            Dir = QDir::toNativeSeparators(addFile.at(i));
-//             = addFile.at(i);
-//            if(!.isEmpty())
-//            {
-//                bool songExists = false;
-//                for(QString &songPlaylist:allmusic)
-//                {
-//                    if( == songPlaylist)    //通过路径判断歌曲是否存在
-//                    {
-//                        qDebug()<<"歌曲已存在 (通过路径判断歌曲是否存在)";
-////                        qDebug()<<"songPlaylist : "<<songPlaylist;
-//                        songExists = true;
-//                        break;
-//                    }
-//                }
-//                if(songExists)
-//                {
-//                    continue;
-//                }
-
-//                fileInfo.setFile();
-
-//                musicType = fileInfo.suffix();        //文件类型
-
-//                qint64 musicFileSize = fileInfo.size();
-//                if(musicFileSize/1024)
-//                {
-//                    if(musicFileSize/1024/1024)
-//                    {
-//                        if(musicFileSize/1024/1024/1024)
-//                        {
-//                            musicSize = QString::number(musicFileSize/1024/1024/1024,10)+"GB";
-//                        }
-//                        else
-//                            musicSize = QString::number(musicFileSize/1024/1024,10)+"MB";
-//                    }
-//                    else
-//                        musicSize = QString::number(musicFileSize/1024,10)+"KB";
-//                }
-//                else
-//                    musicSize = QString::number(musicFileSize,10)+"B";
-//                byteArray = .toLocal8Bit();
-
-//                if(.split(".").last() != "amr" && .split(".").last() != "mmf")
-//                {
-//                    TagLib::FileRef f(byteArray.data());
-//                    if(f.isNull())
-//                    {
-//                        //can't read this music;
-//                        continue;
-//                    }
-//                    TagLib::PropertyMap propertyMap = f.file() ->properties();
-
-//                    musicName = propertyMap["TITLE"].toString().toCString(true);
-//                    if(musicName.isEmpty())
-//                        musicName = fileInfo.baseName();
-//                    musicSinger = propertyMap["ARTIST"].toString().toCString(true);
-//                    if(musicSinger.isEmpty())
-//                        musicSinger = "未知歌手";
-//                    musicAlbum = propertyMap["ALBUM"].toString().toCString(true);
-//                    if(musicAlbum.isEmpty())
-//                        musicAlbum = "未知专辑";
-//                    TagLib::AudioProperties *properties = f.audioProperties();
-
-//                    int seconds = properties->length() % 60;
-//                    int minutes = (properties->length() - seconds) / 60;
-//                    musicTime = QString::number(minutes)+":"+QString("%1").arg(seconds, 2, 10, QChar('0'));
-//                }
-//                else
-//                {
-//                    TagLib::FileRef f(byteArray.data());
-
-//                        musicName = fileInfo.baseName();
-
-//                        musicSinger = "未知歌手";
-
-//                        musicAlbum = "未知专辑";
-
-//                      qDebug() << "musicSize" << musicSize;
-//                }
-//                QListWidgetItem *listItem = new QListWidgetItem(musicInfoWidget);
-//                SongItem *songitem1 = new SongItem;
-//                musicInfoWidget->setItemWidget(listItem,songitem1);
-//                songitem1->song_singer_albumText(musicName,musicSinger,musicAlbum); //歌曲名称 歌手 专辑
-//                songitem1->songTimeLabel->setText(musicTime); //时长
-
-//                localModel->setTable("LocalMusic");
-//                localModel->select();
-
-//                int id = 0;
-//                if (localModel->rowCount() != 0)
-//                {
-//                    int num = localModel->data(localModel->index(localModel->rowCount()-1,0)).toInt();
-//                    id = num + 1;
-//                }
-
-//                allmusic.append();
-//                localAllMusicid.append(QString::number(id));
-//                PlayList->addMedia(QUrl::fromLocalFile());
-
-//                query.exec(QString("insert into LocalMusic (id,musicname,filepath,singer,album,type,size,time) values (%1,'%2','%3','%4','%5','%6','%7','%8')")
-//                           .arg(id).arg(musicName).arg().arg(musicSinger).arg(musicAlbum).arg(musicType).arg(musicSize).arg(musicTime));
-
-//                songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
-//            }
-//        }
-//        Music->setPlaylist(PlayList);
-////        Music->play();
-////        Music->stop();
-//        int position;
-//        if(Music->state() == QMediaPlayer::PlayingState)
-//        {
-//            position = Music->position();
-//            Music->setPosition(position);
-//            Music->play();
-//            isStartPlay = true;
-//        }
-//        else
-//        {
-//            Music->stop();
-//            isStartPlay = false;
-//        }
-//    }
-}
-
 void MusicListWid::get_localmusic_information(QString tableName)
 {
     int ret = -1;
@@ -559,7 +454,6 @@ void MusicListWid::get_localmusic_information(QString tableName)
     }
     if(ret == DB_OP_SUCC)
     {
-        qDebug()<<"歌单名 ==== "<< tableName;
         this->tableName = tableName;
         for(int i = 0;i < resList.size(); i++)
         {
