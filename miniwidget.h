@@ -47,9 +47,11 @@ public:
     void leaveEvent(QEvent*);
 
     void initMyApp();  // liucong add 20201222
+    void songText(QString songName); //mini 正在播放
 
 private:
     void initAction();
+
 
 public slots:
 

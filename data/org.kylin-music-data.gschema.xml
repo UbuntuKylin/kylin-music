@@ -10,6 +10,11 @@
              <summary>dark</summary>
              <description>dark</description>
          </key>
+         <key name="thememode" type="s" >
+             <default>"auto"</default>
+             <summary>auto</summary>
+             <description>auto</description>
+         </key>
 
      </schema>
 </schemalist>

@@ -32,6 +32,7 @@
 #include "changelistwid.h"
 #include "allpupwindow.h"
 #include "widgetstyle.h"
+#include "menumodule.h"
 
 const QString main_style = "QFrame{background:#FFFFFF;border-top-right-radius:12px;}";
 
@@ -44,6 +45,8 @@ class TitleBar : public QFrame
 public:
     explicit TitleBar(QWidget *parent = nullptr);
     ~TitleBar(){}
+
+    menuModule *menumodule;
 
     QLabel *nullLabel;
 
@@ -58,9 +61,9 @@ public:
 
     QPushButton *setBtn;
     QPushButton *miniBtn;
-    QToolButton *minimumBtn;
-    QToolButton *maximumBtn;
-    QToolButton *closeBtn;
+    QPushButton *minimumBtn;
+    QPushButton *maximumBtn;
+    QPushButton *closeBtn;
 
     //搜索相关
     QSqlTableModel *searchModel;
@@ -88,9 +91,10 @@ protected:
 
 private slots:
     //进行最小化、最大化、还原、关闭
-    void onClicked();
+//    void slot_showMaximized();
+//    void slot_quit();
 private:
-    bool Minimize = false;       //最大化和还原俩个状态
+
 
 private:
     void initTitle();

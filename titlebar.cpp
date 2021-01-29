@@ -40,52 +40,12 @@ TitleBar::TitleBar(QWidget *parent) : QFrame(parent)
     titlecolor();
 }
 
-//控制最大化、最小化、关闭按钮
-
-void TitleBar::onClicked()
-{
-    QToolButton *pButton = qobject_cast<QToolButton *>(sender());
-    QWidget *pWindow = this->window();
-    if (pWindow->isTopLevel())
-    {
-        if (pButton == minimumBtn)
-        {
-            pWindow->showMinimized();
-        }
-        else if (pButton == maximumBtn)
-        {
-            if(Minimize)
-            {
-                Minimize = false;
-//                pWindow->isMaximized() ? pWindow->showNormal() : pWindow->showMaximized();
-                pWindow->showNormal();
-            }
-            else
-            {
-                Minimize = true;
-                pWindow->showMaximized();
-//                maximumBtn->setIcon(QIcon::fromTheme("window-restore-symbolic"));
-//                maximumBtn->setToolTip(tr("还原"));
-//                maximumBtn->setToolTip(tr("reduction")); //:/img/default/enlarg.png
-//                maximumBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
-//                                           border-image:url(:/img/default/enlarg.png);}"
-//                                          "QPushButton::hover{border-image:url(:/img/hover/enlarg.png);background:rgba(0,0,0,0.15);}"
-//                                          "QPushButton::pressed{border-image:url(:/img/clicked/enlarg.png);background:rgba(0, 0, 0, 0.2);}"
-//                                          );
-            }
-        }
-
-        else if (pButton == closeBtn)
-        {
-            pWindow->close();
-        }
-    }
-}
-
 void TitleBar::initTitle()
 {
     setStyleSheet(::main_style);
 
+    menumodule = new menuModule(this);
+//    menumodule->menuButton
     resize(750,56);
 
     titleLayout = new QHBoxLayout(this);
@@ -105,6 +65,7 @@ void TitleBar::initTitle()
     leftBtn->setToolTip(tr("back"));
     leftBtn->setDisabled(true);
     leftBtn->setContentsMargins(8,0,0,0);
+    leftBtn->hide();
     rightBtn = new QPushButton;
 //    rightBtn->setIcon(QIcon::fromTheme("pan-end-symbolic"));
     rightBtn->setStyleSheet("QPushButton{background:transparent;}");
@@ -115,6 +76,7 @@ void TitleBar::initTitle()
     rightBtn->setCursor(Qt::PointingHandCursor);
     rightBtn->setToolTip(tr("forward"));
     rightBtn->setDisabled(true);
+    rightBtn->hide();
 
     searchEdit = new QLineEdit;
     searchEdit->setFixedSize(200,32);
@@ -122,6 +84,7 @@ void TitleBar::initTitle()
     searchEdit->setPlaceholderText(tr("Search for music, singers"));
 
 //    searchEdit->setContentsMargins(0,4,0,0);
+    searchEdit->hide();
     searchBtn = new QPushButton(searchEdit);
 
     searchBtn->setFixedSize(16,16);
@@ -195,23 +158,22 @@ void TitleBar::initTitle()
     }
 
 //    changeThemeColorMenu->setTitle("更换主题颜色");
-    changeThemeColorMenu->setTitle(tr("Change the theme color"));
+//    changeThemeColorMenu->setTitle(tr("Change the theme color"));
 //    darkThemeAct->setText("深色模式");
-    darkThemeAct->setText(tr("Dark mode"));
+//    darkThemeAct->setText(tr("Dark mode"));
 //    lightThemeAct->setText("浅色模式");
-    lightThemeAct->setText(tr("Light color pattern"));
+//    lightThemeAct->setText(tr("Light color pattern"));
 //    aboutAct->setText("关于");
-    aboutAct->setText(tr("about"));
+//    aboutAct->setText(tr("about"));
 
-    settingMenu->addMenu(changeThemeColorMenu);
-    changeThemeColorMenu->addAction(lightThemeAct);
-    changeThemeColorMenu->addAction(darkThemeAct);
-    //暂时隐藏关于按钮
-    //settingMenu->addAction(aboutAct);
+//    settingMenu->addMenu(changeThemeColorMenu);
+//    changeThemeColorMenu->addAction(lightThemeAct);
+//    changeThemeColorMenu->addAction(darkThemeAct);
+//    settingMenu->addAction(aboutAct);
 
     setBtn->setMenu(settingMenu);   //下拉三角图标
 
-    connect(aboutAct,SIGNAL(triggered()),this,SLOT(showAboutWidget()));
+//    connect(aboutAct,SIGNAL(triggered()),this,SLOT(showAboutWidget()));
 
 
     nullLabel = new QLabel;
@@ -221,39 +183,43 @@ void TitleBar::initTitle()
     miniBtn->setCursor(Qt::PointingHandCursor);
     miniBtn->setFixedSize(30,30);
 //    miniBtn->setToolTip("mini模式");
-//    miniBtn->setToolTip(tr("mini model"));
+    miniBtn->setToolTip(tr("mini model"));
     miniBtn->setIcon(QIcon::fromTheme("ukui-mini"));
+    miniBtn->setProperty("isWindowButton", 0x1);
+    miniBtn->setProperty("useIconHighlightEffect", 0x2);
+    miniBtn->setFlat(true);
 
-    minimumBtn = new QToolButton;
+    minimumBtn = new QPushButton;
     minimumBtn->setCursor(Qt::PointingHandCursor);
 //    minimumBtn->setToolTip(tr("最小化"));
-//    minimumBtn->setToolTip(tr("To minimize the"));
+    minimumBtn->setToolTip(tr("To minimize the"));
     minimumBtn->setFixedSize(30,30);
     minimumBtn->setIcon(QIcon::fromTheme("window-minimize-symbolic"));
+    minimumBtn->setProperty("isWindowButton", 0x1);
+    minimumBtn->setProperty("useIconHighlightEffect", 0x2);
+    minimumBtn->setFlat(true);
 
-    maximumBtn = new QToolButton;
+    maximumBtn = new QPushButton;
     maximumBtn->setCursor(Qt::PointingHandCursor);
     maximumBtn->setFixedSize(30,30);
 //    maximumBtn->setToolTip(tr("最大化"));
-//    maximumBtn->setToolTip(tr("maximize"));
-    maximumBtn->setObjectName("maximumBtn");
+    maximumBtn->setToolTip(tr("maximize"));
     maximumBtn->setIcon(QIcon::fromTheme("window-maximize-symbolic"));
+    maximumBtn->setProperty("isWindowButton", 0x1);
+    maximumBtn->setProperty("useIconHighlightEffect", 0x2);
+    maximumBtn->setFlat(true);
 
 
-    closeBtn = new QToolButton;
+    closeBtn = new QPushButton;
     closeBtn->setCursor(Qt::PointingHandCursor);
     closeBtn->setFixedSize(30,30);
 //    closeBtn->setToolTip("关闭");
-//    closeBtn->setToolTip(tr("close"));
+    closeBtn->setToolTip(tr("close"));
     closeBtn->setIcon(QIcon::fromTheme("window-close-symbolic"));
     closeBtn->setProperty("isWindowButton", 0x2);
     closeBtn->setProperty("useIconHighlightEffect", 0x8);
-    closeBtn->setAutoRaise(true);
+    closeBtn->setFlat(true);
 
-
-    connect(maximumBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
-    connect(minimumBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
-    connect(closeBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
 
 //    connect(searchBtn,SIGNAL(clicked(bool)),this,SLOT(searchMusic()));
     connect(searchEdit,&QLineEdit::textChanged,this,&TitleBar::searchMusic);
@@ -263,7 +229,7 @@ void TitleBar::initTitle()
 //    LayoutRight->addWidget(userIconBtn);
 //    LayoutRight->addWidget(loginBtn);
 //    LayoutRight->addSpacing(20);
-    LayoutRight->addWidget(setBtn);
+    LayoutRight->addWidget(menumodule->menuButton);
     LayoutRight->addSpacing(4);
     LayoutRight->addWidget(miniBtn);
     LayoutRight->addSpacing(4);
@@ -329,7 +295,7 @@ void TitleBar::titlecolor()
         changeThemeColorMenu->setStyleSheet("QMenu{background-color:#303032;color:#F9F9F9;}"
                                             "QMenu::item:selected{background-color:#3D6BE5;}");
 
-        this->setStyleSheet("background-color:#252526;");
+        this->setStyleSheet(".widget{background-color:#252526;}");
         searchWidget->setStyleSheet("QListWidget{border:5px;background:#3D3D41;color:#F9F9F9; }"
                                     "QListWidget::Item{height:30px;color:#F9F9F9;}"
                                     "QListWidget::Item:hover{background:#303032;color:#F9F9F9; }"
@@ -342,34 +308,12 @@ void TitleBar::titlecolor()
                                  border-image:url(:/img/default/search.png);}\
                                  QPushButton::hover{border-image:url(:/img/hover/search.png);}");
 
-        setBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
+        menumodule->menuButton->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
                               }"
                               "QPushButton::hover{background:#D4DBE9;opacity:0.04;}"
                               "QPushButton::pressed{background:#BEBEBE;opacity:0.04;}"
                               "QPushButton::menu-indicator{image:None;}"
                               );
-
-
-        miniBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
-                               }"
-                               "QPushButton::hover{background:#D4DBE9;opacity:0.04;}"
-                               "QPushButton::pressed{background:#BEBEBE;opacity:0.04;}");
-
-        minimumBtn->setStyleSheet("QToolButton{background:transparent;border-radius:4px;\
-                                  }"
-                                  "QToolButton::hover{background:#D4DBE9;opacity:0.04;}"
-                                  "QToolButton::pressed{background:#BEBEBE;opacity:0.04;}");
-
-        maximumBtn->setStyleSheet("QToolButton{background:transparent;border-radius:4px;\
-                                  }"
-                                  "QToolButton::hover{background:#D4DBE9;opacity:0.04;}"
-                                  "QToolButton::pressed{background:#D4DBE9;opacity:0.04;}"
-                                   );
-
-        closeBtn->setStyleSheet("QToolButton{background:transparent;border-radius:4px;}"
-                                "QToolButton::hover{background:#FD9595;opacity:0.04}"
-                                "QToolButton::pressed{background:#ED6464;}");
-
     }
     else if(WidgetStyle::themeColor == 0)
     {
@@ -379,7 +323,7 @@ void TitleBar::titlecolor()
                                             "QMenu::item:selected{background-color:#3D6BE5;color:#FFFFFF;}");
 
 
-        this->setStyleSheet("background-color:#FFFFFF;");
+        this->setStyleSheet(".widget{background-color:#FFFFFF;}");
 
         searchWidget->setStyleSheet("QListWidget{border:5px;color:#303133; }"
                                     "QListWidget::Item{height:30px;color:#303133;}"
@@ -393,30 +337,12 @@ void TitleBar::titlecolor()
                                  border-image:url(:/img/default/search.png);}\
                                  QPushButton::hover{border-image:url(:/img/hover/search.png);}");
 
-        setBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
+        menumodule->menuButton->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
                               }"
                               "QPushButton::hover{background:rgba(0,0,0,0.15);}"
                               "QPushButton::pressed{background:rgba(0, 0, 0, 0.2);}"
                               "QPushButton::menu-indicator{image:None;}"
                               );
 
-
-        miniBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
-                               }"
-                               "QPushButton::hover{background:rgba(0,0,0,0.15);}"
-                               "QPushButton::pressed{background:rgba(0, 0, 0, 0.2);}");
-
-        minimumBtn->setStyleSheet("QToolButton{background:transparent;border-radius:4px;}"
-                                  "QToolButton::hover{background:rgba(0,0,0,0.15);}"
-                                  "QToolButton::pressed{background:rgba(0, 0, 0, 0.2);}");
-
-        maximumBtn->setStyleSheet("QToolButton{background:transparent;border-radius:4px;}"
-                                  "QToolButton::hover{background-color:rgba(0,0,0,0.15);}"
-                                  "QToolButton::pressed{background:rgba(0, 0, 0, 0.2);}"
-                                   );
-        //QPushButton:pressed{border-image:url(:/img/clicked/close.png);background:rgba(228, 76, 80, 1);}");
-        closeBtn->setStyleSheet("QToolButton{border-radius:4px;}"
-                                "QToolButton::hover{background-color:#F86457;}"
-                                "QToolButton::pressed{background-color:#E44C50;}");
     }
 }

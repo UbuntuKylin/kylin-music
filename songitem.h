@@ -50,16 +50,20 @@ public:
     QPushButton *hoverLike;
     QPushButton *hoverPlay;
 
-    void itemcolor();
+    void itemcolor(int type);
 
     void song_singer_albumText(QString songName,QString singer,QString album); //播放列表label
+
+    enum TypeitemType {
+        defaultType = 0,
+        highlightType = 1
+    } itemType;
+
 
 public slots:
 
 
 private:
-
-
 
 };
 
@@ -77,6 +81,7 @@ public:
     QLabel *songTimeLabel;
     QLabel *songNameLabel;
 
+    void itemcolor();
     void song_singerText(QString songName,QString singer);  //历史记录label
 
 

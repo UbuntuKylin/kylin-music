@@ -65,6 +65,7 @@
 #include "allpupwindow.h"
 #include "daemonipcdbus.h"
 #include "kylinmuisc.h"
+//#include "menumodule.h"
 
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
@@ -82,6 +83,8 @@
 #include <exception>
 #include <QDBusInterface>
 #include <QDBusConnection>
+//播放音乐进度条
+#include "musicslider.h"
 
 struct MusicPath
 {
@@ -97,30 +100,25 @@ class MainWid : public QMainWindow
 
 signals:
     void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
-//    void musicDbus(QString path);
-//    void fromFilemanager(const QStringList &addFile); //拖拽添加歌曲信号
-//private slots:
-////    void addFile(const QStringList &addFile);
-
 
 public:
-    void Single(QString path);
-    void promptMessage();
-
     MainWid(QString str, QWidget *parent=nullptr);
-//    MainWid(QWidget *);
     ~MainWid();
+//    MainWid(QWidget *);
 //    QString getMp3FileName(QString sqlName);
+    void promptMessage();
     void updatalistwidget(int value);//更新listWidget
     void updataplaylistwidget(int value);//更新playlistWidget
+    void updatehistorywidget(int value);
     void updateSongPlaying();
     void slot_showMiniWidget();//迷你模式
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
-    void changeDarkTheme();  //切换深浅色主题
-    void changeLightTheme();
+    void slot_showMaximized();  //最大化和还原
+    void close_MainWid();    //关闭程序
+    void changeDarkTheme();  //切换深色主题
+    void changeLightTheme(); //切换浅色主题
     void mousePressEvent(QMouseEvent *event);
-    void get_historyplaylist_information();  //保存历史记录
     void local_Music();      //判断本地播放列表中歌曲是否存在
     void new_PlayList();     //判断本地歌单歌曲是否存在
     void albumCover_local_playlist(); //本地和歌单默认封面
@@ -129,6 +127,9 @@ public:
     void albumCover_local();          //本地专辑
     void albumCover_playlist();       //歌单专辑
 
+    void initAddPlayList(int num);   //新建歌单，把歌单中的歌曲进行初始化
+    static MainWid *mutual;          //指针类型静态成员变量
+
     QGSettings *themeData = nullptr;
 
     QTimer *promptMessageTimer;
@@ -136,6 +137,7 @@ public:
     void showPromptMessage();   //显示歌曲不存在的提示信息
     void closePromptMessage();
 
+    bool Minimize = false;       //最大化和还原俩个状态
     //添加文件夹
     QStringList AllDirList;
     QStringList DirList; // all checked dir
@@ -159,11 +161,6 @@ public:
 
     QList<MusicPath> MusicPathList;
 
-
-
-    QString Dir;
-    QString musicPath;
-
     QByteArray byteArray;
     QString musicName;
     QString musicSinger;
@@ -174,12 +171,13 @@ public:
 
     void processArgs(QStringList args);
 
-
 public slots:
-//    void playSong(bool);
+    void menuModuleSetThemeStyle(QString str);//切换主题槽函数
+    int kylin_music_play_request(QString path);
     void play_Song();   //播放和暂停
     void on_musicInfoWidget_customContextMenuRequested(const QPoint &pos);  //歌曲列表右键菜单
     void on_sidebarWidget_customContextMenuRequested(const QPoint &pos);    //侧边栏歌单区域右键菜单
+//    void on_historyWidget_customContextMenuRequested(const QPoint &pos);    //历史列表右键菜单
 //    void setHsliderPosition();      //添加歌曲时记住当前播放的位置
 //    void contextMenuEvent(QContextMenuEvent *);
     void playOrPauseAct();    //右键播放
@@ -188,6 +186,7 @@ public slots:
     void getSongInfoAct();    //歌曲信息
     void on_listWidget_doubleClicked(QListWidgetItem *item);         //双击本地音乐播放playlist
     void on_musicListChangeWid_doubleClicked(QListWidgetItem *item); //双击歌单播放
+    void on_historyWidget_doubleClicked(QListWidgetItem *item);      //双击历史列表播放
     void Music_stateChang(QMediaPlayer::State state);//播放状态改变
     void Music_playlist_stateChang(QMediaPlayer::State state);
     void on_lastBtn_clicked();             //上一首
@@ -200,30 +199,35 @@ public slots:
     void playlist_positionChange(qint64 position);
     void playlist_durationChange(qint64 duration);
 //    void playlist_currentMediaChanged(QMediaContent content);
-    void setPosition(int position);
-//    void playlist_setPosition(int position);
+
     bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击  事件过滤器
     void add_music_to_songlist(QAction *listact);    //添加到歌单
     void deleteMusicFromLocalList(); //从本地音乐删除
 //    void deleteMusicFromSongList();  //从歌单删除音乐
-    void deleteThisSongList();
+    void deleteThisSongList();       //删除歌单弹窗
     void showRenameDlg();
     void renameThisSongList();       //重命名歌单
-    void promptThisSongList();       //歌单提示信息
     void renameSongListCon();
     void promptRenamePlayList();     //重命名歌单提示信息
     void promptRemovePlayList();     //删除歌单提示信息
+    void getPlayListStop();
+//    void historyPlay();
+//    void historyNext();
+//    void historyDel();
 
     // 拖动进度条
     void slidePress();
-//    void slideMove(int position);
     void slideRelease();
-//    void playlist_slidePress();
-////    void slideMove(int position);
-//    void playlist_slideRelease();
-    void PlayModeChanged(); //播放模式
+    void setPosition(int position);
 
-    void initSystemTray();
+//    void slideMove(int position);
+    void PlayModeChanged(); //播放模式
+    void addLike();          //我喜欢按钮
+
+    /* 历史播放列表播放相关的槽函数 */
+    void historyPositionChange(qint64 position);
+    void historyDurationChange(qint64 duration);
+
     void showBeforeList();  //显示历史播放列表
     void show_volumeBtn();  //音量显示
     void changeVolume(int values);
@@ -238,10 +242,9 @@ public slots:
     void showSearchResultWidget(); //显示搜索页面
     void hideSearchResultWidget(); //隐藏搜索页面
 
-    int kylin_music_play_request(QString path);
-//    void addFile(const QStringList &addFile);  //拖拽添加歌曲
-
-
+    void local_currentIndexChanged(int currentIndex);    //获取歌曲列表正在播放title
+    void playlist_currentIndexChanged(int currentIndex); //获取歌单列表正在播放title
+    void history_currentIndexChanged(int currentIndex);  //获取历史列表正在播放title
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
@@ -250,12 +253,17 @@ protected:
     // 键盘响应事件
     void keyPressEvent(QKeyEvent *event);
 
-
-
 private:
-//    void paintEvent(QPaintEvent *event);
-//    QString g_file_path;
-//    bool isStartPlay = false;      //默认不播放媒体
+    //主界面构造初始化函数
+    void Single(QString path);//单例
+    void initStyle();//初始化样式
+    void initControlse();//初始化控件
+    void initDbus();//初始化dbus
+    void initAction();//初始化事件
+    void initGSettings();//初始化GSettings
+    void initSystemTray();//初始化托盘
+    void initDaemonIpcDbus();//用户手册
+    void initDataBase();//数据库
 
     // 用户手册功能
     DaemonIpcDbus *mDaemonIpcDbus;
@@ -267,6 +275,7 @@ private:
     ChangeListWid *nullMusicWidget;
     PlaySongArea *myPlaySongArea;
     SongInfoWidget *mySongInfoWidget;
+//    menuModule *menumodule;
     //文件拖拽功能
 
     QVBoxLayout *rightlayout;
@@ -281,7 +290,12 @@ private:
 //    QAction *lookAct; //右键查看本地文件
     QAction *songAct;   //右键歌曲信息
 
-    Slider *hSlider;
+//    QMenu *historyMenu;
+//    QAction *playAction;
+//    QAction *nextAction;
+//    QAction *delAction;
+
+    MusicSlider *hSlider;
     Slider *vSlider;
     QWidget *vSliderWid;
     QHBoxLayout *HLayout;
@@ -319,10 +333,8 @@ private:
     QSize m_guiSize;
     QString m_arch;
     QString m_snap;
-
-    void styleInit();//初始化样式
-    void dbusInit();//初始化dbus
-    void gsettingInit();//初始化gsetting
-    void actionInit();//初始化事件
+    void changeItemColour();//切换歌曲列表文字颜色
+    int songListItemColourType = 0; //音乐列表内文字颜色标志 0：黑色  1：白色
+    void songListOutHightStyle(int cur);
 };
 #endif // MAINWID_H

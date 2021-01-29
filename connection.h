@@ -41,7 +41,7 @@ static bool CreatConnection()
 //    query.exec(QString("drop table HistoryPlayList"));
 //    query.exec(QString("drop table SearchPlayList"));
     query.exec(QString("create table if not exists LocalMusic ("
-                       "id int primary key,"
+                       "hash varchar primary key not null,"
                        "musicname varchar,"
                        "filepath varchar,"
                        "singer varchar,"
@@ -57,6 +57,10 @@ static bool CreatConnection()
                        ));//添加新歌单
 
     query.exec(QString("insert into NewPlayList (listname,musicid) values ('我喜欢','')"));
+//    query.exec(QString("create table if not exists LikeMusic ("
+//                       "hash varchar primary key not null,"
+//                       "time varchar)"
+//                       ));//
 
     query.exec(QString("create table if not exists HistoryPlayList ("
                        "id int primary key,"

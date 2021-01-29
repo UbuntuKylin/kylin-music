@@ -26,92 +26,9 @@ SongItem::SongItem(QWidget *parent):QWidget(parent)
 
 //    setStyleSheet("background:red;");
 
-
-    initItem();
-    itemcolor();
-
-
-}
-
-HistoryListItem::HistoryListItem(QWidget *parent):QWidget(parent)
-{
-    setFixedHeight(40);
-
-
-    setAttribute(Qt::WA_TranslucentBackground, true);
-
-//    setStyleSheet("background:red;");
-
-
     initItem();
 
-
 }
-
-void HistoryListItem::initItem()
-{
-    QHBoxLayout *mainLayout = new QHBoxLayout(this);
-
-    songNameWid = new QWidget(this);
-    singerLabel = new QLabel(this);
-
-    songTimeLabel = new QLabel(this);
-    songNameLabel = new QLabel(this);
-
-    int myheight = 35;
-
-
-    QHBoxLayout *songWidLayout = new QHBoxLayout(songNameWid);
-
-//    songNameLabel->setText("年少有为");
-    songNameLabel->setStyleSheet("width: 182px;\
-                                 height: 14px;\
-                                 font-size: 14px;\
-                                  \
-                                 font-weight: 400;\
-                                 color: #303133;\
-                                 line-height: 14px;"
-                                 );
-
-
-//    songTimeLabel->setText("04:21");
-    songTimeLabel->setFixedHeight(myheight);
-
-    songTimeLabel->setStyleSheet("width: 35px;\
-                                 height: 14px;\
-                                 font-size: 14px;\
-                                  \
-                                 font-weight: 400;\
-                                 color: #303133;\
-                                 line-height: 14px;"
-                                 );
-
-//    singerLabel->setText("未知歌手");
-    singerLabel->setFixedHeight(myheight);
-
-    singerLabel->setStyleSheet("width: 158px;\
-                               height: 14px;\
-                               font-size: 14px;\
-                                \
-                               font-weight: 400;\
-                               color: #303133;\
-                               line-height: 14px;"
-                               );
-
-    songWidLayout->addWidget(songNameLabel,0,Qt::AlignLeft | Qt::AlignVCenter);
-    songWidLayout->setSpacing(5);
-    songWidLayout->setContentsMargins(0,0,20,0);
-
-
-    songNameWid->setLayout(songWidLayout);
-    songNameWid->setFixedHeight(myheight);
-
-    mainLayout->addWidget(songNameWid,278);
-    mainLayout->addWidget(singerLabel,174,Qt::AlignVCenter);
-    mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
-
-}
-
 
 void SongItem::initItem()
 {
@@ -139,22 +56,9 @@ void SongItem::initItem()
     hoverPlay->hide();
 
 //    songNameLabel->setText("年少有为");
-
-
-
-//    songTimeLabel->setText("04:21");
     songTimeLabel->setFixedHeight(myheight);
-
-
-
-//    singerLabel->setText("未知歌手");
     singerLabel->setFixedHeight(myheight);
-
-
-//    albumLabel->setText("未知专辑");
     albumLabel->setFixedHeight(myheight);
-
-
 
 
     songWidLayout->addWidget(songNameLabel,0,Qt::AlignLeft | Qt::AlignVCenter);
@@ -162,7 +66,6 @@ void SongItem::initItem()
     songWidLayout->addWidget(hoverPlay,Qt::AlignRight);
     songWidLayout->setSpacing(5);
     songWidLayout->setContentsMargins(0,0,20,0);
-
 
     songNameWid->setLayout(songWidLayout);
     songNameWid->setFixedHeight(myheight);
@@ -172,13 +75,11 @@ void SongItem::initItem()
     mainLayout->addWidget(albumLabel,174,Qt::AlignVCenter);
     mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
     mainLayout->setContentsMargins(30,0,0,0);
-
-
 }
 
-void SongItem::itemcolor()
+void SongItem::itemcolor(int type)
 {
-    if(WidgetStyle::themeColor == 1)
+    if(type == 1)
     {
 
         songNameLabel->setStyleSheet("width: 182px;\
@@ -222,7 +123,7 @@ void SongItem::itemcolor()
                                  "QPushButton::hover{border-image:url(:/img/clicked/love2.png);}"
                                  "QPushButton::pressed{border-image:url(:/img/clicked/love2.png);}");
     }
-    else if(WidgetStyle::themeColor == 0)
+    else if(type==0)
     {
         songNameLabel->setStyleSheet("width: 182px;\
                                      height: 14px;\
@@ -264,38 +165,6 @@ void SongItem::itemcolor()
         hoverLike->setStyleSheet("QPushButton{border-image:url(:/img/default/loveblack2.png);width:16px;height:16px;}"
                                  "QPushButton::hover{border-image:url(:/img/clicked/love2.png);}"
                                  "QPushButton::pressed{border-image:url(:/img/clicked/love2.png);}");
-    }
-
-}
-
-//历史记录label
-void HistoryListItem::song_singerText(QString songName,QString singer)
-{
-    QString show_songName = "";
-    QString show_singer   = "";
-    if(songName.length() > 9)
-    {
-        show_songName = songName.mid(0,8);
-        show_songName.append("...");
-        songNameLabel->setText(show_songName);
-        songNameLabel->setToolTip(songName);
-    }
-    else
-    {
-        songNameLabel->setText(songName);
-        songNameLabel->setToolTip(songName);
-    }
-    if(singer.length() > 4)
-    {
-        show_singer = singer.mid(0,3);
-        show_singer.append("...");
-        singerLabel->setText(show_singer);
-        singerLabel->setToolTip(singer);
-    }
-    else
-    {
-        singerLabel->setText(singer);
-        singerLabel->setToolTip(singer);
     }
 }
 
@@ -340,5 +209,146 @@ void SongItem::song_singer_albumText(QString songName,QString singer,QString alb
     {
         albumLabel->setText(album);
         albumLabel->setToolTip(album);
+    }
+}
+
+
+
+HistoryListItem::HistoryListItem(QWidget *parent):QWidget(parent)
+{
+    this->setObjectName("HistoryListItem");
+    setFixedHeight(40);
+
+
+    setAttribute(Qt::WA_TranslucentBackground, true);
+
+//    setStyleSheet("background:red;");
+
+    initItem();
+    itemcolor();
+}
+
+void HistoryListItem::initItem()
+{
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
+
+    songNameWid = new QWidget(this);
+    singerLabel = new QLabel(this);
+
+    songTimeLabel = new QLabel(this);
+    songNameLabel = new QLabel(this);
+
+    int myheight = 35;
+
+
+    QHBoxLayout *songWidLayout = new QHBoxLayout(songNameWid);
+
+//    songNameLabel->setText("年少有为");
+
+
+    songTimeLabel->setFixedHeight(myheight);
+    singerLabel->setFixedHeight(myheight);
+
+    songWidLayout->addWidget(songNameLabel,0,Qt::AlignLeft | Qt::AlignVCenter);
+    songWidLayout->setSpacing(5);
+    songWidLayout->setContentsMargins(0,0,20,0);
+
+
+    songNameWid->setLayout(songWidLayout);
+    songNameWid->setFixedHeight(myheight);
+
+    mainLayout->addWidget(songNameWid,146);
+    mainLayout->addWidget(singerLabel,78,Qt::AlignVCenter);
+    mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
+    mainLayout->setContentsMargins(16,0,16,0);
+}
+
+
+//历史记录label
+void HistoryListItem::song_singerText(QString songName,QString singer)
+{
+    QString show_songName = "";
+    QString show_singer   = "";
+    if(songName.length() > 7)
+    {
+        show_songName = songName.mid(0,6);
+        show_songName.append("...");
+        songNameLabel->setText(show_songName);
+        songNameLabel->setToolTip(songName);
+    }
+    else
+    {
+        songNameLabel->setText(songName);
+        songNameLabel->setToolTip(songName);
+    }
+    if(singer.length() > 4)
+    {
+        show_singer = singer.mid(0,3);
+        show_singer.append("...");
+        singerLabel->setText(show_singer);
+        singerLabel->setToolTip(singer);
+    }
+    else
+    {
+        singerLabel->setText(singer);
+        singerLabel->setToolTip(singer);
+    }
+}
+
+void HistoryListItem::itemcolor()
+{
+    if(WidgetStyle::themeColor == 1)
+    {
+
+        songNameLabel->setStyleSheet("width: 112px;\
+                                     height: 14px;\
+                                     font-size: 14px;\
+                                      \
+                                     font-weight: 400;\
+                                     color: #F9F9F9;\
+                                     line-height: 14px;");
+
+        songTimeLabel->setStyleSheet("width: 35px;\
+                                     height: 14px;\
+                                     font-size: 14px;\
+                                      \
+                                     font-weight: 400;\
+                                     color: #F9F9F9;\
+                                     line-height: 14px;");
+
+        singerLabel->setStyleSheet("width: 56px;\
+                                   height: 14px;\
+                                   font-size: 14px;\
+                                    \
+                                   font-weight: 400;\
+                                   color: #F9F9F9;\
+                                   line-height: 14px;");
+
+    }
+    else if(WidgetStyle::themeColor == 0)
+    {
+        songNameLabel->setStyleSheet("width: 112px;\
+                                     height: 14px;\
+                                     font-size: 14px;\
+                                      \
+                                     font-weight: 400;\
+                                     color: #303133;\
+                                     line-height: 14px;");
+
+        songTimeLabel->setStyleSheet("width: 35px;\
+                                     height: 14px;\
+                                     font-size: 14px;\
+                                      \
+                                     font-weight: 400;\
+                                     color: #303133;\
+                                     line-height: 14px;");
+
+        singerLabel->setStyleSheet("width: 56px;\
+                                   height: 14px;\
+                                   font-size: 14px;\
+                                    \
+                                   font-weight: 400;\
+                                   color: #303133;\
+                                   line-height: 14px;");
     }
 }

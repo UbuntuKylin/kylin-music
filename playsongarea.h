@@ -39,6 +39,7 @@
 #include "beforeplaylist.h"
 #include "widgetstyle.h"
 #include "allpupwindow.h"
+#include "musicDataBase.h"
 
 class PlaySongArea : public QWidget
 {
@@ -67,12 +68,15 @@ public:
 
     BeforePlayList *mybeforeList;
     void playcolor();
+    void songText(QString songName);   // 正在播放
 
+    musicDataStruct fileData;
+    int index;
 public slots:
 //    void playSong(bool);
     void play_Song();   //播放和暂停
 
-    void songText(QString songName);
+
 private:
     void initWidget();
     QHBoxLayout *h_mainLayout, *m_hControlLayout;

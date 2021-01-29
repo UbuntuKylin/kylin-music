@@ -1,3 +1,78 @@
+kylin-music (1.0.44kord) v101; urgency=medium
+
+  * 实现歌曲列表拖拽添加歌曲.
+  * 更改三联按钮的样式.
+  * 更改关于界面.
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 27 Jan 2021 20:32:38 +0800
+
+kylin-music (1.0.43kord) v101; urgency=medium
+
+  * 解决我喜欢按钮添加歌曲遗留的问题.
+  * 增加歌单右键.
+
+ -- liujialin <liujialin@kylinos.cn>  Tue, 26 Jan 2021 20:59:44 +0800
+
+kylin-music (1.0.42kord) v101; urgency=medium
+
+  * 实现历史歌单双击播放、播放/暂停、上一首、下一首的功能.
+  * 实现按钮将歌曲添加到我喜欢列表.
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 26 Jan 2021 10:37:12 +0800
+
+kylin-music (1.0.41kord) v101; urgency=medium
+
+  * 修复用户手册显示异常问题
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 20 Jan 2021 09:24:12 +0800
+
+kylin-music (1.0.40kord) v101; urgency=medium
+
+  * 解决禅道BUG#34732 播放列表为空时，切换为mini模式后点击播放按钮后，显示已播放状态.
+  * 解决禅道BUG#34659 删除播放列表，再双击播放歌曲，应用闪退.
+  * 解决禅道BUG#34655 将任意歌单中歌曲全部删除后，点击播放面板下一首按钮，应用闪退.
+  * 解决禅道BUG#34652 新添加至自建歌单中的歌曲无法播放，播放歌曲列表和我喜欢中的歌曲能播放但是终端报错.
+  * 解决禅道BUG#34641 在我喜欢或者其他自建歌单中右键删除歌曲或者查看歌曲信息功能，需要重启应用后才能使用.
+  * 解决禅道BUG#34628 删除歌单后应用闪退，报段错误.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Wed, 20 Jan 2021 09:24:12 +0800
+
+kylin-music (1.0.39kord) v101; urgency=medium
+
+  * 用户手册新增英文版本.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sun, 18 Jan 2021 20:44:38 +0800
+
+kylin-music (1.0.38kord) v101; urgency=medium
+
+  * 用户手册新增英文版本.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sun, 18 Jan 2021 20:21:25 +0800
+
+kylin-music (1.0.37kord) v101; urgency=medium
+
+  * 优化播放逻辑.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Sun, 17 Jan 2021 20:44:38 +0800
+
+kylin-music (1.0.36kord) v101; urgency=medium
+
+  * 解决最大化和最小化相关的问题，添加帮助菜单.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Fri, 16 Jan 2021 20:44:38 +0800
+
+kylin-music (1.0.35kord) v101; urgency=medium
+
+  * 重构数据库逻辑相关逻辑.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Fri, 15 Jan 2021 22:01:38 +0800
+
+kylin-music (1.0.34kord) v101; urgency=medium
+
+  * 修改部分UI界面.
+
+ -- fengyongfan <fengyongfan@kylinos.cn>  Fri, 08 Jan 2021 09:34:40 +0800
+
 kylin-music (1.0.33kord) v101; urgency=medium
 
   * 解决禅道BUG#30575 删除自建歌单后，点击播放面板的下一首按钮或双击播放，麒麟音乐闪退.

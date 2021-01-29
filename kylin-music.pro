@@ -58,6 +58,7 @@ PKGCONFIG += gsettings-qt
 
 SOURCES += \
     allpupwindow.cpp \
+    musicDataBase.cpp \
     changelistwid.cpp \
     daemonipcdbus.cpp \
 #    kylinmuisc.cpp \
@@ -65,6 +66,7 @@ SOURCES += \
     mainwid.cpp \
     menumodule.cpp \
     miniwidget.cpp \
+    musicslider.cpp \
     playsongarea.cpp \
     qtsingleapplication/qtlocalpeer.cpp \
     qtsingleapplication/qtsingleapplication.cpp \
@@ -79,12 +81,14 @@ SOURCES += \
 
 HEADERS += \
     allpupwindow.h \
+    musicDataBase.h \
     changelistwid.h \
     daemonipcdbus.h \
 #    kylinmuisc.h \
     mainwid.h \
     menumodule.h \
     miniwidget.h \
+    musicslider.h \
     myapplication.h \
     playsongarea.h \
     qtsingleapplication/qtlocalpeer.h \
@@ -92,7 +96,7 @@ HEADERS += \
     sidebar.h \
     songitem.h \
     titlebar.h \
-    connection.h \
+#    connection.h \
     slider.h \
     beforeplaylist.h \
     widgetstyle.h \
