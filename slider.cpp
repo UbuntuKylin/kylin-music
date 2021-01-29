@@ -20,10 +20,13 @@
 Slider::Slider(QWidget *parent)
     :QSlider(parent)
 {
-
+//    initUi(); //初始化样式
 }
 Slider::~Slider()
 {
 
 }
 
+//void Slider::initUi()
+//{
+//}

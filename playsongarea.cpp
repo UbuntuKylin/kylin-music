@@ -113,7 +113,7 @@ void PlaySongArea::playcolor()
                                "QPushButton::hover{border-image:url(:/img/hover/nextsong.png);}"
                                "QPushButton::pressed{border-image:url(:/img/clicked/nextsong.png);}");
 
-        volumeBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;}");
+//        volumeBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;}");
 
         likeMusicBtn->setStyleSheet("QPushButton{border-image:url(:/img/default/loveblack2.png);}"
                                     "QPushButton::hover{border-image:url(:/img/clicked/love2.png);}"
@@ -166,13 +166,13 @@ void PlaySongArea::initWidget()
     volumeBtn->setFixedSize(16,16);
     volumeBtn->setCursor(Qt::PointingHandCursor);
     volumeBtn->setIcon(QIcon::fromTheme("audio-volume-high-symbolic"));
-    volumeBtn->hide();
-//    volumeBtn->setToolTip(" 静音 ");
-//    volumeBtn->setToolTip(" mute ");
-//    volumeBtn->setToolTip(" 功能未实现 ");
+    volumeBtn->setProperty("isWindowButton", 0x1);
+    volumeBtn->setProperty("useIconHighlightEffect", 0x2);
+    volumeBtn->setFlat(true);
+    volumeBtn->setToolTip(tr(" volume "));    //音量
 //    volumeBtn->setToolTip(tr(" Function not implemented "));
 
-//    volumeBtn->hide();
+    volumeBtn->hide();
 
 //    volumeSlider = new QSlider;
 //    volumeSlider->setOrientation(Qt::Horizontal);

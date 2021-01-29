@@ -115,6 +115,7 @@ public:
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
     void slot_showMaximized();  //最大化和还原
+    void slot_showMinimized();  //最小化
     void close_MainWid();    //关闭程序
     void changeDarkTheme();  //切换深色主题
     void changeLightTheme(); //切换浅色主题
