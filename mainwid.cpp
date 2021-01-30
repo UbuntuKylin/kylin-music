@@ -147,7 +147,7 @@ void MainWid::initControlse()//初始化控件
         rightlayout->addWidget(hSlider);
         rightlayout->addWidget(myPlaySongArea,0,Qt::AlignBottom);
 
-        vSlider = new Slider;
+        vSlider = new Slider();
         vSlider->installEventFilter(this);
         vSlider->setOrientation(Qt::Vertical);
     //    vSlider->setFixedSize(100,12);
@@ -156,15 +156,15 @@ void MainWid::initControlse()//初始化控件
         vSlider->setMinimum(0);
         vSlider->setMaximum(100);
         vSliderWid = new QWidget();
-        vSliderWid->setFixedSize(30,90);
+//        vSliderWid->setFixedSize(30,90);
         vSliderWid->setWindowFlags(Qt::FramelessWindowHint);
 
         HLayout = new QHBoxLayout;
 
         HLayout->addWidget(vSlider);
         vSliderWid->setLayout(HLayout);
-        vSliderWid->setStyleSheet("background-color:white;");
-
+        vSliderWid->setStyleSheet("background-color:red;");
+        vSliderWid->setGeometry(811,498,30,90);
         rightlayout->setMargin(0);
         rightlayout->setSpacing(0);
 
@@ -263,7 +263,7 @@ void MainWid::initAction()//初始化事件
 
     /* 最大化 最小化 关闭 */
     connect(myTitleBar->maximumBtn, &QToolButton::clicked, this, &MainWid::slot_showMaximized);
-    connect(myTitleBar->minimumBtn, &QToolButton::clicked, this, &MainWid::showMinimized);
+    connect(myTitleBar->minimumBtn, &QToolButton::clicked, this, &MainWid::slot_showMinimized);
     connect(myTitleBar->closeBtn, &QToolButton::clicked, this, &MainWid::close_MainWid);
 
     //迷你模式槽函数绑定
@@ -302,7 +302,7 @@ void MainWid::initAction()//初始化事件
     connect(addvSlider,&QShortcut::activated,this,&MainWid::addvSlider_slot);
     QShortcut *subvSlider=new QShortcut(Qt::Key_S,this);
     connect(subvSlider,&QShortcut::activated,this,&MainWid::subvSlider_slot);
-
+    connect(myPlaySongArea->volumeBtn,&QPushButton::clicked,this,&MainWid::show_volumeBtn);
     connect(myPlaySongArea->mybeforeList->emptyBtn,SIGNAL(clicked(bool)),this,SLOT(clear_HistoryPlayList()));
 
     int ret;
@@ -370,11 +370,13 @@ void MainWid::initAction()//初始化事件
 
 void MainWid::songListOutHightStyle(int cur)
 {
-//    QWidget *wid = mySideBar->myMusicListWid->musicInfoWidget->itemWidget(mySideBar->myMusicListWid->musicInfoWidget->currentItem());
-//    SongItem* item = qobject_cast<SongItem *>(wid);
-//    item->itemType = SongItem::highlightType;//打上高亮标签
-//    changeItemColour();
-//    item->itemType = SongItem::defaultType;;//去掉高亮标签
+    qDebug() << mySideBar->myMusicListWid->musicInfoWidget->currentRow();
+    qDebug() << mySideBar->myMusicListWid->musicInfoWidget->currentItem();
+    QWidget *wid = mySideBar->myMusicListWid->musicInfoWidget->itemWidget(mySideBar->myMusicListWid->musicInfoWidget->currentItem());
+    SongItem* item = qobject_cast<SongItem *>(wid);
+    item->itemType = SongItem::highlightType;//打上高亮标签
+    changeItemColour();
+    item->itemType = SongItem::defaultType;;//去掉高亮标签
 }
 
 void MainWid::initAddPlayList(int num)//初始化播放列表
@@ -509,12 +511,13 @@ void MainWid::initDataBase()//数据库
 
 int MainWid::kylin_music_play_request(QString path)
 {
-    qDebug()<<"path : "<<path;
+    if(path == "--play")
+    {
+
+    }
     QStringList qStringListPath ;
     qStringListPath << path;
-    qDebug()<<"qStringListPath : "<<qStringListPath;
     processArgs(qStringListPath);
-    qDebug()<<"qStringListPath : "<<qStringListPath;
     if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
     {
         rightlayout->replaceWidget(nullMusicWidget,mySideBar->rightChangeWid);
@@ -546,6 +549,10 @@ void MainWid::keyPressEvent(QKeyEvent *event)
     QMainWindow::keyPressEvent(event);
 }
 
+void MainWid::resizeEvent(QResizeEvent *event)
+{
+    myPlaySongArea->mybeforeList->setGeometry(width() - 310,-10,320,height() - 68);
+}
 
 #include <QPropertyAnimation>
 void MainWid::slot_showMiniWidget()
@@ -593,12 +600,11 @@ void MainWid::slot_showMaximized()
         myTitleBar->maximumBtn->setProperty("isWindowButton", 0x1);
         myTitleBar->maximumBtn->setProperty("useIconHighlightEffect", 0x2);
         myTitleBar->maximumBtn->setFlat(true);
-
     }
     else
     {
-//        showMaximized();
-        showFullScreen();
+        showMaximized();
+//        showFullScreen();
         Minimize = true;
         myTitleBar->maximumBtn->setIcon(QIcon::fromTheme("window-restore-symbolic"));
 //                maximumBtn->setToolTip(tr("还原"));
@@ -607,6 +613,14 @@ void MainWid::slot_showMaximized()
         myTitleBar->maximumBtn->setProperty("useIconHighlightEffect", 0x2);
         myTitleBar->maximumBtn->setFlat(true);
     }
+}
+
+void MainWid::slot_showMinimized()
+{
+//    this->hide();
+
+    this->showMinimized();
+    this->showNormal();
 }
 
 void MainWid::close_MainWid()
@@ -1820,7 +1834,6 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
         qDebug()<<"-------从本地歌单中没有获取指定歌曲信息-------";
         return;
     }
-
     /* ===to do: add to history table */
     ret = g_db->addMusicToHistoryMusic(fileData.filepath);
     if (ret == DB_OP_SUCC) {
@@ -1879,7 +1892,6 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     }
     /* get music info */
     row = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
-    qDebug()<<mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->mediaCount();
     mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->setPlaylist(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList);
 
 
@@ -2284,6 +2296,7 @@ void MainWid::on_nextBtn_clicked()      //下一首
             QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
             HistoryListItem *besongitem1 = new HistoryListItem;
             myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+            myPlaySongArea->mybeforeList->historyMusicid.append(fileData.filepath);
             myPlaySongArea->mybeforeList->PlayList->addMedia(QUrl::fromLocalFile(fileData.filepath));
             besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
             besongitem1->songTimeLabel->setText(fileData.time); //时长
@@ -2315,7 +2328,7 @@ void MainWid::on_nextBtn_clicked()      //下一首
 
             /* 添加到历史列表 */
             musicPath = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[nextIndex];
-            ret = g_db->getSongInfoFromPlayList(fileData, musicPath, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
+            ret = g_db->getSongInfoFromPlayList(fileData, musicPath, mySideBar->playListName[mySideBar->currentMusicPlaylist]);
             if(ret != DB_OP_SUCC)
             {
                 qDebug() << "从本地歌单中获取歌曲信息失败" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
@@ -2326,6 +2339,7 @@ void MainWid::on_nextBtn_clicked()      //下一首
                 QListWidgetItem *belistItem = new QListWidgetItem(myPlaySongArea->mybeforeList->beforePlayList);
                 HistoryListItem *besongitem1 = new HistoryListItem;
                 myPlaySongArea->mybeforeList->beforePlayList->setItemWidget(belistItem,besongitem1);
+                myPlaySongArea->mybeforeList->historyMusicid.append(fileData.filepath);
                 myPlaySongArea->mybeforeList->PlayList->addMedia(QUrl::fromLocalFile(fileData.filepath));
                 besongitem1->song_singerText(fileData.title, fileData.singer); //历史列表
                 besongitem1->songTimeLabel->setText(fileData.time); //时长
@@ -2985,6 +2999,7 @@ void MainWid::showBeforeList()
     if((myPlaySongArea->listBtn->isChecked()) == true)
     {
         //历史播放列表输出
+//        myPlaySongArea->mybeforeList->setGeometry(width() - 310,-10,320,height() - 68);
         myPlaySongArea->mybeforeList->show();
     }
     else
@@ -3397,6 +3412,7 @@ void MainWid::clear_HistoryPlayList()
         return;
     }
     myPlaySongArea->mybeforeList->PlayList->clear();
+    qDebug()<<myPlaySongArea->mybeforeList->PlayList->mediaCount();
     myPlaySongArea->mybeforeList->beforeListNumberLabel->setText(
                 tr("A total of")+QString::number(myPlaySongArea->mybeforeList->beforePlayList->count())+tr("The first"));
 
@@ -3938,8 +3954,9 @@ void MainWid::processArgs(QStringList args)
         {
             if(mySideBar->myMusicListWid->localAllMusicid[i] == myPlaySongArea->fileData.filepath)
             {
-                mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
+                //mySideBar->myMusicListWid->Music->setPlaylist(mySideBar->myMusicListWid->PlayList);
                 mySideBar->myMusicListWid->PlayList->setCurrentIndex(i);
+                songListOutHightStyle(i);
                 mySideBar->myMusicListWid->Music->play();
                 myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
                                                        "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
