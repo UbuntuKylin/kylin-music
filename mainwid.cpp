@@ -334,12 +334,10 @@ void MainWid::initAction()//初始化事件
                 this,&MainWid::updataplaylistwidget);
             connect(mySideBar->musicListChangeWid[i]->PlayList,&QMediaPlaylist::currentIndexChanged,
                 this,&MainWid::playlist_currentIndexChanged);
-//            connect(mySideBar->musicListChangeWid[i]->Music,&QMediaPlayer::stateChanged,
-//                this,&MainWid::Music_playlist_stateChang);
-            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(positionChanged(qint64)),
-                this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
-            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(durationChanged(qint64)),
-                this,SLOT(playlist_durationChange(qint64)));
+//            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(positionChanged(qint64)),
+//                this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
+//            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(durationChanged(qint64)),
+//                this,SLOT(playlist_durationChange(qint64)));
         }
     }
 
@@ -400,10 +398,10 @@ void MainWid::initAddPlayList(int num)//初始化播放列表
         this,&MainWid::updataplaylistwidget);
     connect(mySideBar->musicListChangeWid[num]->PlayList,&QMediaPlaylist::currentIndexChanged,
         this,&MainWid::playlist_currentIndexChanged);
-    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(positionChanged(qint64)),
-        this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
-    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(durationChanged(qint64)),
-        this,SLOT(playlist_durationChange(qint64)));
+//    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(positionChanged(qint64)),
+//        this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
+//    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(durationChanged(qint64)),
+//        this,SLOT(playlist_durationChange(qint64)));
     qDebug()<<"初始化播放列表功";
 }
 
@@ -3016,7 +3014,6 @@ void MainWid::showBeforeList()
             connect(myPlaySongArea->mybeforeList->Music,SIGNAL(positionChanged(qint64)),this,SLOT(historyPositionChange(qint64)));  //滑块进度条位置改变
             connect(myPlaySongArea->mybeforeList->Music,SIGNAL(durationChanged(qint64)),this,SLOT(historyDurationChange(qint64)));
         }
-
         myPlaySongArea->mybeforeList->show();
     }
     else
