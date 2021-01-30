@@ -3016,6 +3016,7 @@ void MainWid::showBeforeList()
             connect(myPlaySongArea->mybeforeList->Music,SIGNAL(positionChanged(qint64)),this,SLOT(historyPositionChange(qint64)));  //滑块进度条位置改变
             connect(myPlaySongArea->mybeforeList->Music,SIGNAL(durationChanged(qint64)),this,SLOT(historyDurationChange(qint64)));
         }
+
         myPlaySongArea->mybeforeList->show();
     }
     else
