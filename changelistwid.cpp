@@ -333,17 +333,25 @@ void MusicListWid::addFile(const QStringList &addFile)
             fileInfo.setFile(musicdataStruct.filepath);
             fileType(fileInfo);          //文件类型
             fileSize(fileInfo);      //文件大小
-            fileInformation(musicdataStruct.filepath);//获取歌曲文件信息
-//            filepathHash(musicdataStruct.filepath);// 通过路径获取hash
-            ret = g_db->addMusicToLocalMusic(musicdataStruct);
-            if (ret == DB_OP_SUCC) {
-                showFileInformation(musicdataStruct.title,musicdataStruct.singer,musicdataStruct.album,musicdataStruct.time);  //显示获取歌曲文件信息
-                localAllMusicid.append(musicdataStruct.filepath);
-                PlayList->addMedia(QUrl::fromLocalFile(musicdataStruct.filepath));
-                qDebug()<<"添加歌曲文件路径 ==== "<<musicdataStruct.filepath;
-                songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
-            } else {
-                qDebug()<<"歌曲已存在";
+            if(musicdataStruct.filetype == "mp3" || musicdataStruct.filetype == "ogg" || musicdataStruct.filetype == "wav" ||
+                    musicdataStruct.filetype == "wma" || musicdataStruct.filetype == "spx"|| musicdataStruct.filetype == "ape"||
+                    musicdataStruct.filetype == "flac")
+            {
+                fileInformation(musicdataStruct.filepath);//获取歌曲文件信息
+                //            filepathHash(musicdataStruct.filepath);// 通过路径获取hash
+                ret = g_db->addMusicToLocalMusic(musicdataStruct);
+                if (ret == DB_OP_SUCC) {
+                    showFileInformation(musicdataStruct.title,musicdataStruct.singer,musicdataStruct.album,musicdataStruct.time);  //显示获取歌曲文件信息
+                    localAllMusicid.append(musicdataStruct.filepath);
+                    PlayList->addMedia(QUrl::fromLocalFile(musicdataStruct.filepath));
+                    songNumberLabel->setText(tr("A total of")+QString::number(musicInfoWidget->count())+tr("The first"));
+                } else {
+                    qDebug()<<"歌曲已存在";
+                }
+            }
+            else
+            {
+                qDebug()<<" 请查看歌曲类型 ";
             }
         }
     }
@@ -389,6 +397,8 @@ QStringList MusicListWid::fileInformation(QString filepath)
     if(musicAlbum.isEmpty())
         musicAlbum = "未知专辑";
     TagLib::AudioProperties *properties = f.audioProperties();
+    if(properties == nullptr)
+        return songFiles;
 
     int seconds = properties->length() % 60;
     int minutes = (properties->length() - seconds) / 60;

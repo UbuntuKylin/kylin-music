@@ -247,6 +247,7 @@ public slots:
     void playlist_currentIndexChanged(int currentIndex); //获取歌单列表正在播放title
     void history_currentIndexChanged(int currentIndex);  //获取历史列表正在播放title
 protected:
+    void resizeEvent(QResizeEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);

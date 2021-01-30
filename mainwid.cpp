@@ -543,6 +543,10 @@ void MainWid::keyPressEvent(QKeyEvent *event)
     QMainWindow::keyPressEvent(event);
 }
 
+void MainWid::resizeEvent(QResizeEvent *event)
+{
+    myPlaySongArea->mybeforeList->setGeometry(width() - 310,-10,320,height() - 68);
+}
 
 #include <QPropertyAnimation>
 void MainWid::slot_showMiniWidget()
@@ -2989,7 +2993,7 @@ void MainWid::showBeforeList()
     if((myPlaySongArea->listBtn->isChecked()) == true)
     {
         //历史播放列表输出
-        myPlaySongArea->mybeforeList->setGeometry(width() - 310,-10,320,height() - 68);
+//        myPlaySongArea->mybeforeList->setGeometry(width() - 310,-10,320,height() - 68);
         myPlaySongArea->mybeforeList->show();
     }
     else
