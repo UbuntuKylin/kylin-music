@@ -29,6 +29,7 @@ BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
     initAction(); //初始化连接
     initUi();   //初始化样式
     historyItemColor();
+    Music = nullptr;
 }
 
 void BeforePlayList::initUi()
