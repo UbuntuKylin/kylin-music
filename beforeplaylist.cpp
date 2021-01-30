@@ -22,7 +22,7 @@
 BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
 {
 
-    setGeometry(640,0,320,562);
+    setGeometry(640,0,320,572);
 //    setAttribute(Qt::WA_TranslucentBackground, true);
     setStyleSheet("background:#FFFFFF;");
 

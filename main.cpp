@@ -107,7 +107,9 @@ void msgHandler(QtMsgType type, const QMessageLogContext& context, const QString
 int main(int argc, char *argv[])
 {
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-
+    //高清屏幕自适应
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     MyApplication a("kylin-music", argc, argv );
 //    QApplication a(argc, argv);
 //    if(!CreatConnection())

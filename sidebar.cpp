@@ -71,9 +71,9 @@ void SideBar::sidecolor()
                                color: #8F9399;\
                                line-height: 14px;");
 
-        addSongListBtn->setStyleSheet("border-radius:4px;}"
-                                      "QPushButton::hover{color:#8F9399;}"
-                                      "QPushButton::pressed{color:#606265;}");
+//        addSongListBtn->setStyleSheet("border-radius:4px;}"
+//                                      "QPushButton::hover{color:#8F9399;}"
+//                                      "QPushButton::pressed{color:#606265;}");
 
         songListWidget->setStyleSheet("QListWidget{background-color:#1F2022;border:0px;}"
                                       "QListWidget::item:selected{background-color:#1F2022;}"
@@ -115,9 +115,9 @@ void SideBar::sidecolor()
                                 \
                                color: #8F9399;\
                                line-height: 14px;");
-        addSongListBtn->setStyleSheet("border-radius:4px;}"
-                                      "QPushButton::hover{color:#8F9399;}"
-                                      "QPushButton::pressed{color:#606265;}");
+//        addSongListBtn->setStyleSheet("border-radius:4px;}"
+//                                      "QPushButton::hover{color:#8F9399;}"
+//                                      "QPushButton::pressed{color:#606265;}");
 
         songListWidget->setStyleSheet("QListWidget{background-color:#FAFAFA;border:0px;}"
                                       "QListWidget::item:selected{background-color:#FAFAFA;}"
@@ -169,9 +169,12 @@ void SideBar::initTopWidget()
 
 
 //    addSongListBtn->setGeometry(100,161,16,16);
-    addSongListBtn->setFixedSize(16,16);
+    addSongListBtn->setFixedSize(20,20);
     addSongListBtn->setIcon(QIcon::fromTheme("list-add-symbolic"));
 //    addSongListBtn->setIcon(QIcon(":/img/default/add.png"));
+    addSongListBtn->setProperty("isWindowButton", 0x1);
+    addSongListBtn->setProperty("useIconHighlightEffect", 0x2);
+    addSongListBtn->setFlat(true);
 
     addSongListLayout->addWidget(MySongListLabel);
     addSongListLayout->addWidget(addSongListBtn);
@@ -249,11 +252,16 @@ void SideBar::initTopWidget()
 void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos)
 {
     int ret;
-//    qDebug()<<currentSelectList;
-//    qDebug()<<musicListChangeWid[currentSelectList]->musicInfoWidget->count();
-    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() <= 0)
+    qDebug()<<currentSelectList;
+    qDebug()<<musicListChangeWid[currentSelectList]->musicInfoWidget->count();
+    qDebug() << pos ;
+    qDebug() <<  musicListChangeWid[currentPlayList]->musicInfoWidget->x() << " "
+             <<  musicListChangeWid[currentPlayList]->musicInfoWidget->y() << " "
+             <<  musicListChangeWid[currentPlayList]->musicInfoWidget->width() << " "
+             <<  musicListChangeWid[currentPlayList]->musicInfoWidget->height() << " ";
+    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() > 0)
     {
-        QListWidgetItem *curItem1 = musicListChangeWid[currentPlayList]->musicInfoWidget->itemAt(pos);
+        QListWidgetItem *curItem1 = musicListChangeWid[currentSelectList]->musicInfoWidget->itemAt(pos);
 
         if(curItem1 == NULL)
         {
@@ -662,6 +670,8 @@ void SideBar::initDefaultMusicList()
     rightChangeWid->addWidget(myMusicListWid);
     connect(PlayListBtn,SIGNAL(clicked(bool)),this,SLOT(ChangePage()));
     myMusicListWid->get_localmusic_information("LocalMusic");
+    myMusicListWid->Music->setPlaylist(myMusicListWid->PlayList);
+    myMusicListWid->musicInfoWidget->setCurrentRow(0);
     myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(myMusicListWid->musicInfoWidget->count())+tr("The first"));
 
 }
