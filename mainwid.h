@@ -115,6 +115,7 @@ public:
     void slot_closeMiniWidget();
     void slot_recoverNormalWidget();
     void slot_showMaximized();  //最大化和还原
+    void slot_showMinimized();  //最小化
     void close_MainWid();    //关闭程序
     void changeDarkTheme();  //切换深色主题
     void changeLightTheme(); //切换浅色主题
@@ -247,6 +248,7 @@ public slots:
     void history_currentIndexChanged(int currentIndex);  //获取历史列表正在播放title
     void onPlaylistChanged(int index);
 protected:
+    void resizeEvent(QResizeEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
