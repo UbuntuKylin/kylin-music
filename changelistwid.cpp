@@ -288,11 +288,18 @@ void MusicListWid::initMusicListWid()
 
     PlayList = new QMediaPlaylist(this);
 
-    Music = new QMediaPlayer(this);
-
+    //Music = new QMediaPlayer(this);
+    Music = nullptr;
     this->setLayout(vMainLayout);
 }
-
+void MusicListWid::initialQMediaPlayer()
+{
+    if(Music == nullptr)
+    {
+        Music = new QMediaPlayer(this);
+    }
+    m_musicInitialed = true;
+}
 
 void MusicListWid::on_top_addSongBtn_slot()
 {

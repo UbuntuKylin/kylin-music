@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <QDateTime>
+
 #include "mainwid.h"
 #include "songitem.h"
 #include "miniwidget.h"
@@ -28,6 +30,7 @@ MainWid *MainWid::mutual = nullptr;  //！！！！初始化，非常重要
 MainWid::MainWid(QString str, QWidget *parent)
     : QMainWindow(parent)
 {
+    qDebug() << "Mainwindow intialed at " << QDateTime::currentDateTime().toString("    yyyy-MM-dd hh:mm:ss.zzz"); //设置显示格式
     mutual = this;//！！！赋值，非常重要
     Single(str);//单例
     initDaemonIpcDbus();//用户手册
@@ -43,7 +46,7 @@ MainWid::MainWid(QString str, QWidget *parent)
         kylin_music_play_request(argName);
     }
     initStyle();//初始化样式
-
+    qDebug() << "Mainwindow displayed at " << QDateTime::currentDateTime().toString("    yyyy-MM-dd hh:mm:ss.zzz"); //设置显示格式
     qDebug()<<"--------------------程序初始化完成--------------------";
 }
 
@@ -215,7 +218,18 @@ void MainWid::initDbus()//初始化dbus
     else
         qDebug()<<"初始化DBUS失败";
 }
-
+void MainWid::onPlaylistChanged(int index)
+{
+    if(mySideBar->musicListChangeWid[index]->m_musicInitialed == false){
+        qDebug()<< __FILE__ << " " <<__LINE__ <<"QMediaPlayer Not initialed";
+        return ;
+    }
+    qDebug()<< __FILE__ << " " <<__LINE__ <<"onPlaylistChanged";
+    connect(mySideBar->musicListChangeWid[index]->Music,SIGNAL(positionChanged(qint64)),
+        this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
+    connect(mySideBar->musicListChangeWid[index]->Music,SIGNAL(durationChanged(qint64)),
+        this,SLOT(playlist_durationChange(qint64)));
+}
 void MainWid::initAction()//初始化事件
 {
     connect(vSlider,&QSlider::valueChanged,this,&MainWid::changeVolume);
@@ -229,6 +243,7 @@ void MainWid::initAction()//初始化事件
     connect(myPlaySongArea->playBtn,SIGNAL(clicked(bool)),this,SLOT(play_Song()));   //播放歌曲
 
     connect(mySideBar->myMusicListWid->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(on_listWidget_doubleClicked(QListWidgetItem*)));
+    connect(mySideBar,SIGNAL(changePlaylist(int)),this,SLOT(onPlaylistChanged(int)));
     connect(myPlaySongArea->mybeforeList->beforePlayList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(on_historyWidget_doubleClicked(QListWidgetItem*)));
 
     //播放列表右键菜单
@@ -254,8 +269,8 @@ void MainWid::initAction()//初始化事件
 //    connect(hSlider,&MusicListWid::on_top_addSongBtn_slot,this,&MainWid::setHsliderPosition);
 
     /* 历史列表播放活动条关联的槽函数 */
-    connect(myPlaySongArea->mybeforeList->Music,SIGNAL(positionChanged(qint64)),this,SLOT(historyPositionChange(qint64)));  //滑块进度条位置改变
-    connect(myPlaySongArea->mybeforeList->Music,SIGNAL(durationChanged(qint64)),this,SLOT(historyDurationChange(qint64)));
+//    connect(myPlaySongArea->mybeforeList->Music,SIGNAL(positionChanged(qint64)),this,SLOT(historyPositionChange(qint64)));  //滑块进度条位置改变
+//    connect(myPlaySongArea->mybeforeList->Music,SIGNAL(durationChanged(qint64)),this,SLOT(historyDurationChange(qint64)));
 
 //    connect(mySideBar->myMusicListWid->Music,&QMediaPlayer::stateChanged,this,&MainWid::Music_stateChang);
     connect(myPlaySongArea->playModeBtn,SIGNAL(clicked(bool)),this,SLOT(PlayModeChanged()));
@@ -319,12 +334,10 @@ void MainWid::initAction()//初始化事件
                 this,&MainWid::updataplaylistwidget);
             connect(mySideBar->musicListChangeWid[i]->PlayList,&QMediaPlaylist::currentIndexChanged,
                 this,&MainWid::playlist_currentIndexChanged);
-//            connect(mySideBar->musicListChangeWid[i]->Music,&QMediaPlayer::stateChanged,
-//                this,&MainWid::Music_playlist_stateChang);
-            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(positionChanged(qint64)),
-                this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
-            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(durationChanged(qint64)),
-                this,SLOT(playlist_durationChange(qint64)));
+//            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(positionChanged(qint64)),
+//                this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
+//            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(durationChanged(qint64)),
+//                this,SLOT(playlist_durationChange(qint64)));
         }
     }
 
@@ -385,10 +398,10 @@ void MainWid::initAddPlayList(int num)//初始化播放列表
         this,&MainWid::updataplaylistwidget);
     connect(mySideBar->musicListChangeWid[num]->PlayList,&QMediaPlaylist::currentIndexChanged,
         this,&MainWid::playlist_currentIndexChanged);
-    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(positionChanged(qint64)),
-        this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
-    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(durationChanged(qint64)),
-        this,SLOT(playlist_durationChange(qint64)));
+//    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(positionChanged(qint64)),
+//        this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
+//    connect(mySideBar->musicListChangeWid[num]->Music,SIGNAL(durationChanged(qint64)),
+//        this,SLOT(playlist_durationChange(qint64)));
     qDebug()<<"初始化播放列表功";
 }
 
@@ -1787,7 +1800,8 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
         }
         else if(myPlaySongArea->mybeforeList->currentMusicPlaylist == 20)
         {
-            myPlaySongArea->mybeforeList->Music->stop();
+            if(myPlaySongArea->mybeforeList->m_isMusicInitialed == true)
+                myPlaySongArea->mybeforeList->Music->stop();
         }
         else
         {
@@ -1875,7 +1889,8 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     }
     if(myPlaySongArea->mybeforeList->currentMusicPlaylist == 20)
     {
-        myPlaySongArea->mybeforeList->Music->stop();
+        if(myPlaySongArea->mybeforeList->m_isMusicInitialed == true)
+            myPlaySongArea->mybeforeList->Music->stop();
     }
     /* get music info */
     row = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
@@ -2985,6 +3000,12 @@ void MainWid::showBeforeList()
     if((myPlaySongArea->listBtn->isChecked()) == true)
     {
         //历史播放列表输出
+        if(myPlaySongArea->mybeforeList->m_isMusicInitialed == false)
+        {
+            myPlaySongArea->mybeforeList->initialQMediaPlayer();
+            connect(myPlaySongArea->mybeforeList->Music,SIGNAL(positionChanged(qint64)),this,SLOT(historyPositionChange(qint64)));  //滑块进度条位置改变
+            connect(myPlaySongArea->mybeforeList->Music,SIGNAL(durationChanged(qint64)),this,SLOT(historyDurationChange(qint64)));
+        }
         myPlaySongArea->mybeforeList->show();
     }
     else
@@ -3900,7 +3921,8 @@ void MainWid::processArgs(QStringList args)
     }
     if(myPlaySongArea->mybeforeList->currentMusicPlaylist == 20)
     {
-        myPlaySongArea->mybeforeList->Music->stop();
+        if(myPlaySongArea->mybeforeList->m_isMusicInitialed == true)
+            myPlaySongArea->mybeforeList->Music->stop();
     }
     mySideBar->currentMusicPlaylist = -1;
     if(mySideBar->currentMusicPlaylist == -1)

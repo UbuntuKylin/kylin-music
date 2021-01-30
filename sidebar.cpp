@@ -658,7 +658,7 @@ QString SideBar::enterLineEdit(QString text)   //获取歌单名的hash
 void SideBar::initDefaultMusicList()
 {
     myMusicListWid = new MusicListWid();    //歌曲列表界面占据一个 所以此处应该是num
-
+    myMusicListWid->initialQMediaPlayer();
     rightChangeWid->addWidget(myMusicListWid);
     connect(PlayListBtn,SIGNAL(clicked(bool)),this,SLOT(ChangePage()));
     myMusicListWid->get_localmusic_information("LocalMusic");
@@ -939,12 +939,8 @@ void SideBar::AlterPage()
 
     if (btnIndex < 20) {
         rightChangeWid->setCurrentIndex(btnIndex + 1);   //我喜欢和歌曲列表
-
         currentSelectList = btnIndex;
-    }
-    else {
-//        rightChangeWid->setCurrentIndex(1);
-//        currentSelectList = 1;
-
+        musicListChangeWid[currentSelectList]->initialQMediaPlayer();
+        emit changePlaylist(currentSelectList);
     }
 }

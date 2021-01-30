@@ -63,6 +63,8 @@ public:
     int currentPlayIndex = -1;
 
     bool isStartPlay = false;
+    bool m_isMusicInitialed = false;
+    void initialQMediaPlayer();
 public slots:
     void on_historyWidget_customContextMenuRequested(const QPoint &pos);    //历史列表右键菜单
     void historyPlay();
