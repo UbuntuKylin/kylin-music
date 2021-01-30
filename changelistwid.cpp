@@ -398,8 +398,10 @@ QStringList MusicListWid::fileInformation(QString filepath)
         musicAlbum = "未知专辑";
     TagLib::AudioProperties *properties = f.audioProperties();
     if(properties == nullptr)
+    {
         QMessageBox::about(this,"提示信息","添加文件失败");
         return songFiles;
+    }
 
     int seconds = properties->length() % 60;
     int minutes = (properties->length() - seconds) / 60;
