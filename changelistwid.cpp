@@ -288,11 +288,18 @@ void MusicListWid::initMusicListWid()
 
     PlayList = new QMediaPlaylist(this);
 
-    Music = new QMediaPlayer(this);
-
+    //Music = new QMediaPlayer(this);
+    Music = nullptr;
     this->setLayout(vMainLayout);
 }
-
+void MusicListWid::initialQMediaPlayer()
+{
+    if(Music == nullptr)
+    {
+        Music = new QMediaPlayer(this);
+    }
+    m_musicInitialed = true;
+}
 
 void MusicListWid::on_top_addSongBtn_slot()
 {
@@ -351,7 +358,7 @@ void MusicListWid::addFile(const QStringList &addFile)
             }
             else
             {
-                qDebug()<<" 请查看歌曲类型 ";
+                QMessageBox::about(this,"提示信息","添加文件失败");
             }
         }
     }
@@ -398,11 +405,13 @@ QStringList MusicListWid::fileInformation(QString filepath)
         musicAlbum = "未知专辑";
     TagLib::AudioProperties *properties = f.audioProperties();
     if(properties == nullptr)
+    {
+        QMessageBox::about(this,"提示信息","添加文件失败");
         return songFiles;
+    }
 
     int seconds = properties->length() % 60;
     int minutes = (properties->length() - seconds) / 60;
-
     QString musicTime = QString::number(minutes)+":"+QString("%1").arg(seconds, 2, 10, QChar('0'));
     musicdataStruct.title = musicName;
     musicdataStruct.singer = musicSinger;
@@ -425,7 +434,6 @@ QString MusicListWid::fileSize(QFileInfo fileInfo)
             if(size/1024/1024/1024)
             {
                 musicSize = QString::number(size/1024/1024/1024,10)+"GB";
-                qDebug()<<"1"<<musicSize;
             }
             else
                 musicSize = QString::number(size/1024/1024,10)+"MB";
