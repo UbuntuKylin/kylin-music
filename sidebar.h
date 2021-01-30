@@ -110,6 +110,7 @@ public:
     int currentPlayIndex = -1;   //高亮相关
     // 判断删除歌单歌曲时跳过高亮
     bool skipPlaylistHighlight = false;
+    bool m_isHistoryPlaying = false;
 public:
 //    void songListBtncolor();         //歌单按钮(包括我喜欢)样式
 
@@ -141,7 +142,8 @@ public slots:
 //    void on_musicListChangeWid_doubleClicked(QListWidgetItem *item);
 //    void Music_playlist_stateChang(QMediaPlayer::State state);//播放状态改变
 
-
+signals:
+    void changePlaylist(int index);
 private:
     void initTopWidget();
 
