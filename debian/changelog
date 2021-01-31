@@ -1,3 +1,10 @@
+kylin-music (1.0.45kord) v101; urgency=medium
+
+  * 修复一些添加歌曲遗留的bug.
+  * 重构一些初始化列表的样式.
+
+ -- liujialin <liujialin@kylinos.cn>  Sat, 30 Jan 2021 16:05:38 +0800
+
 kylin-music (1.0.44kord) v101; urgency=medium
 
   * 实现歌曲列表拖拽添加歌曲.

@@ -136,12 +136,27 @@ int main(int argc, char *argv[])
     else
         qDebug() << "Failed to load Chinese translation file.";
 #endif
-    qDebug() << "=================argc is " <<argc << argv[0] << argv[1];
+    //qDebug() << "=================argc is " <<argc << argv[0] << argv[1];
 
     QString str = "";
-    if (argc > 1)
+    str = argv[1];
+    if (str!="")
     {
-        str = argv[1];
+        if(str=="--help")//帮助
+        {
+            qDebug()<<"\nkylin-music [cmd]\n"
+                      "-b -back  上一首\n"
+                      "-n -next  下一首\n"
+                      "-p -pause  暂停\n"
+                      "-s -start  播放\n";
+            return 0;
+        }
+        //如果参数不是命令也不是文件路径，则退出
+        if(!QFileInfo::exists(str)&&str!="-b"&&str!="-back"&&str!="-n"&&str!="-next"&&str!="-p"&&str!="-pause"&&str!="-s"&&str!="-start")
+        {
+            qDebug()<<"参数不合规，请使用--help参数获取帮助";
+            return -1;
+        }
     }
     MainWid w(str);
 

@@ -246,7 +246,9 @@ public slots:
     void local_currentIndexChanged(int currentIndex);    //获取歌曲列表正在播放title
     void playlist_currentIndexChanged(int currentIndex); //获取歌单列表正在播放title
     void history_currentIndexChanged(int currentIndex);  //获取历史列表正在播放title
-    void onPlaylistChanged(int index);
+void onPlaylistChanged(int index);
+    void onPrepareForSleep(bool isSleep);//S3  S4策略
+    void onPrepareForShutdown(bool Shutdown);//S3  S4策略
 protected:
     void resizeEvent(QResizeEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
@@ -339,5 +341,9 @@ private:
     void changeItemColour();//切换歌曲列表文字颜色
     int songListItemColourType = 0; //音乐列表内文字颜色标志 0：黑色  1：白色
     void songListOutHightStyle(int cur);
+
+    bool pauseFromPrepareForSleep = false;//因为系统休眠而暂停
+    int timeFromPrepareForSleep = 0;//因为系统休眠而暂停时的时间
+    bool isFirstObject = false;//判断是否是唯一的对象
 };
 #endif // MAINWID_H

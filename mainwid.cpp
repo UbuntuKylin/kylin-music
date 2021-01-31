@@ -48,6 +48,7 @@ MainWid::MainWid(QString str, QWidget *parent)
     initStyle();//初始化样式
     qDebug() << "Mainwindow displayed at " << QDateTime::currentDateTime().toString("    yyyy-MM-dd hh:mm:ss.zzz"); //设置显示格式
     qDebug()<<"--------------------程序初始化完成--------------------";
+    isFirstObject = false;//可以接收外部命令
 }
 
 MainWid::~MainWid()
@@ -67,18 +68,19 @@ void MainWid::Single(QString path)   //单例
     {
         QDBusInterface interface( "org.ukui.kylin_music", "/org/ukui/kylin_music","org.ukui.kylin_music.play", QDBusConnection::sessionBus());
         QDBusReply<int> reply = interface.call( "kylin_music_play_request", path);
-        qDebug() << "file path is " << path;
+        //qDebug() << "file path is " << path;
         if ( reply.isValid() && reply.value() == 0)
         {
-            qDebug( "%d", reply.value());          // prints 4
+            //qDebug( "%d", reply.value());          // prints 4
         }
         else
         {
             qDebug() << "fail";
         }
-        qDebug()<<"麒麟音乐已经在运行";
+        qDebug()<<"麒麟音乐正在运行";
         exit(0);
     }
+    isFirstObject = true;//我是首个对象
     argName = path;
 }
 
@@ -217,6 +219,52 @@ void MainWid::initDbus()//初始化dbus
     }
     else
         qDebug()<<"初始化DBUS失败";
+    //S3 S4策略
+    QDBusConnection::systemBus().connect(QString("org.freedesktop.login1"),
+                                         QString("/org/freedesktop/login1"),
+                                         QString("org.freedesktop.login1.Manager"),
+                                         QString("PrepareForShutdown"), this,
+                                         SLOT(onPrepareForShutdown(bool)));
+    QDBusConnection::systemBus().connect(QString("org.freedesktop.login1"),
+                                         QString("/org/freedesktop/login1"),
+                                         QString("org.freedesktop.login1.Manager"),
+                                         QString("PrepareForSleep"), this,
+                                         SLOT(onPrepareForSleep(bool)));
+}
+
+void MainWid::onPrepareForShutdown(bool Shutdown)
+{
+    //目前只做事件监听，不处理
+    qDebug()<<"onPrepareForShutdown"<<Shutdown;
+}
+
+void MainWid::onPrepareForSleep(bool isSleep)
+{
+    //990
+    //空指针检验
+    //------此处空指针校验（如果用了指针）------
+
+    //系统事件
+    if(isSleep)
+    {
+        //如果没有正在播放则不处理
+        if("------如果没在播放------")return;
+
+        //------此处暂停------
+
+        pauseFromPrepareForSleep = true;
+        //因为休眠和启动都需要时间，所以重新启动后自动播放的时间会比暂停的时间晚，所以在此记录信号收到时的时间
+        timeFromPrepareForSleep = 123143124131323315435465465;//------此处记录时间------
+        return;
+    }
+    if(!pauseFromPrepareForSleep)//如果休眠之前非正在播放则不处理
+        return;
+    pauseFromPrepareForSleep=false;
+
+    //------此处继续播放------
+    //注意要从记录的时间点开始播放：timeFromPrepareForSleep
+    //可以模拟点击进度条的事件
+
 }
 void MainWid::onPlaylistChanged(int index)
 {
@@ -522,6 +570,55 @@ void MainWid::initDataBase()//数据库
 
 int MainWid::kylin_music_play_request(QString path)
 {
+    //990
+    if(isFirstObject&&!QFileInfo::exists(path))//首个实例不接受文件以外的参数
+    {
+        qDebug()<<"首个实例不接受文件以外的参数";
+        isFirstObject = false;//可以接收其他命令
+        return 0;
+    }
+    if(path=="")//无参数，单例触发
+    {
+        //此处显示相关代码代码无效，暂时作为已知BUG处理，后续尝试kwin接口唤醒
+        if(this->isMinimized())
+            this->showNormal();
+        this->raise();
+        this->activateWindow();
+        qDebug()<<"窗口置顶";
+        return 0;
+    }
+    if(path=="-n"||path=="-next")//下一首
+    {
+
+        //------下一首-------
+        qDebug()<<"下一首";
+
+        return 0;
+    }
+    if(path=="-b"||path=="-back")//上一首
+    {
+
+        //-------上一首------
+        qDebug()<<"上一首";
+
+        return 0;
+    }
+    if(path=="-p"||path=="-pause")//暂停
+    {
+
+        //------暂停------
+        qDebug()<<"暂停";
+
+        return 0;
+    }
+    if(path=="-s"||path=="-start")//播放
+    {
+
+        //------播放------
+        qDebug()<<"播放";
+
+        return 0;
+    }
     QStringList qStringListPath ;
     qStringListPath << path;
     processArgs(qStringListPath);

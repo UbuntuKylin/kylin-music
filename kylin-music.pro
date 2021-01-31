@@ -22,6 +22,8 @@ DEPENDPATH += qtsingleapplication
 
 INCLUDEPATH += ./taglib
 
+!system($$PWD/translations/generate_translations_pm.sh): error("Failed to generate pm")
+
 target.path = /usr/bin
 target.source += $$TARGET
 
