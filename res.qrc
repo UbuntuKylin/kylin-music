@@ -109,5 +109,6 @@
         <file>img/hover/random.png</file>
         <file>img/hover/sequence.png</file>
         <file>img/hover/delete.png</file>
+        <file>translations/kylin-music_zh_CN.qm</file>
     </qresource>
 </RCC>

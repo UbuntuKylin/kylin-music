@@ -1,3 +1,16 @@
+kylin-music (1.0.47kord) v101; urgency=medium
+
+  * 解决用终端控制播放遗留的问题.
+
+ -- liujialin <liujialin@kylinos.cn>  Mon, 01 Feb 2021 13:36:41 +0800
+
+kylin-music (1.0.46kord) v101; urgency=medium
+
+  * 增加s3和s4.
+  * 用命令控制播放/暂停、上一首、下一首.
+
+ -- liujialin <liujialin@kylinos.cn>  Mon, 01 Feb 2021 09:41:41 +0800
+
 kylin-music (1.0.45kord) v101; urgency=medium
 
   * 修复一些添加歌曲遗留的bug.
