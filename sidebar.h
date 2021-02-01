@@ -38,6 +38,7 @@
 #include "allpupwindow.h"
 #include "widgetstyle.h"
 #include "playsongarea.h"
+#include "mytoolbutton.h"
 
 
 struct PlayListNew
@@ -55,7 +56,7 @@ public:
     QLabel *recommendLabel;
     QPushButton *logoLabel;
     QLabel *logoNameLabel;
-    QToolButton *PlayListBtn;    //歌曲列表
+    MyToolButton *PlayListBtn;    //歌曲列表
     QLabel *MySongListLabel;
     QPushButton *addSongListBtn;
 
@@ -65,7 +66,7 @@ public:
 
     QListWidget *songListWidget;
 
-    QToolButton *newSongListBtn[20];   //包括我喜欢在内所有的歌单按钮
+    MyToolButton *newSongListBtn[20];   //包括我喜欢在内所有的歌单按钮
 
     QStackedWidget *rightChangeWid;  //进行界面切换      右部除标题栏和播放区域之外的部分
 
