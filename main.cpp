@@ -158,6 +158,7 @@ int main(int argc, char *argv[])
             return -1;
         }
     }
+    qDebug()<< " str "<< str;
     MainWid w(str);
 
     // 添加窗管协议

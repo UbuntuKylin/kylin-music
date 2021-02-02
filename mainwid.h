@@ -139,6 +139,7 @@ public:
     void closePromptMessage();
 
     bool Minimize = false;       //最大化和还原俩个状态
+    bool isPlay = true;         //判断当前播放的状态  (pause == true   、    play  == false)
     //添加文件夹
     QStringList AllDirList;
     QStringList DirList; // all checked dir
@@ -176,6 +177,8 @@ public slots:
     void menuModuleSetThemeStyle(QString str);//切换主题槽函数
     int kylin_music_play_request(QString path);
     void play_Song();   //播放和暂停
+    void pause();
+    void play();
     void on_musicInfoWidget_customContextMenuRequested(const QPoint &pos);  //歌曲列表右键菜单
     void on_sidebarWidget_customContextMenuRequested(const QPoint &pos);    //侧边栏歌单区域右键菜单
 //    void on_historyWidget_customContextMenuRequested(const QPoint &pos);    //历史列表右键菜单
@@ -246,7 +249,7 @@ public slots:
     void local_currentIndexChanged(int currentIndex);    //获取歌曲列表正在播放title
     void playlist_currentIndexChanged(int currentIndex); //获取歌单列表正在播放title
     void history_currentIndexChanged(int currentIndex);  //获取历史列表正在播放title
-void onPlaylistChanged(int index);
+    void onPlaylistChanged(int index);
     void onPrepareForSleep(bool isSleep);//S3  S4策略
     void onPrepareForShutdown(bool Shutdown);//S3  S4策略
 protected:
@@ -342,8 +345,8 @@ private:
     int songListItemColourType = 0; //音乐列表内文字颜色标志 0：黑色  1：白色
     void songListOutHightStyle(int cur);
 
-    bool pauseFromPrepareForSleep = false;//因为系统休眠而暂停
-    int timeFromPrepareForSleep = 0;//因为系统休眠而暂停时的时间
+//    bool pauseFromPrepareForSleep = false;//因为系统休眠而暂停
+//    int timeFromPrepareForSleep = 0;//因为系统休眠而暂停时的时间
     bool isFirstObject = false;//判断是否是唯一的对象
 };
 #endif // MAINWID_H
