@@ -25,6 +25,13 @@ PlaySongArea::PlaySongArea(QWidget *parent) : QWidget(parent)
 
     setFixedHeight(68);
 
+    sliderWid = new SliderWidget(parent);
+    MotifWmHints hint;
+    hint.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
+    hint.functions = MWM_FUNC_ALL;
+    hint.decorations = MWM_DECOR_BORDER;
+    XAtomHelper::getInstance()->setWindowMotifHint(sliderWid->winId(), hint);
+    sliderWid->hide();
 
     mybeforeList = new BeforePlayList(parent);
     MotifWmHints hints;
@@ -172,7 +179,7 @@ void PlaySongArea::initWidget()
     volumeBtn->setToolTip(tr(" volume "));    //音量
 //    volumeBtn->setToolTip(tr(" Function not implemented "));
 
-    volumeBtn->hide();
+//    volumeBtn->hide();
 
 //    volumeSlider = new QSlider;
 //    volumeSlider->setOrientation(Qt::Horizontal);

@@ -21,7 +21,6 @@ SongItem::SongItem(QWidget *parent):QWidget(parent)
 {
     setFixedHeight(40);
 
-
     setAttribute(Qt::WA_TranslucentBackground, true);
 
 //    setStyleSheet("background:red;");
@@ -212,13 +211,10 @@ void SongItem::song_singer_albumText(QString songName,QString singer,QString alb
     }
 }
 
-
-
 HistoryListItem::HistoryListItem(QWidget *parent):QWidget(parent)
 {
     this->setObjectName("HistoryListItem");
     setFixedHeight(40);
-
 
     setAttribute(Qt::WA_TranslucentBackground, true);
 
@@ -253,7 +249,6 @@ void HistoryListItem::initItem()
     songWidLayout->setSpacing(5);
     songWidLayout->setContentsMargins(0,0,20,0);
 
-
     songNameWid->setLayout(songWidLayout);
     songNameWid->setFixedHeight(myheight);
 
@@ -261,8 +256,8 @@ void HistoryListItem::initItem()
     mainLayout->addWidget(singerLabel,78,Qt::AlignVCenter);
     mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
     mainLayout->setContentsMargins(16,0,16,0);
+    this->setStyleSheet("background:transparent;");
 }
-
 
 //历史记录label
 void HistoryListItem::song_singerText(QString songName,QString singer)

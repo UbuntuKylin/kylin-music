@@ -148,28 +148,40 @@ void MainWid::initControlse()//初始化控件
         //实例化进度条
         hSlider = new MusicSlider(this);
 
-
         rightlayout->addWidget(hSlider);
         rightlayout->addWidget(myPlaySongArea,0,Qt::AlignBottom);
 
-        vSlider = new Slider();
-        vSlider->installEventFilter(this);
-        vSlider->setOrientation(Qt::Vertical);
-    //    vSlider->setFixedSize(100,12);
-    //    vSlider->setToolTip("音量调节");
-        vSlider->setToolTip(tr("volume"));
-        vSlider->setMinimum(0);
-        vSlider->setMaximum(100);
-        vSliderWid = new QWidget();
-//        vSliderWid->setFixedSize(30,90);
-        vSliderWid->setWindowFlags(Qt::FramelessWindowHint);
+//        vSliderDialog = new QDialog(this);
+//        vSliderDialog->setFixedSize(30,90);
+//        MotifWmHints hint;
+//        hint.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
+//        hint.functions = MWM_FUNC_ALL;
+//        hint.decorations = MWM_DECOR_BORDER;
+//        XAtomHelper::getInstance()->setWindowMotifHint(vSliderDialog->winId(), hint);
+        //        vSliderDialog->setWindowFlags(Qt::FramelessWindowHint);
 
-        HLayout = new QHBoxLayout;
+//        vSlider = new Slider;
+//        vSlider->installEventFilter(this);
+//        vSlider->setOrientation(Qt::Vertical);
+//    //    vSlider->setFixedSize(100,12);
+//    //    vSlider->setToolTip("音量调节");
+//        vSlider->setToolTip(tr("volume"));
+//        vSlider->setMinimum(0);
+//        vSlider->setMaximum(100);
+//        vSlider->setValue(50);
+////        vSlider->setSingleStep(1);
+//        vSlider->setStyleSheet("QSlider::groove:vertical {width:4px;}"
+//                               "QSlider::add-page:vertical{background:#3790FA;}"
+//                               "QSlider::sub-page:vertical{background:#ECEEF5;}"
+//                               "QSlider::handle:vertical{width:10px;height:10px;margin-top: 0px;margin-left: -5px;margin-bottom: 0px;margin-right: -5px; }"
+//                               "QSlider::handle:vertical:disabled {background: #3790FA;");
 
-        HLayout->addWidget(vSlider);
-        vSliderWid->setLayout(HLayout);
-        vSliderWid->setStyleSheet("background-color:red;");
-        vSliderWid->setGeometry(811,498,30,90);
+//        HLayout = new QHBoxLayout;
+
+//        HLayout->addWidget(vSlider);
+//        sliderWid->setLayout(HLayout);
+//        vSliderDialog->setStyleSheet("background-color:#FFFFFF;");
+
         rightlayout->setMargin(0);
         rightlayout->setSpacing(0);
 
@@ -285,7 +297,7 @@ void MainWid::onPlaylistChanged(int index)
 }
 void MainWid::initAction()//初始化事件
 {
-    connect(vSlider,&QSlider::valueChanged,this,&MainWid::changeVolume);
+    connect(myPlaySongArea->sliderWid->vSlider,&QSlider::valueChanged,this,&MainWid::changeVolume);
 
     connect(myTitleBar->miniBtn,&QPushButton::clicked,this,&MainWid::slot_showMiniWidget);
     connect(m_MiniWidget->m_recoveryWinBtn,&QPushButton::clicked,this,&MainWid::slot_recoverNormalWidget);
@@ -371,6 +383,8 @@ void MainWid::initAction()//初始化事件
     QShortcut *subvSlider=new QShortcut(Qt::Key_S,this);
     connect(subvSlider,&QShortcut::activated,this,&MainWid::subvSlider_slot);
     connect(myPlaySongArea->volumeBtn,&QPushButton::clicked,this,&MainWid::show_volumeBtn);
+    myPlaySongArea->sliderWid->raise();
+    myPlaySongArea->volumeBtn->setCheckable(true);
     connect(myPlaySongArea->mybeforeList->emptyBtn,SIGNAL(clicked(bool)),this,SLOT(clear_HistoryPlayList()));
 
     int ret;
@@ -666,6 +680,7 @@ void MainWid::keyPressEvent(QKeyEvent *event)
 void MainWid::resizeEvent(QResizeEvent *event)
 {
     myPlaySongArea->mybeforeList->setGeometry(width() - 310,-10,320,height() - 68);
+    myPlaySongArea->sliderWid->setGeometry(width() - 147,height() - 142,30,90);
 }
 
 #include <QPropertyAnimation>
@@ -960,7 +975,6 @@ void MainWid::play_Song()
 //    }
     if(isPlay)
     {
-        isPlay = true;
         if(mySideBar->myMusicListWid->Music->state() == QMediaPlayer::PlayingState ||
                 mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->state() == QMediaPlayer::PlayingState ||
                 myPlaySongArea->mybeforeList->Music->state() == QMediaPlayer::PlayingState)
@@ -971,7 +985,6 @@ void MainWid::play_Song()
     }
     else
     {
-        isPlay = false;
         if(mySideBar->myMusicListWid->Music->state() != QMediaPlayer::PlayingState ||
                 mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->state() != QMediaPlayer::PlayingState ||
                 myPlaySongArea->mybeforeList->Music->state() != QMediaPlayer::PlayingState)
@@ -2250,7 +2263,9 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
             myPlaySongArea->mybeforeList->Music->stop();
     }
     /* get music info */
+    qDebug()<<" currentSelectList "<<mySideBar->currentSelectList;
     row = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
+    qDebug()<<" row :"<< row <<"  "<<" currentSelectList "<<mySideBar->currentSelectList;
     mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->setPlaylist(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList);
 
 
@@ -2268,6 +2283,7 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     if(ret == DB_OP_SUCC)
     {
         mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->play();
+        isPlay = true;
         myPlaySongArea->songText(fileData.title); // 正在播放
         m_MiniWidget->songText(fileData.title);   //mini正在播放
     }
@@ -3384,58 +3400,92 @@ void MainWid::showBeforeList()
 
 void MainWid::show_volumeBtn()
 {
-    if(vSliderWid->isHidden())
+    if(myPlaySongArea->volumeBtn->isChecked() == true)
     {
-        vSliderWid->show();
+        myPlaySongArea->sliderWid->show();
     }
     else
     {
-        vSliderWid->hide();
+        myPlaySongArea->sliderWid->hide();
     }
 }
 
 void MainWid::changeVolume(int values)
 {
-    if(values == 0)
+    if(mySideBar->currentMusicPlaylist == -1)
     {
-        myPlaySongArea->volumeBtn->setIcon(QIcon(":/img/clicked/vol_close.png"));
+        if(values == 0)
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-muted"));
+        }
+        else if(values > 0&&values <= 50)
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-medium"));
+        }
+        else
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-high"));
+        }
+        mySideBar->myMusicListWid->Music->setVolume(values);
     }
-    else if(values > 0&&values <= 50)
+    else if(mySideBar->currentMusicPlaylist >= 0 && mySideBar->currentMusicPlaylist < 20)
     {
-        myPlaySongArea->volumeBtn->setIcon(QIcon(":/img/clicked/vol_small.png"));
+        if(values == 0)
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-muted"));
+        }
+        else if(values > 0&&values <= 50)
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-medium"));
+        }
+        else
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-high"));
+        }
+        mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->setVolume(values);
     }
     else
     {
-        myPlaySongArea->volumeBtn->setIcon(QIcon(":/img/clicked/vol_large.png"));
+        if(values == 0)
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-muted"));
+        }
+        else if(values > 0&&values <= 50)
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-medium"));
+        }
+        else
+        {
+            myPlaySongArea->volumeBtn->setIcon(QIcon::fromTheme("audio-volume-high"));
+        }
+        myPlaySongArea->mybeforeList->Music->setVolume(values);
     }
-    mySideBar->myMusicListWid->Music->setVolume(values);
 }
 
 void MainWid::mousePressEvent(QMouseEvent *event)
 {
-    vSlider->hide();
+//    sliderWid->vSlider->hide();
 }
 
 void MainWid::addvSlider_slot()
 {
-
-    vSlider->show();
-    int values = vSlider->value();
+    myPlaySongArea->sliderWid->vSlider->show();
+    int values = myPlaySongArea->sliderWid->vSlider->value();
     if(values < 100)
     {
         values++;
-        vSlider->setValue(values);
+        myPlaySongArea->sliderWid->vSlider->setValue(values);
     }
 }
 void MainWid::subvSlider_slot()
 {
-    vSlider->show();
-    int values = vSlider->value();
+    myPlaySongArea->sliderWid->vSlider->show();
+    int values = myPlaySongArea->sliderWid->vSlider->value();
     if(values > 0)
     {
 
         values--;
-        vSlider->setValue(values);
+        myPlaySongArea->sliderWid->vSlider->setValue(values);
     }
 }
 

@@ -85,6 +85,8 @@
 #include <QDBusConnection>
 //播放音乐进度条
 #include "musicslider.h"
+//音量弹窗
+#include "sliderwidget.h"
 
 struct MusicPath
 {
@@ -204,7 +206,7 @@ public slots:
     void playlist_durationChange(qint64 duration);
 //    void playlist_currentMediaChanged(QMediaContent content);
 
-    bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击  事件过滤器
+
     void add_music_to_songlist(QAction *listact);    //添加到歌单
     void deleteMusicFromLocalList(); //从本地音乐删除
 //    void deleteMusicFromSongList();  //从歌单删除音乐
@@ -260,6 +262,7 @@ protected:
     void dropEvent(QDropEvent *event);
     // 键盘响应事件
     void keyPressEvent(QKeyEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);   //鼠标滑块点击  事件过滤器
 
 private:
     //主界面构造初始化函数
@@ -304,9 +307,9 @@ private:
 //    QAction *delAction;
 
     MusicSlider *hSlider;
-    Slider *vSlider;
-    QWidget *vSliderWid;
-    QHBoxLayout *HLayout;
+//    Slider *vSlider;
+//    QDialog *vSliderDialog;
+//    QHBoxLayout *HLayout;
     int moved = 0;
 
     miniWidget *m_MiniWidget;
