@@ -35,7 +35,8 @@ void menuModule::initAction(){
     QAction *actionQuit = new QAction(m_menu);
 //    actionQuit->setText(tr("Quit"));
 //    actions<<actionTheme<<actionHelp<<actionAbout<<actionQuit;
-    actions<<actionTheme<<actionHelp<<actionAbout;
+//    actions<<actionTheme<<actionHelp<<actionAbout;    //隐藏关于主题颜色的设置，默认跟随主题，不随着用户操作更改。
+    actions<<actionHelp<<actionAbout;
     m_menu->addActions(actions);
 //    互斥按钮组
     QMenu *themeMenu = new QMenu;
@@ -47,13 +48,13 @@ void menuModule::initAction(){
     autoTheme->setCheckable(true);
     QAction *lightTheme = new QAction(tr("Light"),this);
     lightTheme->setObjectName("Light");//用TEXT判断有风险
-    themeMenuGroup->addAction(lightTheme);
-    themeMenu->addAction(lightTheme);
+//    themeMenuGroup->addAction(lightTheme);
+//    themeMenu->addAction(lightTheme);
     lightTheme->setCheckable(true);
     QAction *darkTheme = new QAction(tr("Dark"),this);
     darkTheme->setObjectName("Dark");//用TEXT判断有风险
-    themeMenuGroup->addAction(darkTheme);
-    themeMenu->addAction(darkTheme);
+//    themeMenuGroup->addAction(darkTheme);
+//    themeMenu->addAction(darkTheme);
     darkTheme->setCheckable(true);
     QList<QAction* > themeActions;
     themeActions<<autoTheme<<lightTheme<<darkTheme;
@@ -90,14 +91,16 @@ void menuModule::setThemeFromLocalThemeSetting(QList<QAction* > themeActions)
 }
 
 void menuModule::themeUpdate(){
-    if(themeStatus == themeLightOnly)
-    {
-        setThemeLight();
-    }else if(themeStatus == themeBlackOnly){
-        setThemeDark();
-    }else{
-        setStyleByThemeGsetting();
-    }
+//    if(themeStatus == themeLightOnly)
+//    {
+//        setThemeLight();
+//    }else if(themeStatus == themeBlackOnly){
+//        setThemeDark();
+//    }else{
+//        setStyleByThemeGsetting();
+//    }
+      setStyleByThemeGsetting();   //应用颜色更新只跟随主题
+
 }
 
 void menuModule::setStyleByThemeGsetting(){

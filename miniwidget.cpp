@@ -121,7 +121,8 @@ void miniWidget::minicolor()
         setStyleSheet("border-radius:12px;background-color:#252526;");
         m_mainFrame->setStyleSheet("border-radius:6px;background-color:#252526");
         m_timeLab->setStyleSheet("QLabel{color:#8F9399;}");
-        m_coverLabel->setStyleSheet("QLabel{border-image:url(:/img/kylin-music.png);}");
+//        m_coverLabel->setStyleSheet("QLabel{border-image:url(:/img/kylin-music.png);}");
+        m_coverLabel->setPixmap(QPixmap(":/img/kylin-music-logo.png").scaled(48,48));
 
         m_songNameLab->setStyleSheet("QLabel{color:#F9F9F9;}");
 //        m_preBtn->setIcon(QIcon(":/img/dark/lastsong.png"));
@@ -163,7 +164,8 @@ void miniWidget::minicolor()
         setStyleSheet("border-radius:12px;background-color:#FFFFFF;");
         m_mainFrame->setStyleSheet("border-radius:6px;background-color:#FFFFFF");
         m_timeLab->setStyleSheet("QLabel{color:#8F9399;}");
-        m_coverLabel->setStyleSheet("QLabel{border-image:url(:/img/kylin-music.png);}");
+//        m_coverLabel->setStyleSheet("QLabel{border-image:url(:/img/kylin-music.png);}");
+        m_coverLabel->setPixmap(QPixmap(":/img/kylin-music-logo.png").scaled(48,48));
 
         m_songNameLab->setStyleSheet("QLabel{color:#303133;}");
 //        m_preBtn->setIcon(QIcon(":/img/default/lastsong.png"));

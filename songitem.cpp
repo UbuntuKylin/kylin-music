@@ -261,6 +261,7 @@ void HistoryListItem::initItem()
     mainLayout->addWidget(singerLabel,78,Qt::AlignVCenter);
     mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
     mainLayout->setContentsMargins(16,0,16,0);
+    this->setStyleSheet("background:transparent;");
 }
 
 
