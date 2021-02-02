@@ -35,8 +35,11 @@ void SideBar::sidecolor()
 {
     if(WidgetStyle::themeColor == 1)
     {
-        PlayListBtn->setIcon(QIcon(":/img/default/songlist_w .png"));
-
+        QList<MyToolButton *> list = this->findChildren<MyToolButton *>();
+        for(MyToolButton *tmp : list)
+        {
+            tmp->defaultStyle();
+        }
         setStyleSheet("#SideBar{width: 210px;\
                       background: #1F2022;\
                       border-top-left-radius: 12px;border-bottom-left-radius:12px;}");
@@ -58,13 +61,7 @@ void SideBar::sidecolor()
                                       color: #8F9399;\
                                       line-height: 14px;"
                                         );
-        PlayListBtn->setStyleSheet("QToolButton{padding-left:15px;margin-left:14px;\
-                                   font-size: 14px;\
-                                    \
-                                   background:#3790FA;\
-                                   color:#FFFFFF;border-radius:16px;}"
-                                    "QToolButton::hover{background:#40A9FB;}"
-                                    "QToolButton::pressed{background:#296CD9;}");
+
 
         MySongListLabel->setStyleSheet("font-size: 14px;margin-left:26px;\
                                 \
@@ -83,7 +80,11 @@ void SideBar::sidecolor()
     }
     else if(WidgetStyle::themeColor == 0)
     {
-        PlayListBtn->setIcon(QIcon(":/img/default/songlist_w .png"));
+        QList<MyToolButton *> list = this->findChildren<MyToolButton *>();
+        for(MyToolButton *tmp : list)
+        {
+            tmp->defaultStyle();
+        }
 
         setStyleSheet("#SideBar{width: 210px;\
                       background: #FAFAFA;\
@@ -104,13 +105,7 @@ void SideBar::sidecolor()
                                       color: #8F9399;\
                                       line-height: 14px;"
                                         );
-        PlayListBtn->setStyleSheet("QToolButton{padding-left:15px;margin-left:14px;\
-                                 font-size: 14px;\
-                                  \
-                                 background:#3790FA;\
-                                 color:#FFFFFF;border-radius:16px;}"
-                                  "QToolButton::hover{background:#40A9FB;}"
-                                  "QToolButton::pressed{background:#296CD9;}");
+
         MySongListLabel->setStyleSheet("font-size: 14px;margin-left:26px;\
                                 \
                                color: #8F9399;\
@@ -151,13 +146,10 @@ void SideBar::initTopWidget()
     recommendLabel->setText(tr("Music library"));
     recommendLabel->setGeometry(38,73,45,20);
 
-    PlayListBtn = new QToolButton(this);
-//    PlayListBtn->setGeometry(16,99,180,32);
-    PlayListBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    PlayListBtn->setIconSize(QSize(16,16));
+    PlayListBtn = new MyToolButton;
 //    PlayListBtn->setText(tr("歌曲列表"));
     PlayListBtn->setText(tr("The song list"));
-    PlayListBtn->setFixedSize(180,32);
+    PlayListBtn->setStatusTip(IS_SELECT);
 
     QHBoxLayout *addSongListLayout = new QHBoxLayout(this);
     MySongListLabel = new QLabel(this);
@@ -694,12 +686,7 @@ void SideBar::createSongList()
     {
         newSongList[i] = new QListWidgetItem(songListWidget);
         listName = playListName.at(i);
-        newSongListBtn[i] = new QToolButton(this);
-        newSongListBtn[i]->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        newSongListBtn[i]->setIcon(QIcon(":/img/default/songlist.png"));
-        newSongListBtn[i]->setIconSize(QSize(16,16));
-        newSongListBtn[i]->setFixedSize(180,32);
-
+        newSongListBtn[i] = new MyToolButton;
         newSongList[i]->setSizeHint(QSize(180,38));
 
         if (listName != "") {
@@ -707,30 +694,6 @@ void SideBar::createSongList()
 
         }
 
-        if(WidgetStyle::themeColor == 1)
-        {
-            newSongListBtn[i]->setIcon(QIcon(":/img/default/songlist_w .png"));
-
-            newSongListBtn[i]->setStyleSheet("QToolButton{padding-left:15px;margin-left:10px;\
-                                               font-size: 14px;\
-                                               \
-                                              background-color:#1F2022;\
-                                              color:#F9F9F9;border-radius:16px;}"
-                                              "QToolButton::hover{background-color:#303032;border-radius:16px;}"
-                                              "QToolButton::pressed{background-color:#303032;border-radius:16px;}");
-        }
-        else if(WidgetStyle::themeColor == 0)
-        {
-            newSongListBtn[i]->setIcon(QIcon(":/img/default/songlist.png"));
-
-            newSongListBtn[i]->setStyleSheet("QToolButton{padding-left:15px;margin-left:10px;\
-                                             font-size: 14px;\
-                                             \
-                                            background-color:#FAFAFA;\
-                                            color:#303133;border-radius:16px;}"
-                                            "QToolButton::hover{background-color:#EEEEEE;border-radius:16px;}"
-                                            "QToolButton::pressed{background-color:#EEEEEE;border-radius:16px;}");
-        }
         songListWidget->setItemWidget(newSongList[i],newSongListBtn[i]);
         musicListChangeWid[i] = new MusicListWid(this);
         musicListChangeWid[i]->top_addSongBtn->hide();
@@ -826,36 +789,11 @@ void SideBar::addItemToSongList()
     }
 
     newSongList[num] = new QListWidgetItem(songListWidget);  //我喜欢 这一item占有一个索引，所以num作为控制新建歌单数组的下标变量时应该减去1
-    newSongListBtn[num] = new QToolButton(this);
-    newSongListBtn[num]->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    newSongListBtn[num]->setIconSize(QSize(16,16));
+    newSongListBtn[num] = new MyToolButton;
+
     newSongListBtn[num]->setText(listName);
     newSongListBtn[num]->setFixedSize(180,32);
     newSongList[num]->setSizeHint(QSize(180,32));
-    if(WidgetStyle::themeColor == 1)
-    {
-        newSongListBtn[num]->setIcon(QIcon(":/img/default/songlist_w .png"));
-
-        newSongListBtn[num]->setStyleSheet("QToolButton{padding-left:15px;margin-left:10px;\
-                                           font-size: 14px;\
-                                           \
-                                          background-color:#1F2022;\
-                                          color:#F9F9F9;border-radius:16px;}"
-                                          "QToolButton::hover{background-color:#303032;border-radius:16px;}"
-                                          "QToolButton::pressed{background-color:#303032;border-radius:16px;}");
-    }
-    else if(WidgetStyle::themeColor == 0)
-    {
-        newSongListBtn[num]->setIcon(QIcon(":/img/default/songlist.png"));
-
-        newSongListBtn[num]->setStyleSheet("QToolButton{padding-left:15px;margin-left:10px;\
-                                         font-size: 14px;\
-                                         \
-                                        background-color:#FAFAFA;\
-                                        color:#303133;border-radius:16px;}"
-                                        "QToolButton::hover{background-color:#EEEEEE;border-radius:16px;}"
-                                        "QToolButton::pressed{background-color:#EEEEEE;border-radius:16px;}");
-    }
     songListWidget->setItemWidget(newSongList[num],newSongListBtn[num]);
 
     qDebug() << "listName 是：" << listName <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
