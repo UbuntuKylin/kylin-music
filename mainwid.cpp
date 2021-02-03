@@ -1999,6 +1999,7 @@ void MainWid::deleteMusicFromLocalList()
         }
         mySideBar->myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
     }
+  
     if(mySideBar->myMusicListWid->musicInfoWidget->count() == 0)
     {
         qDebug()<<"歌单中无歌曲";
