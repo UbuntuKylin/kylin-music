@@ -59,7 +59,6 @@ public:
         highlightType = 1
     } itemType;
 
-
 public slots:
 
 

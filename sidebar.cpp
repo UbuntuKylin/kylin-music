@@ -241,25 +241,29 @@ void SideBar::initTopWidget()
     createSongList();
 }
 
+//歌单中的右键位置向上偏移120px
 void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos)
 {
     int ret;
-    qDebug()<<currentSelectList;
-    qDebug()<<musicListChangeWid[currentSelectList]->musicInfoWidget->count();
     qDebug() << pos ;
     qDebug() <<  musicListChangeWid[currentPlayList]->musicInfoWidget->x() << " "
              <<  musicListChangeWid[currentPlayList]->musicInfoWidget->y() << " "
              <<  musicListChangeWid[currentPlayList]->musicInfoWidget->width() << " "
              <<  musicListChangeWid[currentPlayList]->musicInfoWidget->height() << " ";
-    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() > 0)
-    {
-        QListWidgetItem *curItem1 = musicListChangeWid[currentSelectList]->musicInfoWidget->itemAt(pos);
+    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() <= 0)
+        return;
+    QPoint tempPoint = pos;
+    if(tempPoint.ry()<120)
+        return;
 
-        if(curItem1 == NULL)
-        {
-            return;
-        }
+    tempPoint.setY(tempPoint.ry() - 120);
+    QListWidgetItem *curItem1 = musicListChangeWid[currentSelectList]->musicInfoWidget->itemAt(tempPoint);
+
+    if(curItem1 == NULL)
+    {
+        return;
     }
+
     menu = new QMenu(musicListChangeWid[currentSelectList]->musicInfoWidget);
     listPlayAct = new QAction(this);
     listNextAct = new QAction(this);
@@ -637,7 +641,6 @@ void SideBar::listSongAct_slot()
         return;
     }
 }
-
 
 void SideBar::addSongList()
 {
