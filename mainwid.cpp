@@ -3705,7 +3705,7 @@ void MainWid::add_nullMusicWidgetAddFile()
         exts.append(QString("*.wav"));
         exts.append(QString("*.wma"));
         exts.append(QString("*.spx"));
-        exts.append(QString("*.ape"));
+        //exts.append(QString("*.ape"));
         exts.append(QString("*.flac"));
         matchDir.setNameFilters(exts);
         matchMp3Files = matchDir.entryList();
