@@ -52,10 +52,10 @@ bool SliderWidget::eventFilter(QObject *obj, QEvent *event)   //鼠标滑块点�
                 {
                     vSlider->setValue(pos);
                 }
-                qDebug()<<"pos : "<<pos;
-                qDebug()<<"dur : "<<dur;
-                qDebug()<<"height() : "<<vSlider->height();
-                qDebug()<<"mouseEvent->y() : "<<mouseEvent->y();
+//                qDebug()<<"pos : "<<pos;
+//                qDebug()<<"dur : "<<dur;
+//                qDebug()<<"height() : "<<vSlider->height();
+//                qDebug()<<"mouseEvent->y() : "<<mouseEvent->y();
             }
         }
     }

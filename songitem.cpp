@@ -20,11 +20,9 @@
 SongItem::SongItem(QWidget *parent):QWidget(parent)
 {
     setFixedHeight(40);
-
     setAttribute(Qt::WA_TranslucentBackground, true);
 
 //    setStyleSheet("background:red;");
-
     initItem();
 
 }
