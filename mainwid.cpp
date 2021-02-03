@@ -683,7 +683,7 @@ void MainWid::keyPressEvent(QKeyEvent *event)
 void MainWid::resizeEvent(QResizeEvent *event)
 {
     myPlaySongArea->mybeforeList->setGeometry(width() - 310,-10,320,height() - 68);
-    myPlaySongArea->sliderWid->setGeometry(width() - 147,height() - 142,30,90);
+    myPlaySongArea->sliderWid->setGeometry(width() - 125,height() - 142,30,90);
 }
 
 #include <QPropertyAnimation>
@@ -976,6 +976,7 @@ void MainWid::play_Song()
 //            }
 //        }
 //    }
+    qDebug()<<isPlay;
     if(isPlay)
     {
         if(mySideBar->myMusicListWid->Music->state() == QMediaPlayer::PlayingState ||
@@ -1255,11 +1256,6 @@ void MainWid::on_sidebarWidget_customContextMenuRequested(const QPoint &pos)    
 void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
 {
     int ret;
-    qDebug() << pos ;
-//    qDebug() <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->x() << " "
-//             <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->y() << " "
-//             <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->width() << " "
-//             <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->height() << " ";
     QListWidgetItem *curItem1 = mySideBar->myMusicListWid->musicInfoWidget->itemAt(pos);
 
     if(curItem1 == NULL)
@@ -1885,6 +1881,7 @@ void MainWid::getPlayListStop()
                                                 "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
                                                 "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
     myPlaySongArea->mybeforeList->isStartPlay = false;
+    mySideBar->currentMusicPlaylist = -2;
     myPlaySongArea->songText("");
     myPlaySongArea->bottomLeftLabel->setText("");
 }
@@ -1963,6 +1960,13 @@ void MainWid::deleteMusicFromLocalList()
             }
         }
         mySideBar->myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
+    }
+    if(mySideBar->myMusicListWid->musicInfoWidget->count() == 0)
+    {
+        qDebug()<<"歌单中无歌曲";
+        rightlayout->replaceWidget(mySideBar->rightChangeWid,nullMusicWidget);
+        nullMusicWidget->show();
+        mySideBar->rightChangeWid->hide();
     }
 }
 
@@ -3091,6 +3095,10 @@ void MainWid::currentMediaChanged(QMediaContent content)
 
 void MainWid::slidePress() //滑动条鼠标按下
 {
+    if(mySideBar->currentMusicPlaylist == -2)
+    {
+        return;
+    }
     if (mySideBar->currentMusicPlaylist == -1)
     {
         mySideBar->myMusicListWid->Music->pause();
@@ -3107,22 +3115,57 @@ void MainWid::slidePress() //滑动条鼠标按下
 
 void MainWid::slideRelease()   //滑动条鼠标弹起
 {
+    if(mySideBar->currentMusicPlaylist == -2)
+    {
+        return;
+    }
     if(mySideBar->currentMusicPlaylist == -1)
     {
         mySideBar->myMusicListWid->Music->play();
+        isPlay = true;
+        myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                               "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                               "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+
+        m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+        mySideBar->myMusicListWid->isStartPlay = true;
     }
     else if (mySideBar->currentMusicPlaylist >= 0 && mySideBar->currentMusicPlaylist < 20)
     {
         mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
+        isPlay = true;
+        myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                               "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                               "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+
+        m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+        mySideBar->myMusicListWid->isStartPlay = true;
     }
     else
     {
         myPlaySongArea->mybeforeList->Music->play();
+        isPlay = true;
+        myPlaySongArea->playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                               "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                               "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+
+        m_MiniWidget->m_playStateBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                                    "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                                    "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+        mySideBar->myMusicListWid->isStartPlay = true;
     }
 }
 
 void MainWid::setPosition(int position)
 {
+    if(mySideBar->currentMusicPlaylist == -2)
+    {
+        return;
+    }
     if(mySideBar->currentMusicPlaylist == -1)
     {
         if (qAbs(mySideBar->myMusicListWid->Music->position() - position) > 99)

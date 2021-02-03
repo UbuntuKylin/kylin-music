@@ -127,7 +127,7 @@ public slots:
     void AlterPage();
 //    void AlterthisPage();
 
-    void on_musicListChangeWid_customContextMenuRequested(const QPoint &pos);
+    void on_musicListChangeWid_customContextMenuRequested(const QPoint &pos);     //歌单中的右键位置向上偏移120px
     void listPlayAct_slot();
     void listNextAct_slot();
     void addMusicToPlayList(QAction *listact);

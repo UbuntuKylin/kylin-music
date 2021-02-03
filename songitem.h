@@ -33,8 +33,6 @@
 
 #include <songitem.h>
 #include <widgetstyle.h>
-#include <QMouseEvent>
-#include <QEvent>
 
 class SongItem : public QWidget
 {

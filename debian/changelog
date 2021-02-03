@@ -1,3 +1,9 @@
+kylin-music (1.0.49kord) v101; urgency=medium
+
+  * 解决一些禅道bug.
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 03 Feb 2021 15:51:24 +0800
+
 kylin-music (1.0.48kord) v101; urgency=medium
 
   * 添加音量功能.

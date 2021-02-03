@@ -74,8 +74,6 @@ void SongItem::initItem()
     mainLayout->setContentsMargins(30,0,0,0);
 }
 
-
-
 void SongItem::itemcolor(int type)
 {
     if(type == 1)
