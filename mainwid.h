@@ -283,7 +283,8 @@ private:
     QWidget *rightWid;
     TitleBar *myTitleBar;
     SideBar *mySideBar;
-    ChangeListWid *nullMusicWidget;
+    ChangeListWid *nullMusicWidget;   //初始化判断
+//    ChangeListWid *nullMusicWid;      //删除歌曲
     PlaySongArea *myPlaySongArea;
     SongInfoWidget *mySongInfoWidget;
 //    menuModule *menumodule;

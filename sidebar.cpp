@@ -259,7 +259,7 @@ void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos
              <<  musicListChangeWid[currentPlayList]->musicInfoWidget->y() << " "
              <<  musicListChangeWid[currentPlayList]->musicInfoWidget->width() << " "
              <<  musicListChangeWid[currentPlayList]->musicInfoWidget->height() << " ";
-    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() <= 0)
+    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() > 0)
     {
         QListWidgetItem *curItem1 = musicListChangeWid[currentSelectList]->musicInfoWidget->itemAt(pos);
 

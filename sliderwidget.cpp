@@ -26,11 +26,11 @@ void SliderWidget::initUi()
     vSlider->setMaximum(100);
     vSlider->setValue(50);
 //        vSlider->setSingleStep(1);
-    vSlider->setStyleSheet("QSlider::groove:vertical {width:4px;}"
-                           "QSlider::add-page:vertical{background:#3790FA;}"
+    vSlider->setStyleSheet("QSlider::groove:vertical {width:10px;}"
+                           "QSlider::add-page:vertical{background:#FFFFFF;}"
                            "QSlider::sub-page:vertical{background:#ECEEF5;}"
                            "QSlider::handle:vertical{width:10px;height:10px;margin-top: 0px;margin-left: -5px;margin-bottom: 0px;margin-right: -5px; }"
-                           "QSlider::handle:vertical:disabled {background: #3790FA;");
+                           );
 
     HLayout = new QHBoxLayout;
     HLayout->addWidget(vSlider);

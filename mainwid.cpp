@@ -120,6 +120,7 @@ void MainWid::initControlse()//初始化控件
 //        connect(mySideBar,SIGNAL(createNewList()),this,SLOT(connectHandle()));
 
         nullMusicWidget = new ChangeListWid(this);   //空页面
+//        nullMusicWid = new ChangeListWid(this);   //空页面
 
         //    myMusicListWid = new MusicListWid(this);
 
@@ -133,7 +134,9 @@ void MainWid::initControlse()//初始化控件
         leftlayout->addWidget(mySideBar);
 
         rightlayout->addWidget(myTitleBar, 0, Qt::AlignTop);
-
+//        QWidget *wid = new QWidget(this);
+//        wid->setParent(mySideBar->rightChangeWid);
+//        wid->show();
         if(mySideBar->myMusicListWid->musicInfoWidget->count() == 0)
         {
             rightlayout->addWidget(nullMusicWidget,Qt::AlignTop);
@@ -1896,7 +1899,8 @@ void MainWid::deleteMusicFromLocalList()
         mySideBar->myMusicListWid->musicInfoWidget->removeItemWidget(mySideBar->myMusicListWid->musicInfoWidget->item(row));
         delete mySideBar->myMusicListWid->musicInfoWidget->item(row);
 
-        if (mySideBar->currentMusicPlaylist == mySideBar->currentSelectList) {
+        if (mySideBar->currentMusicPlaylist == mySideBar->currentSelectList)
+        {
             currPlay = mySideBar->myMusicListWid->PlayList->currentIndex();
             if (currPlay == row)
             {
@@ -3412,6 +3416,10 @@ void MainWid::show_volumeBtn()
 
 void MainWid::changeVolume(int values)
 {
+    if(mySideBar->currentMusicPlaylist == -2)
+    {
+        return;
+    }
     if(mySideBar->currentMusicPlaylist == -1)
     {
         if(values == 0)
