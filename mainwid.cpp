@@ -311,6 +311,8 @@ void MainWid::initAction()//初始化事件
     connect(myPlaySongArea->playBtn,SIGNAL(clicked(bool)),this,SLOT(play_Song()));   //播放歌曲
 
     connect(mySideBar->myMusicListWid->musicInfoWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(on_listWidget_doubleClicked(QListWidgetItem*)));
+    connect(mySideBar->myMusicListWid->musicInfoWidget,&QListWidget::itemClicked,this,&MainWid::on_listWidget_Clicked);//单击事件
+    connect(myPlaySongArea->mybeforeList->beforePlayList,&QListWidget::itemClicked,this,&MainWid::on_listWidget_Clicked);//单击事件
     connect(mySideBar,SIGNAL(changePlaylist(int)),this,SLOT(onPlaylistChanged(int)));
     connect(myPlaySongArea->mybeforeList->beforePlayList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(on_historyWidget_doubleClicked(QListWidgetItem*)));
 
@@ -404,6 +406,7 @@ void MainWid::initAction()//初始化事件
                 this,&MainWid::updataplaylistwidget);
             connect(mySideBar->musicListChangeWid[i]->PlayList,&QMediaPlaylist::currentIndexChanged,
                 this,&MainWid::playlist_currentIndexChanged);
+            connect(mySideBar->musicListChangeWid[i]->musicInfoWidget,&QListWidget::itemClicked,this,&MainWid::on_listWidget_Clicked);//单击事件
 //            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(positionChanged(qint64)),
 //                this,SLOT(playlist_positionChange(qint64)));  //滑块进度条位置改变
 //            connect(mySideBar->musicListChangeWid[i]->Music,SIGNAL(durationChanged(qint64)),
@@ -782,10 +785,15 @@ void MainWid::promptMessage()
 
 void MainWid::play_Song()
 {
-    if(mySideBar->currentMusicPlaylist == -2) {
-        QMessageBox::about(this,"提示信息","请选择歌曲后再点击播放");
-        return;
-    }
+    if(currentItemNow==nullptr)
+        if(mySideBar->myMusicListWid->musicInfoWidget->count()<1)
+        {
+            QMessageBox::about(this,"提示信息","请选择歌曲后再点击播放");
+            return;
+        }
+        else
+            currentItemNow=mySideBar->myMusicListWid->musicInfoWidget;
+
 //    if(mySideBar->currentMusicPlaylist == -1)
 //    {
 //        if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
@@ -976,12 +984,10 @@ void MainWid::play_Song()
 //            }
 //        }
 //    }
-    qDebug()<<isPlay;
+    //qDebug()<<isPlay;
     if(isPlay)
     {
-        if(mySideBar->myMusicListWid->Music->state() == QMediaPlayer::PlayingState ||
-                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->state() == QMediaPlayer::PlayingState ||
-                myPlaySongArea->mybeforeList->Music->state() == QMediaPlayer::PlayingState)
+        if(isPlaying())
         {
             pause();
         }
@@ -989,16 +995,25 @@ void MainWid::play_Song()
     }
     else
     {
-        if(mySideBar->myMusicListWid->Music->state() != QMediaPlayer::PlayingState ||
-                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->state() != QMediaPlayer::PlayingState ||
-                myPlaySongArea->mybeforeList->Music->state() != QMediaPlayer::PlayingState)
+        if(!isPlaying())
         {
             play();
         }
         isPlay = true;
     }
 }
-
+bool MainWid::isPlaying()
+{
+    bool result = false;
+    result |= (mySideBar->myMusicListWid->Music->state()== QMediaPlayer::PlayingState);
+    if(mySideBar->currentMusicPlaylist!=-2)
+        if(mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music != nullptr)
+            qDebug()<<"播放单击选中歌单";//此处有问题，暂时遗留
+            //result |= (mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->state()== QMediaPlayer::PlayingState);
+    if(myPlaySongArea->mybeforeList->Music!=nullptr)
+        result |= (myPlaySongArea->mybeforeList->Music->state()== QMediaPlayer::PlayingState);
+    return result;
+}
 void MainWid::pause()
 {
     if(mySideBar->currentMusicPlaylist == -2) {
@@ -1087,10 +1102,28 @@ void MainWid::pause()
 
 void MainWid::play()
 {
-    if(mySideBar->currentMusicPlaylist == -2) {
-        QMessageBox::about(this,"提示信息","请选择歌曲后再点击播放");
-        return;
+    if(currentItemNow==nullptr)
+        if(mySideBar->myMusicListWid->musicInfoWidget->count()<1)
+        {
+            QMessageBox::about(this,"提示信息","请选择歌曲后再点击播放");
+            return;
+        }
+        else
+            currentItemNow=mySideBar->myMusicListWid->musicInfoWidget;
+    if(currentItemNow==mySideBar->myMusicListWid->musicInfoWidget)
+        mySideBar->currentMusicPlaylist=-1;
+    else
+    {
+        for(int i = 0;i<20;i++)
+        {
+            if(currentItemNow==mySideBar->musicListChangeWid[i]->musicInfoWidget)
+            {
+                mySideBar->currentMusicPlaylist = i;
+                break;
+            }
+        }
     }
+
     if(mySideBar->currentMusicPlaylist == -1)
     {
         if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
@@ -1118,12 +1151,14 @@ void MainWid::play()
 
                 albumCover_local_playlist();  //本地和歌单默认封面
 
-                int currentIndex = mySideBar->myMusicListWid->PlayList->currentIndex();
+//                int currentIndex = mySideBar->myMusicListWid->PlayList->currentIndex();
+        int currentIndex = currentItemNow->currentRow();
                 if(currentIndex == -1)
                 {
                     return;
                 }
-
+                if(mySideBar->myMusicListWid->PlayList->currentIndex()!=currentIndex)
+                    mySideBar->myMusicListWid->PlayList->setCurrentIndex(currentIndex);
                 QString filePath = mySideBar->myMusicListWid->localAllMusicid[currentIndex];
                 ret = g_db->getSongInfoFromLocalMusic(filePath, fileData);
                 if(ret == DB_OP_SUCC)
@@ -1159,12 +1194,14 @@ void MainWid::play()
                                                             "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
 
                 // 播放歌曲，并设置当前播放列表索引
-                int currentIndex = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex();
+                //int currentIndex = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex();
+                int currentIndex = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->musicInfoWidget->currentRow();
                 if(currentIndex == -1)
                 {
                     return;
                 }
-
+                if(mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->currentIndex()!=currentIndex)
+                    mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->PlayList->setCurrentIndex(currentIndex);
                 QString filePath = mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->localAllMusicid[currentIndex];
                 ret = g_db->getSongInfoFromPlayList(fileData, filePath, mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->tableName);
                 if(ret == DB_OP_SUCC)
@@ -1172,7 +1209,9 @@ void MainWid::play()
                     myPlaySongArea->songText(fileData.title); // 正在播放
                     m_MiniWidget->songText(fileData.title);   //mini正在播放
                 }
-                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
+//                mySideBar->musicListChangeWid[mySideBar->currentMusicPlaylist]->Music->play();
+
+                on_musicListChangeWid_doubleClicked(currentItemNow->item(0));
             }
         }
     }
@@ -1901,8 +1940,7 @@ void MainWid::deleteMusicFromLocalList()
         mySideBar->myMusicListWid->musicInfoWidget->removeItemWidget(mySideBar->myMusicListWid->musicInfoWidget->item(row));
         delete mySideBar->myMusicListWid->musicInfoWidget->item(row);
 
-        if (mySideBar->currentMusicPlaylist == mySideBar->currentSelectList)
-        {
+        if (mySideBar->currentMusicPlaylist == mySideBar->currentSelectList) {
             currPlay = mySideBar->myMusicListWid->PlayList->currentIndex();
             if (currPlay == row)
             {
@@ -1961,6 +1999,7 @@ void MainWid::deleteMusicFromLocalList()
         }
         mySideBar->myMusicListWid->songNumberLabel->setText(tr("A total of")+QString::number(mySideBar->myMusicListWid->musicInfoWidget->count())+tr("The first"));
     }
+  
     if(mySideBar->myMusicListWid->musicInfoWidget->count() == 0)
     {
         qDebug()<<"歌单中无歌曲";
@@ -2160,6 +2199,11 @@ void MainWid::updatehistorywidget(int value)
     skipPlayHighlight = false;
 }
 
+void MainWid::on_listWidget_Clicked(QListWidgetItem *item)//双击本地音乐播放playlist
+{
+    currentItemNow = item->listWidget();
+}
+
 void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地音乐播放playlist
 {
     int row;
@@ -2280,7 +2324,6 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
     row = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
     qDebug()<<" row :"<< row <<"  "<<" currentSelectList "<<mySideBar->currentSelectList;
     mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->setPlaylist(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList);
-
 
 
     mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(row);
