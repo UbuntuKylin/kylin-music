@@ -244,34 +244,30 @@ void SideBar::initTopWidget()
 void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos)
 {
     int ret;
-    qDebug()<<currentSelectList;
-    qDebug()<<musicListChangeWid[currentSelectList]->musicInfoWidget->count();
     qDebug() << pos ;
-    qDebug() <<  musicListChangeWid[currentPlayList]->musicInfoWidget->x() << " "
-             <<  musicListChangeWid[currentPlayList]->musicInfoWidget->y() << " "
-             <<  musicListChangeWid[currentPlayList]->musicInfoWidget->width() << " "
-             <<  musicListChangeWid[currentPlayList]->musicInfoWidget->height() << " ";
-    if(musicListChangeWid[currentSelectList]->musicInfoWidget->count() > 0)
-    {
-        QListWidgetItem *curItem1 = musicListChangeWid[currentSelectList]->musicInfoWidget->itemAt(pos);
+    qDebug() <<  musicListChangeWid[currentSelectList]->musicInfoWidget->x() << " "
+             <<  musicListChangeWid[currentSelectList]->musicInfoWidget->y() << " "
+             <<  musicListChangeWid[currentSelectList]->musicInfoWidget->width() << " "
+             <<  musicListChangeWid[currentSelectList]->musicInfoWidget->height() << " ";
+    QListWidgetItem *curItem1 = musicListChangeWid[currentSelectList]->musicInfoWidget->itemAt(pos);
 
-        if(curItem1 == NULL)
-        {
-            return;
-        }
+    if(curItem1 == NULL)
+    {
+        return;
     }
-    menu = new QMenu(musicListChangeWid[currentSelectList]->musicInfoWidget);
-    listPlayAct = new QAction(this);
-    listNextAct = new QAction(this);
-    listDeleAct = new QAction(this);
-    listSongAct = new QAction(this);
+
+    menu = new QMenu();
+    listPlayAct = new QAction();
+    listNextAct = new QAction();
+    listDeleAct = new QAction();
+    listSongAct = new QAction();
 
     listPlayAct->setText(tr("play"));   //播放
     listNextAct->setText(tr("The following piece"));   //下一首
     listDeleAct->setText(tr("Delete the next song from the playlist"));  //从歌单中删除
     listSongAct->setText(tr("Song information")); //歌曲信息
 
-    QMenu *menu5 = new QMenu(this);
+    QMenu *menu5 = new QMenu();
     menu5->setTitle(tr("Add to playlist"));    //添加到歌单
     QStringList playListNameList;
 
@@ -637,7 +633,6 @@ void SideBar::listSongAct_slot()
         return;
     }
 }
-
 
 void SideBar::addSongList()
 {

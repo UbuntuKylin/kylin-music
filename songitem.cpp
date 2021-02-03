@@ -20,11 +20,9 @@
 SongItem::SongItem(QWidget *parent):QWidget(parent)
 {
     setFixedHeight(40);
-
     setAttribute(Qt::WA_TranslucentBackground, true);
 
 //    setStyleSheet("background:red;");
-
     initItem();
 
 }
@@ -75,6 +73,8 @@ void SongItem::initItem()
     mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
     mainLayout->setContentsMargins(30,0,0,0);
 }
+
+
 
 void SongItem::itemcolor(int type)
 {

@@ -1255,6 +1255,11 @@ void MainWid::on_sidebarWidget_customContextMenuRequested(const QPoint &pos)    
 void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
 {
     int ret;
+    qDebug() << pos ;
+//    qDebug() <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->x() << " "
+//             <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->y() << " "
+//             <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->width() << " "
+//             <<  mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->height() << " ";
     QListWidgetItem *curItem1 = mySideBar->myMusicListWid->musicInfoWidget->itemAt(pos);
 
     if(curItem1 == NULL)

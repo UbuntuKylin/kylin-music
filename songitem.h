@@ -33,6 +33,8 @@
 
 #include <songitem.h>
 #include <widgetstyle.h>
+#include <QMouseEvent>
+#include <QEvent>
 
 class SongItem : public QWidget
 {
@@ -58,7 +60,6 @@ public:
         defaultType = 0,
         highlightType = 1
     } itemType;
-
 
 public slots:
 
