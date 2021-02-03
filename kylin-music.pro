@@ -74,6 +74,7 @@ SOURCES += \
     qtsingleapplication/qtlocalpeer.cpp \
     qtsingleapplication/qtsingleapplication.cpp \
     sidebar.cpp \
+    sliderwidget.cpp \
     songitem.cpp \
     titlebar.cpp \
     slider.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
     qtsingleapplication/qtlocalpeer.h \
     qtsingleapplication/qtsingleapplication.h \
     sidebar.h \
+    sliderwidget.h \
     songitem.h \
     titlebar.h \
 #    connection.h \

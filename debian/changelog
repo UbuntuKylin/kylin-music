@@ -1,3 +1,9 @@
+kylin-music (1.0.48kord) v101; urgency=medium
+
+  * 添加音量功能.
+
+ -- liujialin <liujialin@kylinos.cn>  Tue, 02 Feb 2021 15:56:41 +0800
+
 kylin-music (1.0.47kord) v101; urgency=medium
 
   * 解决用终端控制播放遗留的问题.
