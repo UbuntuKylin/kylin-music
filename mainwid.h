@@ -104,7 +104,7 @@ signals:
     void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
 
 public:
-    MainWid(QString str, QWidget *parent=nullptr);
+    MainWid(QString str, QWidget *parent = nullptr);
     ~MainWid();
 //    MainWid(QWidget *);
 //    QString getMp3FileName(QString sqlName);
