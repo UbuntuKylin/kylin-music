@@ -1313,7 +1313,7 @@ void MainWid::on_musicInfoWidget_customContextMenuRequested(const QPoint &pos)
 
     playAct->setText(tr("play"));   //播放
     nextAct->setText(tr("The following piece"));   //下一首
-    deleAct->setText(tr("Remove from the song list"));   //从歌曲列表中删除
+    deleAct->setText(tr("Remove from Song list"));   //从歌曲列表中删除
     songAct->setText(tr("Song information"));    //歌曲信息
 
     QMenu *menu5 = new QMenu(this);
