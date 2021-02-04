@@ -33,6 +33,7 @@
 
 #include <songitem.h>
 #include <widgetstyle.h>
+#include "mytoolbutton.h"
 
 class SongItem : public QWidget
 {
@@ -42,11 +43,11 @@ public:
 
     explicit SongItem(QWidget *parent = nullptr);
     void initItem();
-    QWidget *songNameWid;
-    QLabel *singerLabel;
-    QLabel *albumLabel;
+//    QWidget *songNameWid;
+    MyLabel *singerLabel;
+    MyLabel *albumLabel;
     QLabel *songTimeLabel;
-    QLabel *songNameLabel;
+    MyLabel *songNameLabel;
     QPushButton *hoverLike;
     QPushButton *hoverPlay;
 
@@ -59,6 +60,9 @@ public:
         highlightType = 1
     } itemType;
 
+    QString itemSongName;
+    QString itemSinger;
+    QString itemAlbum;
 public slots:
 
 

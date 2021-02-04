@@ -130,7 +130,7 @@ void SideBar::initTopWidget()
     QHBoxLayout *logoLayout = new QHBoxLayout(this);
     logoLabel = new QPushButton(this);
     logoNameLabel = new QLabel(this);
-    logoNameLabel->setFixedSize(59,20);
+    logoNameLabel->setFixedSize(120,30);
 //    logoNameLabel->setText("麒麟音乐");
     logoNameLabel->setText(tr("Kylin music"));
     //    logoLabel->setGeometry(40,20,100,30);
@@ -148,7 +148,7 @@ void SideBar::initTopWidget()
 
     PlayListBtn = new MyToolButton;
 //    PlayListBtn->setText(tr("歌曲列表"));
-    PlayListBtn->setText(tr("The song list"));
+    PlayListBtn->setText(tr("Song list"));
     PlayListBtn->setStatusTip(IS_SELECT);
 
     QHBoxLayout *addSongListLayout = new QHBoxLayout(this);
@@ -180,7 +180,7 @@ void SideBar::initTopWidget()
 //    songListWidget->setFocusPolicy(Qt::NoFocus);
 
     QWidget *logoWid = new QWidget(this);
-    logoWid->setFixedSize(100, 40);
+    logoWid->setFixedSize(140, 40);
     logoWid->setLayout(logoLayout);
 //    logoWid->setGeometry(8,8,82,24);
 
