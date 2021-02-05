@@ -303,7 +303,7 @@ void MusicListWid::initialQMediaPlayer()
 
 void MusicListWid::on_top_addSongBtn_slot()
 {
-    songFiles = QFileDialog::getOpenFileNames(this, tr("Open the file"),"","音乐文件(*.mp3 *.ogg *.wav *.wma *.spx *.flac)");  //歌曲文件
+    songFiles = QFileDialog::getOpenFileNames(this, tr("Open the file"),"","音乐文件(*.mp3 *.ogg *.wma *.spx *.flac)");  //歌曲文件
 //    if(!songFiles.isEmpty())
 //    {
 //        for(int i = 0; i < songFiles.size(); i++)

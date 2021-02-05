@@ -1,3 +1,9 @@
+kylin-music (1.0.50kord) v101; urgency=medium
+
+  * 解决滑动滑动条，播放状态未改变的bug.
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 03 Feb 2021 18:53:04 +0800
+
 kylin-music (1.0.49kord) v101; urgency=medium
 
   * 解决一些禅道bug.

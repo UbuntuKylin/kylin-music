@@ -104,7 +104,7 @@ signals:
     void addFile(const QStringList &addFile);  //发送拖拽添加歌曲
 
 public:
-    MainWid(QString str, QWidget *parent=nullptr);
+    MainWid(QString str, QWidget *parent = nullptr);
     ~MainWid();
 //    MainWid(QWidget *);
 //    QString getMp3FileName(QString sqlName);
@@ -141,7 +141,7 @@ public:
     void closePromptMessage();
 
     bool Minimize = false;       //最大化和还原俩个状态
-    bool isPlay = false;         //判断当前播放的状态  (pause == true   、    play  == false)
+    bool isPlay = true;         //判断当前播放的状态  (pause == true   、    play  == false)
     //添加文件夹
     QStringList AllDirList;
     QStringList DirList; // all checked dir
@@ -191,7 +191,6 @@ public slots:
 
     void getSongInfoAct();    //歌曲信息
     void on_listWidget_doubleClicked(QListWidgetItem *item);         //双击本地音乐播放playlist
-    void on_listWidget_Clicked(QListWidgetItem *item);         //单击本地音乐播放playlist
     void on_musicListChangeWid_doubleClicked(QListWidgetItem *item); //双击歌单播放
     void on_historyWidget_doubleClicked(QListWidgetItem *item);      //双击历史列表播放
     void Music_stateChang(QMediaPlayer::State state);//播放状态改变
@@ -353,7 +352,5 @@ private:
 //    bool pauseFromPrepareForSleep = false;//因为系统休眠而暂停
 //    int timeFromPrepareForSleep = 0;//因为系统休眠而暂停时的时间
     bool isFirstObject = false;//判断是否是唯一的对象
-    QListWidget *currentItemNow = nullptr;//用来保存单击选中的item
-    bool isPlaying();
 };
 #endif // MAINWID_H
