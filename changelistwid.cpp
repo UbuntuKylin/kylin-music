@@ -340,7 +340,7 @@ void MusicListWid::addFile(const QStringList &addFile)
             fileInfo.setFile(musicdataStruct.filepath);
             fileType(fileInfo);          //文件类型
             fileSize(fileInfo);      //文件大小
-            if(musicdataStruct.filetype == "mp3" || musicdataStruct.filetype == "ogg" || musicdataStruct.filetype == "wav" ||
+            if(musicdataStruct.filetype == "mp3" || musicdataStruct.filetype == "ogg" ||
                     musicdataStruct.filetype == "wma" || musicdataStruct.filetype == "spx"||
                     musicdataStruct.filetype == "flac")
             {

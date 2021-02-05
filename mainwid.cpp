@@ -811,7 +811,6 @@ void MainWid::play_Song()
 
     if(mySideBar->currentMusicPlaylist == -2)
     {
-        qDebug()<<"count : "<<mySideBar->myMusicListWid->musicInfoWidget->count();
         if(mySideBar->myMusicListWid->musicInfoWidget->count() > 0)
         {
             mySideBar->currentMusicPlaylist = -1;
@@ -2061,20 +2060,23 @@ void MainWid::on_listWidget_doubleClicked(QListWidgetItem *item)//双击本地�
 
     /* play area info */
 
-    musicPath = mySideBar->myMusicListWid->localAllMusicid[row];
-    ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
-    if(ret == DB_OP_SUCC)
-    {
-        mySideBar->myMusicListWid->Music->play();
-        isPlay = true;
-        myPlaySongArea->songText(fileData.title); // 正在播放
-        m_MiniWidget->songText(fileData.title);   //mini正在播放
-    }
-    else
-    {
-        qDebug()<<"-------从本地歌单中没有获取指定歌曲信息-------";
-        return;
-    }
+//    musicPath = mySideBar->myMusicListWid->localAllMusicid[row];
+//    ret = g_db->getSongInfoFromLocalMusic(musicPath, fileData);
+//    if(ret == DB_OP_SUCC)
+//    {
+//        mySideBar->myMusicListWid->Music->play();
+//        isPlay = true;
+//        myPlaySongArea->songText(fileData.title); // 正在播放
+//        m_MiniWidget->songText(fileData.title);   //mini正在播放
+//    }
+//    else
+//    {
+//        qDebug()<<"-------从本地歌单中没有获取指定歌曲信息-------";
+//        return;
+//    }
+    local_currentIndexChanged(row);
+    mySideBar->myMusicListWid->Music->play();
+    isPlay = true;
     /* ===to do: add to history table */
     ret = g_db->addMusicToHistoryMusic(fileData.filepath);
     if (ret == DB_OP_SUCC) {
@@ -2133,13 +2135,8 @@ void MainWid::on_musicListChangeWid_doubleClicked(QListWidgetItem *item)
             myPlaySongArea->mybeforeList->Music->stop();
     }
     /* get music info */
-    qDebug()<<" currentSelectList "<<mySideBar->currentSelectList;
     row = mySideBar->musicListChangeWid[mySideBar->currentSelectList]->musicInfoWidget->currentIndex().row();
-    qDebug()<<" row :"<< row <<"  "<<" currentSelectList "<<mySideBar->currentSelectList;
     mySideBar->musicListChangeWid[mySideBar->currentSelectList]->Music->setPlaylist(mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList);
-
-
-
     mySideBar->musicListChangeWid[mySideBar->currentSelectList]->PlayList->setCurrentIndex(row);
     mySideBar->currentMusicPlaylist = mySideBar->currentSelectList;
 //    connect(mySideBar->myMusicListWid->PlayList, &QMediaPlaylist::currentIndexChanged, this,&MainWid::currentPlayHighlight);
@@ -4269,7 +4266,6 @@ void MainWid::showPromptMessage()
 
 void MainWid::dragEnterEvent(QDragEnterEvent *event)   //拖进事件
 {
-    qDebug()<<"dragEnterEvent";
     // 判断拖拽文件类型，文件名 接收该动作
     if(event->mimeData()->hasFormat("text/uri-list"))
     {
@@ -4291,7 +4287,6 @@ void MainWid::dragLeaveEvent(QDragLeaveEvent *event)
 
 void MainWid::dropEvent(QDropEvent *event)    //放下事件
 {
-    qDebug()<<"dropEvent";
     auto urls = event->mimeData()->urls();
     if(urls.isEmpty())
     {
