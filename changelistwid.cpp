@@ -43,13 +43,13 @@ void ChangeListWid::initStack()
     QVBoxLayout *vAddFolderLayout = new QVBoxLayout(this);
 
     songListLabel = new QLabel(this);
-    songListLabel->setGeometry(30,18,100,30);
+    songListLabel->setGeometry(30,18,120,30);
 //    songListLabel->setText("歌曲列表");
     songListLabel->setText(tr("Song list"));
 
 
     songNumberLabel = new QLabel(this);
-    songNumberLabel->setGeometry(142,28,40,18);
+    songNumberLabel->setGeometry(142,28,100,24);
 //    songNumberLabel->setText("共0首");
     songNumberLabel->setText(tr("A total of 0 first"));
 
@@ -58,7 +58,8 @@ void ChangeListWid::initStack()
     nullMusicIconLabel->setStyleSheet("border-image:url(:/img/default/pict1.png)");
 
     nullMusicLabel = new QLabel(this);
-    nullMusicLabel->setFixedSize(84,24);
+    nullMusicLabel->setFixedSize(200,30);
+    nullMusicLabel->setAlignment(Qt::AlignHCenter);
 //    nullMusicLabel->setText("还没有歌曲！");
     nullMusicLabel->setText(tr("There are no songs yet!"));
 
@@ -103,7 +104,7 @@ void ChangeListWid::nullWidgetColor()
 {
     if(WidgetStyle::themeColor == 1)
     {
-        songListLabel->setStyleSheet("width:96px;height:24px;"
+        songListLabel->setStyleSheet("width:120px;height:30px;"
                                      "font-size: 24px;\
                                       \
                                      font-weight: 600;\
@@ -135,7 +136,7 @@ void ChangeListWid::nullWidgetColor()
     }
     else if(WidgetStyle::themeColor == 0)
     {
-        songListLabel->setStyleSheet("width:96px;height:24px;"
+        songListLabel->setStyleSheet("width:120px;height:30px;"
                                      "font-size: 24px;\
                                       \
                                      font-weight: 600;\
