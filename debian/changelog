@@ -1,3 +1,34 @@
+kylin-music (1.0.52kord~rc4) v101; urgency=medium
+
+  * 解决禅道BUG#24621 删除本地歌曲后，再次点击歌曲应用闪退.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 07 Feb 2021 11:23:35 +0800
+
+kylin-music (1.0.52kord~rc3) v101; urgency=medium
+
+  * 解决禅道BUG#38415 英文系统--主界面有中文我喜欢.
+  * 解决禅道BUG#37385 双击打开麒麟音乐，播放按钮的状态不对.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 07 Feb 2021 09:19:54 +0800
+
+kylin-music (1.0.52kord~rc2) v101; urgency=medium
+
+  * 更改用户手册.
+
+ -- liujialin <liujialin@kylinos.cn>  Sat, 06 Feb 2021 11:04:26 +0800
+
+kylin-music (1.0.52kord~rc1) v101; urgency=medium
+
+  * 解决禅道bug #38148、#38139、#37901、#37894
+
+ -- liujialin <liujialin@kylinos.cn>  Fri, 05 Feb 2021 13:56:21 +0800
+
+kylin-music (1.0.51kord) v101; urgency=medium
+
+  * 解决禅道bug37612 打开程序时点击播放按钮弹窗.
+
+ -- liujialin <liujialin@kylinos.cn>  Fri, 05 Feb 2021 10:10:10 +0800
+
 kylin-music (1.0.50kord) v101; urgency=medium
 
   * 解决滑动滑动条，播放状态未改变的bug.

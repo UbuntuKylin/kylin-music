@@ -119,8 +119,8 @@ public:
     void slot_showMaximized();  //最大化和还原
     void slot_showMinimized();  //最小化
     void close_MainWid();    //关闭程序
-    void changeDarkTheme();  //切换深色主题
-    void changeLightTheme(); //切换浅色主题
+    void changeDarkTheme(bool isplay);  //切换深色主题
+    void changeLightTheme(bool isplay); //切换浅色主题
     void mousePressEvent(QMouseEvent *event);
     void local_Music();      //判断本地播放列表中歌曲是否存在
     void new_PlayList();     //判断本地歌单歌曲是否存在

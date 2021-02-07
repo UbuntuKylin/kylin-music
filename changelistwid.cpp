@@ -45,7 +45,7 @@ void ChangeListWid::initStack()
     songListLabel = new QLabel(this);
     songListLabel->setGeometry(30,18,100,30);
 //    songListLabel->setText("歌曲列表");
-    songListLabel->setText(tr("The song list"));
+    songListLabel->setText(tr("Song list"));
 
 
     songNumberLabel = new QLabel(this);
@@ -194,7 +194,7 @@ void MusicListWid::initMusicListWid()
     songListLabel = new QLabel(this);
 //    songListLabel->setGeometry(30,18,100,30);
 //    songListLabel->setText("歌曲列表");
-    songListLabel->setText(tr("The song list"));
+    songListLabel->setText(tr("Song list"));
 
 
     songNumberLabel = new QLabel(this);
@@ -225,7 +225,7 @@ void MusicListWid::initMusicListWid()
     top_addSongBtn->setIcon(QIcon(":/img/default/add.png"));
     top_addSongBtn->setIconSize(QSize(16,16));
 //    top_addSongBtn->setText("添加歌曲");
-    top_addSongBtn->setText(tr("Add the songs"));
+    top_addSongBtn->setText(tr("   Add"));
     top_addSongBtn->setFixedSize(100,30);
 
 
@@ -340,7 +340,7 @@ void MusicListWid::addFile(const QStringList &addFile)
             fileInfo.setFile(musicdataStruct.filepath);
             fileType(fileInfo);          //文件类型
             fileSize(fileInfo);      //文件大小
-            if(musicdataStruct.filetype == "mp3" || musicdataStruct.filetype == "ogg" || musicdataStruct.filetype == "wav" ||
+            if(musicdataStruct.filetype == "mp3" || musicdataStruct.filetype == "ogg" ||
                     musicdataStruct.filetype == "wma" || musicdataStruct.filetype == "spx"||
                     musicdataStruct.filetype == "flac")
             {
@@ -485,7 +485,15 @@ void MusicListWid::get_localmusic_information(QString tableName)
                 this->localAllMusicid.append(resList.at(i).filepath);
                 songitem->song_singer_albumText(resList.at(i).title,resList.at(i).singer,resList.at(i).album); //歌曲名称 歌手 专辑
                 songitem->songTimeLabel->setText(resList.at(i).time); //时长
-                this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
+//                QFileInfo file(resList.at(i).filepath);
+//                if(file.exists())
+//                {
+                    this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
+//                }
+//                else
+//                {
+//                    continue;
+//                }
             }
         }
     }
