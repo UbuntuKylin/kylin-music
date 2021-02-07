@@ -126,35 +126,35 @@
         <translation>麒麟音乐</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="744"/>
+        <location filename="../mainwid.cpp" line="757"/>
         <source>maximize</source>
         <translation>最大化</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="756"/>
+        <location filename="../mainwid.cpp" line="769"/>
         <source>reduction</source>
         <translation>还原</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1106"/>
+        <location filename="../mainwid.cpp" line="1127"/>
         <source>rename</source>
         <translation>重命名</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1108"/>
+        <location filename="../mainwid.cpp" line="1129"/>
         <source>Delete the playlist</source>
         <translation>删除歌单</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1144"/>
-        <location filename="../mainwid.cpp" line="1235"/>
-        <location filename="../mainwid.cpp" line="1248"/>
-        <location filename="../mainwid.cpp" line="1263"/>
+        <location filename="../mainwid.cpp" line="1165"/>
+        <location filename="../mainwid.cpp" line="1256"/>
+        <location filename="../mainwid.cpp" line="1269"/>
+        <location filename="../mainwid.cpp" line="1284"/>
         <source>play</source>
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1145"/>
+        <location filename="../mainwid.cpp" line="1166"/>
         <source>The following piece</source>
         <translation>下一首</translation>
     </message>
@@ -163,74 +163,74 @@
         <translation type="vanished">添加到我喜欢</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1146"/>
+        <location filename="../mainwid.cpp" line="1167"/>
         <source>Remove from Song list</source>
         <translation>从歌曲列表中删除</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1150"/>
+        <location filename="../mainwid.cpp" line="1171"/>
         <source>Add to playlist</source>
         <translation>添加到歌单</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1147"/>
+        <location filename="../mainwid.cpp" line="1168"/>
         <source>Song information</source>
         <translation>歌曲信息</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1165"/>
+        <location filename="../mainwid.cpp" line="1186"/>
         <source>I like</source>
         <translation>我喜欢</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1229"/>
+        <location filename="../mainwid.cpp" line="1250"/>
         <source>pause</source>
         <translation>暂停</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1885"/>
+        <location filename="../mainwid.cpp" line="1963"/>
         <source>The song name:</source>
         <translation>歌曲名称:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1886"/>
+        <location filename="../mainwid.cpp" line="1964"/>
         <source>singer:</source>
         <translation>歌曲歌手:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1887"/>
+        <location filename="../mainwid.cpp" line="1965"/>
         <source>album:</source>
         <translation>歌曲专辑:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1888"/>
+        <location filename="../mainwid.cpp" line="1966"/>
         <source>The file type:</source>
         <translation>文件类型:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1889"/>
+        <location filename="../mainwid.cpp" line="1967"/>
         <source>The file size:</source>
         <translation>文件大小:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1890"/>
+        <location filename="../mainwid.cpp" line="1968"/>
         <source>File length:</source>
         <translation>文件时长:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1891"/>
+        <location filename="../mainwid.cpp" line="1969"/>
         <source>File location:</source>
         <translation>文件位置:</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="4126"/>
-        <location filename="../mainwid.cpp" line="4158"/>
+        <location filename="../mainwid.cpp" line="4208"/>
+        <location filename="../mainwid.cpp" line="4240"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="4126"/>
-        <location filename="../mainwid.cpp" line="4158"/>
+        <location filename="../mainwid.cpp" line="4208"/>
+        <location filename="../mainwid.cpp" line="4240"/>
         <source>暂无法打开文件，请检查路径和文件名称</source>
         <translation type="unfinished"></translation>
     </message>
@@ -267,52 +267,52 @@
         <translation type="vanished">默认歌单无法重命名！</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1340"/>
-        <location filename="../mainwid.cpp" line="1482"/>
-        <location filename="../mainwid.cpp" line="1503"/>
-        <location filename="../mainwid.cpp" line="1537"/>
-        <location filename="../mainwid.cpp" line="1565"/>
-        <location filename="../mainwid.cpp" line="1594"/>
-        <location filename="../mainwid.cpp" line="1626"/>
-        <location filename="../mainwid.cpp" line="1659"/>
-        <location filename="../mainwid.cpp" line="1680"/>
-        <location filename="../mainwid.cpp" line="1859"/>
-        <location filename="../mainwid.cpp" line="2146"/>
-        <location filename="../mainwid.cpp" line="2230"/>
-        <location filename="../mainwid.cpp" line="2477"/>
-        <location filename="../mainwid.cpp" line="2524"/>
-        <location filename="../mainwid.cpp" line="2609"/>
-        <location filename="../mainwid.cpp" line="2653"/>
-        <location filename="../mainwid.cpp" line="3869"/>
-        <location filename="../mainwid.cpp" line="3907"/>
-        <location filename="../mainwid.cpp" line="4210"/>
-        <location filename="../mainwid.cpp" line="4244"/>
-        <location filename="../mainwid.cpp" line="4417"/>
+        <location filename="../mainwid.cpp" line="1361"/>
+        <location filename="../mainwid.cpp" line="1560"/>
+        <location filename="../mainwid.cpp" line="1581"/>
+        <location filename="../mainwid.cpp" line="1615"/>
+        <location filename="../mainwid.cpp" line="1643"/>
+        <location filename="../mainwid.cpp" line="1672"/>
+        <location filename="../mainwid.cpp" line="1704"/>
+        <location filename="../mainwid.cpp" line="1737"/>
+        <location filename="../mainwid.cpp" line="1758"/>
+        <location filename="../mainwid.cpp" line="1937"/>
+        <location filename="../mainwid.cpp" line="2227"/>
+        <location filename="../mainwid.cpp" line="2312"/>
+        <location filename="../mainwid.cpp" line="2559"/>
+        <location filename="../mainwid.cpp" line="2606"/>
+        <location filename="../mainwid.cpp" line="2691"/>
+        <location filename="../mainwid.cpp" line="2735"/>
+        <location filename="../mainwid.cpp" line="3951"/>
+        <location filename="../mainwid.cpp" line="3989"/>
+        <location filename="../mainwid.cpp" line="4292"/>
+        <location filename="../mainwid.cpp" line="4326"/>
+        <location filename="../mainwid.cpp" line="4499"/>
         <source>A total of</source>
         <translation>共</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="1340"/>
-        <location filename="../mainwid.cpp" line="1482"/>
-        <location filename="../mainwid.cpp" line="1503"/>
-        <location filename="../mainwid.cpp" line="1537"/>
-        <location filename="../mainwid.cpp" line="1565"/>
-        <location filename="../mainwid.cpp" line="1594"/>
-        <location filename="../mainwid.cpp" line="1626"/>
-        <location filename="../mainwid.cpp" line="1659"/>
-        <location filename="../mainwid.cpp" line="1680"/>
-        <location filename="../mainwid.cpp" line="1859"/>
-        <location filename="../mainwid.cpp" line="2146"/>
-        <location filename="../mainwid.cpp" line="2230"/>
-        <location filename="../mainwid.cpp" line="2477"/>
-        <location filename="../mainwid.cpp" line="2524"/>
-        <location filename="../mainwid.cpp" line="2609"/>
-        <location filename="../mainwid.cpp" line="2653"/>
-        <location filename="../mainwid.cpp" line="3869"/>
-        <location filename="../mainwid.cpp" line="3907"/>
-        <location filename="../mainwid.cpp" line="4210"/>
-        <location filename="../mainwid.cpp" line="4244"/>
-        <location filename="../mainwid.cpp" line="4417"/>
+        <location filename="../mainwid.cpp" line="1361"/>
+        <location filename="../mainwid.cpp" line="1560"/>
+        <location filename="../mainwid.cpp" line="1581"/>
+        <location filename="../mainwid.cpp" line="1615"/>
+        <location filename="../mainwid.cpp" line="1643"/>
+        <location filename="../mainwid.cpp" line="1672"/>
+        <location filename="../mainwid.cpp" line="1704"/>
+        <location filename="../mainwid.cpp" line="1737"/>
+        <location filename="../mainwid.cpp" line="1758"/>
+        <location filename="../mainwid.cpp" line="1937"/>
+        <location filename="../mainwid.cpp" line="2227"/>
+        <location filename="../mainwid.cpp" line="2312"/>
+        <location filename="../mainwid.cpp" line="2559"/>
+        <location filename="../mainwid.cpp" line="2606"/>
+        <location filename="../mainwid.cpp" line="2691"/>
+        <location filename="../mainwid.cpp" line="2735"/>
+        <location filename="../mainwid.cpp" line="3951"/>
+        <location filename="../mainwid.cpp" line="3989"/>
+        <location filename="../mainwid.cpp" line="4292"/>
+        <location filename="../mainwid.cpp" line="4326"/>
+        <location filename="../mainwid.cpp" line="4499"/>
         <source>The first</source>
         <translation>首</translation>
     </message>
@@ -345,49 +345,49 @@
         <translation type="vanished">文件位置</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="2332"/>
-        <location filename="../mainwid.cpp" line="2725"/>
-        <location filename="../mainwid.cpp" line="2782"/>
+        <location filename="../mainwid.cpp" line="2414"/>
+        <location filename="../mainwid.cpp" line="2807"/>
+        <location filename="../mainwid.cpp" line="2864"/>
         <source>00:00</source>
         <translation>00:00</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="562"/>
-        <location filename="../mainwid.cpp" line="567"/>
-        <location filename="../mainwid.cpp" line="3211"/>
-        <location filename="../mainwid.cpp" line="3216"/>
-        <location filename="../mainwid.cpp" line="3287"/>
-        <location filename="../mainwid.cpp" line="3358"/>
+        <location filename="../mainwid.cpp" line="575"/>
+        <location filename="../mainwid.cpp" line="580"/>
+        <location filename="../mainwid.cpp" line="3293"/>
+        <location filename="../mainwid.cpp" line="3298"/>
+        <location filename="../mainwid.cpp" line="3369"/>
+        <location filename="../mainwid.cpp" line="3440"/>
         <source> A list of circulation </source>
         <translation>列表循环</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="578"/>
-        <location filename="../mainwid.cpp" line="583"/>
-        <location filename="../mainwid.cpp" line="3229"/>
-        <location filename="../mainwid.cpp" line="3234"/>
-        <location filename="../mainwid.cpp" line="3303"/>
-        <location filename="../mainwid.cpp" line="3374"/>
+        <location filename="../mainwid.cpp" line="591"/>
+        <location filename="../mainwid.cpp" line="596"/>
+        <location filename="../mainwid.cpp" line="3311"/>
+        <location filename="../mainwid.cpp" line="3316"/>
+        <location filename="../mainwid.cpp" line="3385"/>
+        <location filename="../mainwid.cpp" line="3456"/>
         <source> Random broadcast </source>
         <translation>随机播放</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="530"/>
-        <location filename="../mainwid.cpp" line="535"/>
-        <location filename="../mainwid.cpp" line="3247"/>
-        <location filename="../mainwid.cpp" line="3252"/>
-        <location filename="../mainwid.cpp" line="3319"/>
-        <location filename="../mainwid.cpp" line="3390"/>
+        <location filename="../mainwid.cpp" line="543"/>
+        <location filename="../mainwid.cpp" line="548"/>
+        <location filename="../mainwid.cpp" line="3329"/>
+        <location filename="../mainwid.cpp" line="3334"/>
+        <location filename="../mainwid.cpp" line="3401"/>
+        <location filename="../mainwid.cpp" line="3472"/>
         <source> Order of play </source>
         <translation>顺序播放</translation>
     </message>
     <message>
-        <location filename="../mainwid.cpp" line="546"/>
-        <location filename="../mainwid.cpp" line="551"/>
-        <location filename="../mainwid.cpp" line="3193"/>
-        <location filename="../mainwid.cpp" line="3198"/>
-        <location filename="../mainwid.cpp" line="3271"/>
-        <location filename="../mainwid.cpp" line="3342"/>
+        <location filename="../mainwid.cpp" line="559"/>
+        <location filename="../mainwid.cpp" line="564"/>
+        <location filename="../mainwid.cpp" line="3275"/>
+        <location filename="../mainwid.cpp" line="3280"/>
+        <location filename="../mainwid.cpp" line="3353"/>
+        <location filename="../mainwid.cpp" line="3424"/>
         <source> Single cycle </source>
         <translation>单曲循环</translation>
     </message>
@@ -620,9 +620,9 @@
         <location filename="../sidebar.cpp" line="218"/>
         <location filename="../sidebar.cpp" line="230"/>
         <location filename="../sidebar.cpp" line="236"/>
-        <location filename="../sidebar.cpp" line="766"/>
-        <location filename="../sidebar.cpp" line="781"/>
-        <location filename="../sidebar.cpp" line="870"/>
+        <location filename="../sidebar.cpp" line="773"/>
+        <location filename="../sidebar.cpp" line="788"/>
+        <location filename="../sidebar.cpp" line="877"/>
         <source>Prompt information</source>
         <translation>提示信息</translation>
     </message>
@@ -677,24 +677,25 @@
         <translation>文件位置:</translation>
     </message>
     <message>
-        <location filename="../sidebar.cpp" line="766"/>
+        <location filename="../sidebar.cpp" line="773"/>
         <source>The number of playlists has reached the limit!!</source>
         <translation>歌单数量已达上限！！！</translation>
     </message>
     <message>
-        <location filename="../sidebar.cpp" line="781"/>
+        <location filename="../sidebar.cpp" line="788"/>
         <source>Single song name already exists!!</source>
         <translation>歌单名已存在！！！</translation>
     </message>
     <message>
         <location filename="../sidebar.cpp" line="293"/>
         <location filename="../sidebar.cpp" line="712"/>
-        <location filename="../sidebar.cpp" line="867"/>
+        <location filename="../sidebar.cpp" line="740"/>
+        <location filename="../sidebar.cpp" line="874"/>
         <source>I like</source>
         <translation>我喜欢</translation>
     </message>
     <message>
-        <location filename="../sidebar.cpp" line="870"/>
+        <location filename="../sidebar.cpp" line="877"/>
         <source>默认歌单无法删除</source>
         <translation type="unfinished"></translation>
     </message>

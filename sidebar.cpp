@@ -735,7 +735,16 @@ void SideBar::createSongList()
         }
         else
         {
-            musicListChangeWid[i]->songListLabel->setText(listName);
+            if(listName == "我喜欢")
+            {
+                qDebug()<<"listName"<<listName;
+                musicListChangeWid[i]->songListLabel->setText(tr("I like"));
+                qDebug()<<musicListChangeWid[i]->songListLabel->text();
+            }
+            else
+            {
+                musicListChangeWid[i]->songListLabel->setText(listName);
+            }
         }
 
         rightChangeWid->addWidget(musicListChangeWid[i]);
