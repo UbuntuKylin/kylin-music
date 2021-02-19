@@ -871,6 +871,75 @@ int MusicDataBase::getPlayList(QStringList& playListNameList)
     }
 }
 
+int MusicDataBase::renamePlayList(const QString& oldPlayListName, const QString& newPlayListName)
+{
+    if(oldPlayListName.isEmpty() || newPlayListName.isEmpty())
+    {
+        return INVALID_INPUT;
+    }
+
+    if("我喜欢" == oldPlayListName || "我喜欢" == newPlayListName)
+    {
+        return INVALID_INPUT;
+    }
+    int oldCheckRes = checkPlayListExist(oldPlayListName);
+    if(DB_OP_SUCC == oldCheckRes)
+    {
+        int newCheckRes = checkPlayListExist(newPlayListName);
+        if(LIST_NOT_FOUND == newCheckRes)
+        {
+            //sql支持table重命名
+            bool queryRes = true;
+            QSqlQuery queryRename(m_database);
+            //重命名歌单
+            QString renameListString = QString("ALTER TABLE 'playlist_%1' RENAME TO 'playlist_%2'").
+                    arg(inPutStringHandle(oldPlayListName)).
+                    arg(inPutStringHandle(newPlayListName));
+            queryRes &= queryRename.exec(renameListString);
+            if(true == queryRes)
+            {
+                //要把歌单列表中的对应旧歌单名删除，添加新歌单名
+                int createRes = createNewPlayList(newPlayListName);
+                if(DB_OP_SUCC == createRes)
+                {
+                    int delRes = delPlayList(oldPlayListName);
+                    if(DB_OP_SUCC == delRes)
+                    {
+                        return DB_OP_SUCC;//歌单名表名和歌单列表中的名称全部改变
+                    }
+                    else
+                    {
+                        return LIST_RENAME_ERR;//歌单名已改变，但歌单表中同时存在新歌单名和旧歌单名
+                    }
+                }
+                else
+                {
+                    return LIST_RENAME_ERR;//歌单名已改变，但歌单表中名未改变
+                }
+            }
+            else
+            {
+                return LIST_RENAME_FAILED;
+            }
+        }
+        else
+        {
+            if(DB_OP_SUCC == newCheckRes)
+            {
+                return LIST_EXISTS;
+            }
+            else
+            {
+                return newCheckRes;
+            }
+        }
+    }
+    else
+    {
+        return oldCheckRes;
+    }
+}
+
 int MusicDataBase::checkPlayListExist(const QString& playListName)
 {
     bool getRes = true;
