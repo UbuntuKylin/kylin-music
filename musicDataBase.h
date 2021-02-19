@@ -29,6 +29,9 @@ enum DB_RETURN_STATUS{              //数据库操作结果返回表
     DEL_TABLE_FAILED    = (-13),    //数据库删表失败
     SONG_NOT_FOUND      = (-14),    //数据库中未找到该歌曲
     LIST_NOT_FOUND      = (-15),    //数据库中未找到该歌单
+    LIST_EXISTS         = (-16),    //数据库中已存在该名字歌单
+    LIST_RENAME_FAILED  = (-17),    //重命名歌单失败，正常退出
+    LIST_RENAME_ERR     = (-18),    //重命名歌单失败，创建了新名称歌单，但新建歌单的列表中名称未能重命名
 };
 
 typedef struct
@@ -58,6 +61,8 @@ public:
     int delPlayList(const QString& playListName);
     //查询当前已有歌单列表
     int getPlayList(QStringList& playListNameList);
+    //重命名歌单名title
+    int renamePlayList(const QString& oldPlayListName, const QString& newPlayListName);
 
 
     /**************************新建歌曲增删改查****************************/
