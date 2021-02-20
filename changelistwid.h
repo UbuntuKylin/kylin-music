@@ -190,6 +190,10 @@ private:
     QLabel *albumLabel;
     QLabel *timeLabel;
 
+    //过滤乱码，目前只显示utf8格式
+    //此处将来可以优化，添加转码功能，兼容多种格式
+    QString filterTextCode(QString str);
+    inline int preNum(unsigned char byte);
 };
 
 
