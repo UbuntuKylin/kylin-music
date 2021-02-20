@@ -447,10 +447,7 @@ QStringList MusicListWid::fileInformation(QString filepath)
 
     QString musicName = propertyMap["TITLE"].toString().toCString(true);
     if(filterTextCode(musicName).isEmpty())
-    {//fileInfo.baseName()方法在文件名中存在‘.’字符时异常
-        musicName = fileInfo.absoluteFilePath().split("/").last();
-        musicName.chop(musicName.length()-musicName.lastIndexOf("."));
-    }
+        musicName = fileInfo.completeBaseName();
     QString musicSinger = propertyMap["ARTIST"].toString().toCString(true);
     if(filterTextCode(musicSinger).isEmpty())
         musicSinger = "未知歌手";
