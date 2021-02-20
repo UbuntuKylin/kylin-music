@@ -1,3 +1,9 @@
+kylin-music (1.0.52kord~rc5) v101; urgency=medium
+
+  * 增加一些label汉化样式.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 07 Feb 2021 15:06:10 +0800
+
 kylin-music (1.0.52kord~rc4) v101; urgency=medium
 
   * 解决禅道BUG#24621 删除本地歌曲后，再次点击歌曲应用闪退.
