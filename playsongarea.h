@@ -69,7 +69,7 @@ public:
 
     BeforePlayList *mybeforeList;
     SliderWidget *sliderWid;
-    void playcolor();
+    void playcolor(bool isplay);
     void songText(QString songName);   // 正在播放
 
     musicDataStruct fileData;

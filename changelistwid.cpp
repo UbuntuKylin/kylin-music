@@ -536,7 +536,15 @@ void MusicListWid::get_localmusic_information(QString tableName)
                 this->localAllMusicid.append(resList.at(i).filepath);
                 songitem->song_singer_albumText(resList.at(i).title,resList.at(i).singer,resList.at(i).album); //歌曲名称 歌手 专辑
                 songitem->songTimeLabel->setText(resList.at(i).time); //时长
-                this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
+//                QFileInfo file(resList.at(i).filepath);
+//                if(file.exists())
+//                {
+                    this->PlayList->addMedia(QUrl::fromLocalFile(resList.at(i).filepath));
+//                }
+//                else
+//                {
+//                    continue;
+//                }
             }
         }
     }

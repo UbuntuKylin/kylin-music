@@ -288,7 +288,14 @@ void SideBar::on_musicListChangeWid_customContextMenuRequested(const QPoint &pos
             QString listName = playListNameList.at(i);
             QAction *listaction = new QAction(this);
             listaction->setData(i);
-            listaction->setText(listName);
+            if(listName == "我喜欢")
+            {
+                listaction->setText(tr("I like"));
+            }
+            else
+            {
+                listaction->setText(listName);
+            }
             menu5->addAction(listaction);
         }
     }
@@ -699,7 +706,15 @@ void SideBar::createSongList()
         newSongList[i]->setSizeHint(QSize(180,38));
 
         if (listName != "") {
-            newSongListBtn[i]->setText(listName);
+//            newSongListBtn[i]->setText(listName);
+            if(listName == "我喜欢")
+            {
+                newSongListBtn[i]->setText(tr("I like"));
+            }
+            else
+            {
+                newSongListBtn[i]->setText(listName);
+            }
 
         }
 
@@ -720,7 +735,16 @@ void SideBar::createSongList()
         }
         else
         {
-            musicListChangeWid[i]->songListLabel->setText(listName);
+            if(listName == "我喜欢")
+            {
+                qDebug()<<"listName"<<listName;
+                musicListChangeWid[i]->songListLabel->setText(tr("I like"));
+                qDebug()<<musicListChangeWid[i]->songListLabel->text();
+            }
+            else
+            {
+                musicListChangeWid[i]->songListLabel->setText(listName);
+            }
         }
 
         rightChangeWid->addWidget(musicListChangeWid[i]);
@@ -849,7 +873,7 @@ void SideBar::deleteSongList()      //删除歌单提示信息
     int row = songListWidget->currentIndex().row();
 
     QString playlistName = playListName[row];   //我喜欢占一个索引
-    if(playlistName == "我喜欢")
+    if(playlistName == tr("I like"))
     {
         promptSongListPup->pupDialog->hide();
         QMessageBox::about(this,tr("Prompt information"),tr("默认歌单无法删除"));

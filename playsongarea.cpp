@@ -42,10 +42,10 @@ PlaySongArea::PlaySongArea(QWidget *parent) : QWidget(parent)
     mybeforeList->hide();
 
     initWidget();
-    playcolor();
+    playcolor(true);
 }
 
-void PlaySongArea::playcolor()
+void PlaySongArea::playcolor(bool isplay)
 {
     if(WidgetStyle::themeColor == 1)
     {
@@ -59,9 +59,18 @@ void PlaySongArea::playcolor()
 
 //        playBtn->setIcon(QIcon(":/img/default/play2.png"));
         playBtn->setIconSize(QSize(36,36));
-        playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
-                               "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
-                               "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        if(isplay == true)
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        }
+        else
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+        }
 
 //        nextBtn->setIcon(QIcon(":/img/dark/nextsong.png"));
         nextBtn->setIconSize(QSize(18,18));
@@ -104,9 +113,18 @@ void PlaySongArea::playcolor()
 
 //        playBtn->setIcon(QIcon(":/img/default/play2.png"));
         playBtn->setIconSize(QSize(36,36));
-        playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
-                               "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
-                               "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        if(isplay == true)
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        }
+        else
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+        }
 
 //        closeBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
 //                                border-image:url(:/img/default/close.png);}\
