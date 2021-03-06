@@ -64,6 +64,8 @@ public:
     int getPlayList(QStringList& playListNameList);
     //重命名歌单名title
     int renamePlayList(const QString& oldPlayListName, const QString& newPlayListName);
+    //从所有歌单中删除一首歌
+    int delSongFromEveryWhere(const QString& filePath);
 
 
     /**************************新建歌曲增删改查****************************/

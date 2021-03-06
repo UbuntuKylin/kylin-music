@@ -11,13 +11,14 @@ MusicDataBase::MusicDataBase(QObject *parent) : QObject(parent)
     qDebug() << QSqlDatabase::drivers();//当前环境支持哪些数据库
     QMutexLocker lockData( &m_mutex);  //加锁，函数执行完后自动解锁
     m_database=QSqlDatabase::addDatabase("QSQLITE");
-    QString dirPath = QString(getenv("HOME")) + "/.config/.kylin_music_ver1.0_";
+    QString dirPath = QString(getenv("HOME")) + "/.config/.kylin_music_ver1.1_";
 //TODO
-//    QFileInfo oldVersion(dirPath + "mymusic.db");
-//    if(oldVersion.exists())
-//    {
+    QFileInfo oldVersion(QString(getenv("HOME")) + "/.config/.kylin_music_ver1.0_" + "mymusic.db");
+    if(oldVersion.exists())
+    {
         //读取旧版本数据库内容，并添加至新版本数据库函数
-//    }
+        qDebug() << "存在旧版本数据库" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
+    }
     m_database.setDatabaseName(dirPath + "mymusic.db");
 }
 
@@ -221,9 +222,6 @@ int MusicDataBase::delMusicFromLocalMusic(const QString& filePath)
         }
 
     }
-    //从其他歌单中也要删除
-    //TODO,中间删除失败，要添加回去
-    //检查歌曲是否在历史歌单中存在
 }
 
 int MusicDataBase::createNewPlayList(const QString& playListName)
@@ -884,40 +882,78 @@ int MusicDataBase::addMusicToHistoryMusic(const QString& filePath)
             //查询历史列表中是否已有该歌曲，已有的话，返回添加失败
             int checkHistoryRes = checkIfSongExistsInHistoryMusic(filePath);
 
-            //历史列表中已经有这首歌，重复添加了
-            if(DB_OP_SUCC == checkHistoryRes)
+            //历史列表中没有这首歌，直接添加
+            if(SONG_NOT_FOUND == checkHistoryRes)
             {
-                return DB_OP_ADD_REPEAT;
+                //历史列表中不存在该歌曲，添加该歌曲
+                QSqlQuery addSongToHistory(m_database);
+                QString addSongString = QString("insert into HistoryPlayList (filepath,title,singer,album,filetype,size,time) values('%1','%2','%3','%4','%5','%6','%7')").
+                        arg(inPutStringHandle(temp.filepath)).
+                        arg(inPutStringHandle(temp.title)).
+                        arg(inPutStringHandle(temp.singer)).
+                        arg(inPutStringHandle(temp.album)).
+                        arg(inPutStringHandle(temp.filetype)).
+                        arg(inPutStringHandle(temp.size)).
+                        arg(inPutStringHandle(temp.time));
+                queryRes = addSongToHistory.exec(addSongString);
+                //插入歌曲时自增id和idIndex无法赋值，插入后取得自增id，给idIndex赋值
+                int tempIndex = addSongToHistory.lastInsertId().toInt();
+                bool setRes = true;
+                QSqlQuery setSongIDFromLocal(m_database);
+                QString setIndex = QString("update HistoryPlayList set idIndex='%1' WHERE filepath='%2'").
+                        arg(tempIndex).arg(inPutStringHandle(temp.filepath));
+                setRes &= setSongIDFromLocal.exec(setIndex);
+
+                if(true == (queryRes&setRes))
+                {
+                    return DB_OP_SUCC;
+                }
+                else
+                {
+                    qDebug() << "数据库打开，添加失败！！！" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
+                    return DB_OP_ADD_FAILED;
+                }
+            }
+            else//历史列表中已存在该，歌曲，需要先删除再添加
+            {
+                int delHistoryRes = delMusicFromHistoryMusic(filePath);
+                if(DB_OP_SUCC == delHistoryRes)
+                {
+                    //历史列表中不存在该歌曲，添加该歌曲
+                    QSqlQuery addSongToHistory(m_database);
+                    QString addSongString = QString("insert into HistoryPlayList (filepath,title,singer,album,filetype,size,time) values('%1','%2','%3','%4','%5','%6','%7')").
+                            arg(inPutStringHandle(temp.filepath)).
+                            arg(inPutStringHandle(temp.title)).
+                            arg(inPutStringHandle(temp.singer)).
+                            arg(inPutStringHandle(temp.album)).
+                            arg(inPutStringHandle(temp.filetype)).
+                            arg(inPutStringHandle(temp.size)).
+                            arg(inPutStringHandle(temp.time));
+                    queryRes = addSongToHistory.exec(addSongString);
+                    //插入歌曲时自增id和idIndex无法赋值，插入后取得自增id，给idIndex赋值
+                    int tempIndex = addSongToHistory.lastInsertId().toInt();
+                    bool setRes = true;
+                    QSqlQuery setSongIDFromLocal(m_database);
+                    QString setIndex = QString("update HistoryPlayList set idIndex='%1' WHERE filepath='%2'").
+                            arg(tempIndex).arg(inPutStringHandle(temp.filepath));
+                    setRes &= setSongIDFromLocal.exec(setIndex);
+
+                    if(true == (queryRes&setRes))
+                    {
+                        return DB_OP_SUCC;
+                    }
+                    else
+                    {
+                        qDebug() << "数据库打开，添加失败！！！" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
+                        return DB_OP_ADD_FAILED;
+                    }
+                }
+                else
+                {
+                    return delHistoryRes;
+                }
             }
 
-            //历史列表中不存在该歌曲，添加该歌曲
-            QSqlQuery addSongToHistory(m_database);
-            QString addSongString = QString("insert into HistoryPlayList (filepath,title,singer,album,filetype,size,time) values('%1','%2','%3','%4','%5','%6','%7')").
-                    arg(inPutStringHandle(temp.filepath)).
-                    arg(inPutStringHandle(temp.title)).
-                    arg(inPutStringHandle(temp.singer)).
-                    arg(inPutStringHandle(temp.album)).
-                    arg(inPutStringHandle(temp.filetype)).
-                    arg(inPutStringHandle(temp.size)).
-                    arg(inPutStringHandle(temp.time));
-            queryRes = addSongToHistory.exec(addSongString);
-            //插入歌曲时自增id和idIndex无法赋值，插入后取得自增id，给idIndex赋值
-            int tempIndex = addSongToHistory.lastInsertId().toInt();
-            bool setRes = true;
-            QSqlQuery setSongIDFromLocal(m_database);
-            QString setIndex = QString("update HistoryPlayList set idIndex='%1' WHERE filepath='%2'").
-                    arg(tempIndex).arg(inPutStringHandle(temp.filepath));
-            setRes &= setSongIDFromLocal.exec(setIndex);
-
-            if(true == (queryRes&setRes))
-            {
-                return DB_OP_SUCC;
-            }
-            else
-            {
-                qDebug() << "数据库打开，添加失败！！！" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
-                return DB_OP_ADD_FAILED;
-            }
 
         }
         else
@@ -1556,6 +1592,91 @@ int MusicDataBase::getSongIndexFromPlayList(const QString& filePath,const QStrin
     {
         return DB_DISORDERD;
     }
+}
+
+int MusicDataBase::delSongFromEveryWhere(const QString& filePath)
+{
+    //从历史歌单中删除该歌
+    int checkHistoryRes = checkIfSongExistsInHistoryMusic(filePath);
+    if(DB_OP_SUCC == checkHistoryRes)
+    {
+        int delHistoryRes = delMusicFromHistoryMusic(filePath);
+        if(DB_OP_SUCC != delHistoryRes)
+        {
+            return delHistoryRes;
+        }
+        else
+        {}
+    }
+    else
+    {
+        if(SONG_NOT_FOUND != checkHistoryRes)
+        {
+            return checkHistoryRes;
+        }
+        else
+        {}
+    }
+
+    //从总歌单中删除该歌
+    int checkLocalRes = checkIfSongExistsInLocalMusic(filePath);
+    if(DB_OP_SUCC == checkLocalRes)
+    {
+        int delLocalRes = delMusicFromLocalMusic(filePath);
+        if(DB_OP_SUCC != delLocalRes)
+        {
+            return delLocalRes;
+        }
+        else
+        {}
+    }
+    else
+    {
+        if(SONG_NOT_FOUND != checkLocalRes)
+        {
+            return checkLocalRes;
+        }
+        else
+        {}
+    }
+
+    QStringList temp;
+    //查询当前已有歌单列表
+    int getPlayListRes = getPlayList(temp);
+    if(DB_OP_SUCC == getPlayListRes)
+    {
+        foreach (auto tempList, temp)
+        {
+            //检查歌曲是否在歌单列表中存在
+            int checkPlayListRes = checkIfSongExistsInPlayList(filePath, tempList);
+            if(DB_OP_SUCC == checkPlayListRes)
+            {
+                //从新建歌单中删除歌曲，使用歌曲filePath,歌单名title值，输入数据必须有效，
+                int delMusicFromPlayListRes = delMusicFromPlayList(filePath, tempList);
+                if(DB_OP_SUCC != delMusicFromPlayListRes)
+                {
+                    return delMusicFromPlayListRes;
+                }
+                else
+                {}
+            }
+            else
+            {
+                if(SONG_NOT_FOUND != checkPlayListRes)
+                {
+                    return checkPlayListRes;
+                }
+                else
+                {}
+            }
+        }
+    }
+    else
+    {
+        return getPlayListRes;
+    }
+    //从历史歌单，总歌单，各新建歌单中都删除后，返回成功。
+    return DB_OP_SUCC;
 }
 
 QString MusicDataBase::inPutStringHandle(const QString& input)
