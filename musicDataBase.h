@@ -33,6 +33,9 @@ enum DB_RETURN_STATUS{              //数据库操作结果返回表
     LIST_RENAME_FAILED  = (-17),    //重命名歌单失败，正常退出
     LIST_RENAME_ERR     = (-18),    //重命名歌单失败，创建了新名称歌单，但新建歌单的列表中名称未能重命名
     LIST_REORDER_ERR    = (-19),    //歌单中歌曲更改顺序失败
+    LIST_NOT_EMPTY      = (-20),    //歌单不为空
+    LIST_IS_EMPTY       = (-21),    //歌单为空
+    OUT_OF_RESULT       = (-22),    //歌单为空
 };
 
 typedef struct
@@ -66,11 +69,16 @@ public:
     int renamePlayList(const QString& oldPlayListName, const QString& newPlayListName);
     //从所有歌单中删除一首歌
     int delSongFromEveryWhere(const QString& filePath);
-
+    //删除多首歌曲
+    int delMultiSongs(const QString &playListName, const QStringList &songsList);
+    //检查歌单是否为空
+    int checkIfPlayListIsEmpty(const QString& playListName);
 
     /**************************新建歌曲增删改查****************************/
     //添加歌曲到新建歌单，使用歌曲filePath,歌单名title值，输入数据必须有效，
     int addMusicToPlayList(const QString& filePath,const QString& playListName);
+    //从歌单中添加歌曲到新建歌单，如果本地歌单中没有，同样插入本地歌单，使用musicDataStruct结构,输入数据必须有效，
+    int addNewSongToPlayList(const musicDataStruct& fileData,const QString& playListName);
     //从新建歌单中删除歌曲，使用歌曲filePath,歌单名title值，输入数据必须有效，
     int delMusicFromPlayList(const QString& filePath,const QString& playListName);
     //根据歌曲filePath在指定歌单中查询歌曲信息
