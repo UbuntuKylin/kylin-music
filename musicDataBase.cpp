@@ -1076,7 +1076,7 @@ int MusicDataBase::getSongInfoListFromHistoryMusic(QList<musicDataStruct>& resLi
     {
         bool getRes = true;
         QSqlQuery getSongListFromHistoryMusic(m_database);
-        QString getSongListString = QString("select * from HistoryPlayList");
+        QString getSongListString = QString("select * from HistoryPlayList order by idIndex desc");
         getRes = getSongListFromHistoryMusic.exec(getSongListString);
 
         if(true == getRes)
@@ -1435,7 +1435,57 @@ int MusicDataBase::addMusicToPlayList(const QString& filePath,const QString& pla
     }
 
 }
+//从歌单中添加歌曲到新建歌单，如果本地歌单中没有，同样插入本地歌单，使用musicDataStruct结构,输入数据必须有效，
+int MusicDataBase::addNewSongToPlayList(const musicDataStruct& fileData,const QString& playListName)
+{
+    if(playListName.isEmpty())
+    {
+        return INVALID_INPUT;
+    }
+    if(fileData.title.isEmpty() || fileData.filepath.isEmpty())
+    {
+        qDebug() << "无效入参" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
+        return INVALID_INPUT;
+    }
 
+    int checkListRes = checkIfSongExistsInPlayList(fileData.filepath,playListName);
+    if(SONG_NOT_FOUND != checkListRes)
+    {
+        return checkListRes;
+    }
+    else
+    {
+        int checkLocalRes = checkIfSongExistsInLocalMusic(fileData.filepath);
+        if(checkLocalRes == SONG_NOT_FOUND)
+        {
+            int addLocalRes;
+            addLocalRes = addMusicToLocalMusic(fileData);
+            if(DB_OP_SUCC == addLocalRes)
+            {
+                int addListRes;
+                addListRes = addMusicToPlayList(fileData.filepath,playListName);
+                return addListRes;
+            }
+            else
+            {
+                return addLocalRes;
+            }
+        }
+        else if(checkLocalRes == DB_OP_SUCC)
+        {
+            int addListRes;
+            addListRes = addMusicToPlayList(fileData.filepath,playListName);
+            return addListRes;
+        }
+        else
+        {
+            return checkLocalRes;
+        }
+    }
+
+
+
+}
 //从新建歌单中删除歌曲，使用歌曲的路径值,输入数据必须有效，
 int MusicDataBase::delMusicFromPlayList(const QString& filePath,const QString& playListName)
 {
@@ -1677,6 +1727,148 @@ int MusicDataBase::delSongFromEveryWhere(const QString& filePath)
     }
     //从历史歌单，总歌单，各新建歌单中都删除后，返回成功。
     return DB_OP_SUCC;
+}
+
+//删除多首歌曲
+int MusicDataBase::delMultiSongs(const QString &playListName, const QStringList &songsList)
+{
+    //入参检查
+    if(playListName.isEmpty())
+    {
+        return INVALID_INPUT;
+    }
+    if(0 == songsList.size())
+    {
+        return INVALID_INPUT;
+    }
+    foreach (auto songName, songsList)
+    {
+        if(songName.isEmpty())
+        {
+            return INVALID_INPUT;
+        }
+    }
+    if("LocalMusic" == playListName || "HistoryPlayList" == playListName)
+    {
+
+    }
+    else
+    {
+        int playListCheckRes = checkPlayListExist(playListName);
+        if(DB_OP_SUCC != playListCheckRes)
+        {
+            return playListCheckRes;
+        }
+    }
+
+    foreach (auto songName, songsList)
+    {
+        int checkIfSongExists = OUT_OF_RESULT;
+        if("LocalMusic" == playListName)
+        {
+            checkIfSongExists = checkIfSongExistsInLocalMusic(songName);
+            if(SONG_NOT_FOUND == checkIfSongExists)
+            {
+                continue;
+            }
+        }
+        else if("HistoryPlayList" == playListName)
+        {
+            checkIfSongExists = checkIfSongExistsInHistoryMusic(songName);
+            if(SONG_NOT_FOUND == checkIfSongExists)
+            {
+                continue;
+            }
+        }
+        else
+        {
+            checkIfSongExists = checkIfSongExistsInPlayList(songName, playListName);
+            if(SONG_NOT_FOUND == checkIfSongExists)
+            {
+                continue;
+            }
+        }
+
+
+        if(DB_OP_SUCC == checkIfSongExists)
+        {
+            int delRes = OUT_OF_RESULT;
+            if("LocalMusic" == playListName)
+            {
+                delRes = delMusicFromLocalMusic(songName);
+            }
+            else if("HistoryPlayList" == playListName)
+            {
+                delRes = delMusicFromHistoryMusic(songName);
+            }
+            else
+            {
+                delRes = delMusicFromPlayList(songName, playListName);
+            }
+
+            if(delRes != DB_OP_SUCC)
+            {
+                return delRes;
+            }
+            else
+            {
+                continue;
+            }
+        }
+        else
+        {
+            return checkIfSongExists;
+        }
+    }
+    return DB_OP_SUCC;
+}
+
+int MusicDataBase::checkIfPlayListIsEmpty(const QString& playListName)
+{
+    if(playListName.isEmpty())
+    {
+        return INVALID_INPUT;
+    }
+    int playListCheckRes = checkPlayListExist(playListName);
+    if(DB_OP_SUCC != playListCheckRes)
+    {
+        return playListCheckRes;
+    }
+    else
+    {
+        if(true == m_database.isValid())
+        {
+            bool getRes = true;
+            int count = 0;
+            QSqlQuery getSongFromPlayList(m_database);
+            QString getSongString = QString("select count(*) from 'playlist_%1'").arg(inPutStringHandle(playListName));
+            getRes = getSongFromPlayList.exec(getSongString);
+            if(true == getRes)
+            {
+                if(getSongFromPlayList.next())
+                {
+                    count = getSongFromPlayList.value(0).toInt();
+                    if(count > 0)
+                    {
+                        return LIST_NOT_EMPTY;
+                    }
+                    else
+                    {
+                        return LIST_IS_EMPTY;
+                    }
+                }
+                else
+                {
+                    qDebug() << "数据库中查无此歌！" <<__FILE__<< ","<<__FUNCTION__<<","<<__LINE__;
+                    return DB_DISORDERD;
+                }
+            }
+            else
+            {
+                return DB_OP_GET_FAILED;
+            }
+        }
+    }
 }
 
 QString MusicDataBase::inPutStringHandle(const QString& input)
