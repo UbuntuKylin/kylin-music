@@ -20,6 +20,11 @@ LIBS +=-lX11
 INCLUDEPATH += qtsingleapplication
 DEPENDPATH += qtsingleapplication
 
+INCLUDEPATH +=  ui/ \
+                dbus/ \
+                playcontroller/ \
+                dbcontroller/
+
 INCLUDEPATH += ./taglib
 
 #!system($$PWD/translations/generate_translations_pm.sh): error("Failed to generate pm")
@@ -58,56 +63,37 @@ PKGCONFIG += gsettings-qt
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+#main
+SOURCES += main.cpp
+
+#ui
 SOURCES += \
-    allpupwindow.cpp \
-    musicDataBase.cpp \
-    changelistwid.cpp \
-    daemonipcdbus.cpp \
-#    kylinmuisc.cpp \
-    main.cpp \
-    mainwid.cpp \
-    menumodule.cpp \
-    miniwidget.cpp \
-    musicslider.cpp \
-    mytoolbutton.cpp \
-    playsongarea.cpp \
-    qtsingleapplication/qtlocalpeer.cpp \
-    qtsingleapplication/qtsingleapplication.cpp \
-    sidebar.cpp \
-    sliderwidget.cpp \
-    songitem.cpp \
-    titlebar.cpp \
-    slider.cpp \
-    beforeplaylist.cpp \
-    widgetstyle.cpp \
-#    draglistwidget.cpp
-    xatom-helper.cpp
+    ui/mainwindow.cpp \
+    ui/xatom-helper.cpp
 
 HEADERS += \
-    allpupwindow.h \
-    musicDataBase.h \
-    changelistwid.h \
-    daemonipcdbus.h \
-#    kylinmuisc.h \
-    mainwid.h \
-    menumodule.h \
-    miniwidget.h \
-    musicslider.h \
-    myapplication.h \
-    mytoolbutton.h \
-    playsongarea.h \
+    ui/mainwindow.h \
+    ui/myapplication.h \
+    ui/xatom-helper.h
+#control
+SOURCES += \
+    dbus/daemonipcdbus.cpp \
+    dbcontroller/musicDataBase.cpp \
+    playcontroller/player.cpp
+
+HEADERS += \
+    dbus/daemonipcdbus.h \
+    dbcontroller/musicDataBase.h \
+    playcontroller/player.h
+
+#singleton and others
+SOURCES += \
+    qtsingleapplication/qtlocalpeer.cpp \
+    qtsingleapplication/qtsingleapplication.cpp
+
+HEADERS += \
     qtsingleapplication/qtlocalpeer.h \
-    qtsingleapplication/qtsingleapplication.h \
-    sidebar.h \
-    sliderwidget.h \
-    songitem.h \
-    titlebar.h \
-#    connection.h \
-    slider.h \
-    beforeplaylist.h \
-    widgetstyle.h \
-#    draglistwidget.h
-    xatom-helper.h
+    qtsingleapplication/qtsingleapplication.h
 
 # Default rules for deployment.
 # qnx: target.path = /tmp/$${TARGET}/bin

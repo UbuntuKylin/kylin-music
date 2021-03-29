@@ -11,7 +11,7 @@ MusicDataBase::MusicDataBase(QObject *parent) : QObject(parent)
     qDebug() << QSqlDatabase::drivers();//当前环境支持哪些数据库
     QMutexLocker lockData( &m_mutex);  //加锁，函数执行完后自动解锁
     m_database=QSqlDatabase::addDatabase("QSQLITE");
-    QString dirPath = QString(getenv("HOME")) + "/.config/.kylin_music_ver1.0_";
+    QString dirPath = QString(getenv("HOME")) + "/.config/.kylin_music_ver1.1_";
 //TODO
 //    QFileInfo oldVersion(dirPath + "mymusic.db");
 //    if(oldVersion.exists())
