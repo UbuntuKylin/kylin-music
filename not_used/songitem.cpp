@@ -20,12 +20,9 @@
 SongItem::SongItem(QWidget *parent):QWidget(parent)
 {
     setFixedHeight(40);
-
-
     setAttribute(Qt::WA_TranslucentBackground, true);
 
 //    setStyleSheet("background:red;");
-
     initItem();
 
 }
@@ -34,18 +31,18 @@ void SongItem::initItem()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
-    songNameWid = new QWidget(this);
-    singerLabel = new QLabel(this);
-    albumLabel = new QLabel(this);
+//    songNameWid = new QWidget(this);
+    singerLabel = new MyLabel(this);
+    albumLabel = new MyLabel(this);
     songTimeLabel = new QLabel(this);
-    songNameLabel = new QLabel(this);
+    songNameLabel = new MyLabel(this);
     hoverLike = new QPushButton(this);
     hoverPlay = new QPushButton(this);
 
     int myheight = 35;
 
 
-    QHBoxLayout *songWidLayout = new QHBoxLayout(songNameWid);
+//    QHBoxLayout *songWidLayout = new QHBoxLayout(songNameWid);
 
 
     hoverLike->setFixedSize(16,16);
@@ -61,16 +58,16 @@ void SongItem::initItem()
     albumLabel->setFixedHeight(myheight);
 
 
-    songWidLayout->addWidget(songNameLabel,0,Qt::AlignLeft | Qt::AlignVCenter);
-    songWidLayout->addWidget(hoverLike,0,Qt::AlignRight);
-    songWidLayout->addWidget(hoverPlay,Qt::AlignRight);
-    songWidLayout->setSpacing(5);
-    songWidLayout->setContentsMargins(0,0,20,0);
+//    songWidLayout->addWidget(songNameLabel,0,Qt::AlignLeft | Qt::AlignVCenter);
+//    songWidLayout->addWidget(hoverLike,0,Qt::AlignRight);
+//    songWidLayout->addWidget(hoverPlay,Qt::AlignRight);
+//    songWidLayout->setSpacing(5);
+//    songWidLayout->setContentsMargins(0,0,20,0);
 
-    songNameWid->setLayout(songWidLayout);
-    songNameWid->setFixedHeight(myheight);
+//    songNameWid->setLayout(songWidLayout);
+//    songNameWid->setFixedHeight(myheight);
 
-    mainLayout->addWidget(songNameWid,278);
+    mainLayout->addWidget(songNameLabel,278);
     mainLayout->addWidget(singerLabel,174,Qt::AlignVCenter);
     mainLayout->addWidget(albumLabel,174,Qt::AlignVCenter);
     mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
@@ -82,9 +79,7 @@ void SongItem::itemcolor(int type)
     if(type == 1)
     {
 
-        songNameLabel->setStyleSheet("width: 182px;\
-                                     height: 14px;\
-                                     font-size: 14px;\
+        songNameLabel->setStyleSheet("font-size: 14px;\
                                       \
                                      font-weight: 400;\
                                      color: #F9F9F9;\
@@ -98,18 +93,14 @@ void SongItem::itemcolor(int type)
                                      color: #F9F9F9;\
                                      line-height: 14px;");
 
-        singerLabel->setStyleSheet("width: 158px;\
-                                   height: 14px;\
-                                   font-size: 14px;\
+        singerLabel->setStyleSheet("font-size: 14px;\
                                     \
                                    font-weight: 400;\
                                    color: #F9F9F9;\
                                    line-height: 14px;");
 
 
-        albumLabel->setStyleSheet("width: 158px;\
-                                  height: 14px;\
-                                  font-size: 14px;\
+        albumLabel->setStyleSheet("font-size: 14px;\
                                    \
                                   font-weight: 400;\
                                   color: #F9F9F9;\
@@ -125,9 +116,7 @@ void SongItem::itemcolor(int type)
     }
     else if(type==0)
     {
-        songNameLabel->setStyleSheet("width: 182px;\
-                                     height: 14px;\
-                                     font-size: 14px;\
+        songNameLabel->setStyleSheet("font-size: 14px;\
                                       \
                                      font-weight: 400;\
                                      color: #303133;\
@@ -141,18 +130,14 @@ void SongItem::itemcolor(int type)
                                      color: #303133;\
                                      line-height: 14px;");
 
-        singerLabel->setStyleSheet("width: 158px;\
-                                   height: 14px;\
-                                   font-size: 14px;\
+        singerLabel->setStyleSheet("font-size: 14px;\
                                     \
                                    font-weight: 400;\
                                    color: #303133;\
                                    line-height: 14px;");
 
 
-        albumLabel->setStyleSheet("width: 158px;\
-                                  height: 14px;\
-                                  font-size: 14px;\
+        albumLabel->setStyleSheet("font-size: 14px;\
                                    \
                                   font-weight: 400;\
                                   color: #303133;\
@@ -171,54 +156,19 @@ void SongItem::itemcolor(int type)
 //播放列表label
 void SongItem::song_singer_albumText(QString songName,QString singer,QString album)
 {
-    QString show_songName = "";
-    QString show_singer   = "";
-    QString show_album    = "";
-    if(songName.length() > 17)
-    {
-        show_songName = songName.mid(0,16);
-        show_songName.append("...");
-        songNameLabel->setText(show_songName);
-        songNameLabel->setToolTip(songName);
-    }
-    else
-    {
-        songNameLabel->setText(songName);
-        songNameLabel->setToolTip(songName);
-    }
-    if(singer.length() > 9)
-    {
-        show_singer = singer.mid(0,8);
-        show_singer.append("...");
-        singerLabel->setText(show_singer);
-        singerLabel->setToolTip(singer);
-    }
-    else
-    {
-        singerLabel->setText(singer);
-        singerLabel->setToolTip(singer);
-    }
-    if(album.length() > 10)
-    {
-        show_album = album.mid(0,9);
-        show_album.append("...");
-        albumLabel->setText(show_album);
-        albumLabel->setToolTip(album);
-    }
-    else
-    {
-        albumLabel->setText(album);
-        albumLabel->setToolTip(album);
-    }
+    itemSongName = songName;
+    itemSinger = singer;
+    itemAlbum = album;
+    songNameLabel->setText(itemSongName);
+    albumLabel->setText(itemAlbum);
+    singerLabel->setText(itemSinger);
+
 }
-
-
 
 HistoryListItem::HistoryListItem(QWidget *parent):QWidget(parent)
 {
     this->setObjectName("HistoryListItem");
     setFixedHeight(40);
-
 
     setAttribute(Qt::WA_TranslucentBackground, true);
 
@@ -253,7 +203,6 @@ void HistoryListItem::initItem()
     songWidLayout->setSpacing(5);
     songWidLayout->setContentsMargins(0,0,20,0);
 
-
     songNameWid->setLayout(songWidLayout);
     songNameWid->setFixedHeight(myheight);
 
@@ -261,8 +210,8 @@ void HistoryListItem::initItem()
     mainLayout->addWidget(singerLabel,78,Qt::AlignVCenter);
     mainLayout->addWidget(songTimeLabel,64,Qt::AlignVCenter);
     mainLayout->setContentsMargins(16,0,16,0);
+    this->setStyleSheet("background:transparent;");
 }
-
 
 //历史记录label
 void HistoryListItem::song_singerText(QString songName,QString singer)

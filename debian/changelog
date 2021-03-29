@@ -1,3 +1,78 @@
+kylin-music (1.0.52kord~rc5) v101; urgency=medium
+
+  * 增加一些label汉化样式.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 07 Feb 2021 15:06:10 +0800
+
+kylin-music (1.0.52kord~rc4) v101; urgency=medium
+
+  * 解决禅道BUG#24621 删除本地歌曲后，再次点击歌曲应用闪退.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 07 Feb 2021 11:23:35 +0800
+
+kylin-music (1.0.52kord~rc3) v101; urgency=medium
+
+  * 解决禅道BUG#38415 英文系统--主界面有中文我喜欢.
+  * 解决禅道BUG#37385 双击打开麒麟音乐，播放按钮的状态不对.
+
+ -- liujialin <liujialin@kylinos.cn>  Sun, 07 Feb 2021 09:19:54 +0800
+
+kylin-music (1.0.52kord~rc2) v101; urgency=medium
+
+  * 更改用户手册.
+
+ -- liujialin <liujialin@kylinos.cn>  Sat, 06 Feb 2021 11:04:26 +0800
+
+kylin-music (1.0.52kord~rc1) v101; urgency=medium
+
+  * 解决禅道bug #38148、#38139、#37901、#37894
+
+ -- liujialin <liujialin@kylinos.cn>  Fri, 05 Feb 2021 13:56:21 +0800
+
+kylin-music (1.0.51kord) v101; urgency=medium
+
+  * 解决禅道bug37612 打开程序时点击播放按钮弹窗.
+
+ -- liujialin <liujialin@kylinos.cn>  Fri, 05 Feb 2021 10:10:10 +0800
+
+kylin-music (1.0.50kord) v101; urgency=medium
+
+  * 解决滑动滑动条，播放状态未改变的bug.
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 03 Feb 2021 18:53:04 +0800
+
+kylin-music (1.0.49kord) v101; urgency=medium
+
+  * 解决一些禅道bug.
+
+ -- liujialin <liujialin@kylinos.cn>  Wed, 03 Feb 2021 15:51:24 +0800
+
+kylin-music (1.0.48kord) v101; urgency=medium
+
+  * 添加音量功能.
+
+ -- liujialin <liujialin@kylinos.cn>  Tue, 02 Feb 2021 15:56:41 +0800
+
+kylin-music (1.0.47kord) v101; urgency=medium
+
+  * 解决用终端控制播放遗留的问题.
+
+ -- liujialin <liujialin@kylinos.cn>  Mon, 01 Feb 2021 13:36:41 +0800
+
+kylin-music (1.0.46kord) v101; urgency=medium
+
+  * 增加s3和s4.
+  * 用命令控制播放/暂停、上一首、下一首.
+
+ -- liujialin <liujialin@kylinos.cn>  Mon, 01 Feb 2021 09:41:41 +0800
+
+kylin-music (1.0.45kord) v101; urgency=medium
+
+  * 修复一些添加歌曲遗留的bug.
+  * 重构一些初始化列表的样式.
+
+ -- liujialin <liujialin@kylinos.cn>  Sat, 30 Jan 2021 16:05:38 +0800
+
 kylin-music (1.0.44kord) v101; urgency=medium
 
   * 实现歌曲列表拖拽添加歌曲.

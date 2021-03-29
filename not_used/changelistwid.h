@@ -134,6 +134,7 @@ public:
     QSqlTableModel *localModel;
     QString tableName;
 
+    bool m_musicInitialed = false;
 
     int currentPlayIndex = -1;   //高亮相关
     bool isStartPlay = false;
@@ -143,7 +144,7 @@ public:
 signals:
 //     void filePathHash(QString);
 public:
-
+    void initialQMediaPlayer();
     void get_localmusic_information(QString tableName);   //获取初始界面的歌曲列表信息
 //    void get_listmusic_information(int listindex);  //获取歌单页面歌曲信息
 
@@ -189,6 +190,10 @@ private:
     QLabel *albumLabel;
     QLabel *timeLabel;
 
+    //过滤乱码，目前只显示utf8格式
+    //此处将来可以优化，添加转码功能，兼容多种格式
+    QString filterTextCode(QString str);
+    inline int preNum(unsigned char byte);
 };
 
 

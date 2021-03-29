@@ -25,6 +25,13 @@ PlaySongArea::PlaySongArea(QWidget *parent) : QWidget(parent)
 
     setFixedHeight(68);
 
+    sliderWid = new SliderWidget(parent);
+    MotifWmHints hint;
+    hint.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
+    hint.functions = MWM_FUNC_ALL;
+    hint.decorations = MWM_DECOR_BORDER;
+    XAtomHelper::getInstance()->setWindowMotifHint(sliderWid->winId(), hint);
+    sliderWid->hide();
 
     mybeforeList = new BeforePlayList(parent);
     MotifWmHints hints;
@@ -35,10 +42,10 @@ PlaySongArea::PlaySongArea(QWidget *parent) : QWidget(parent)
     mybeforeList->hide();
 
     initWidget();
-    playcolor();
+    playcolor(true);
 }
 
-void PlaySongArea::playcolor()
+void PlaySongArea::playcolor(bool isplay)
 {
     if(WidgetStyle::themeColor == 1)
     {
@@ -52,9 +59,18 @@ void PlaySongArea::playcolor()
 
 //        playBtn->setIcon(QIcon(":/img/default/play2.png"));
         playBtn->setIconSize(QSize(36,36));
-        playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
-                               "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
-                               "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        if(isplay == true)
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        }
+        else
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+        }
 
 //        nextBtn->setIcon(QIcon(":/img/dark/nextsong.png"));
         nextBtn->setIconSize(QSize(18,18));
@@ -97,9 +113,18 @@ void PlaySongArea::playcolor()
 
 //        playBtn->setIcon(QIcon(":/img/default/play2.png"));
         playBtn->setIconSize(QSize(36,36));
-        playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
-                               "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
-                               "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        if(isplay == true)
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/play2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/play2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/play2.png);}");
+        }
+        else
+        {
+            playBtn->setStyleSheet("QPushButton{border-radius:17px;border-image:url(:/img/default/pause2.png);}"
+                                   "QPushButton::hover{border-image:url(:/img/hover/pause2.png);}"
+                                   "QPushButton::pressed{border-image:url(:/img/clicked/pause2.png);}");
+        }
 
 //        closeBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;\
 //                                border-image:url(:/img/default/close.png);}\
@@ -113,7 +138,7 @@ void PlaySongArea::playcolor()
                                "QPushButton::hover{border-image:url(:/img/hover/nextsong.png);}"
                                "QPushButton::pressed{border-image:url(:/img/clicked/nextsong.png);}");
 
-        volumeBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;}");
+//        volumeBtn->setStyleSheet("QPushButton{background:transparent;border-radius:4px;}");
 
         likeMusicBtn->setStyleSheet("QPushButton{border-image:url(:/img/default/loveblack2.png);}"
                                     "QPushButton::hover{border-image:url(:/img/clicked/love2.png);}"
@@ -166,10 +191,10 @@ void PlaySongArea::initWidget()
     volumeBtn->setFixedSize(16,16);
     volumeBtn->setCursor(Qt::PointingHandCursor);
     volumeBtn->setIcon(QIcon::fromTheme("audio-volume-high-symbolic"));
-    volumeBtn->hide();
-//    volumeBtn->setToolTip(" 静音 ");
-//    volumeBtn->setToolTip(" mute ");
-//    volumeBtn->setToolTip(" 功能未实现 ");
+    volumeBtn->setProperty("isWindowButton", 0x1);
+    volumeBtn->setProperty("useIconHighlightEffect", 0x2);
+    volumeBtn->setFlat(true);
+    volumeBtn->setToolTip(tr(" volume "));    //音量
 //    volumeBtn->setToolTip(tr(" Function not implemented "));
 
 //    volumeBtn->hide();
@@ -268,7 +293,7 @@ void PlaySongArea::initWidget()
     bottmRightLayout->addWidget(playModeBtn,Qt::AlignRight);
     bottmRightLayout->addSpacing(6);
     //暂时隐藏历史播放列表
-    bottmRightLayout->addWidget(listBtn,Qt::AlignRight);
+    //bottmRightLayout->addWidget(listBtn,Qt::AlignRight);
 
     bottomLeftWid->setLayout(bottomLeftLayout);
     playCenterWid->setLayout(playCenterLayout);

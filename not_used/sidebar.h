@@ -38,6 +38,7 @@
 #include "allpupwindow.h"
 #include "widgetstyle.h"
 #include "playsongarea.h"
+#include "mytoolbutton.h"
 
 
 struct PlayListNew
@@ -55,7 +56,7 @@ public:
     QLabel *recommendLabel;
     QPushButton *logoLabel;
     QLabel *logoNameLabel;
-    QToolButton *PlayListBtn;    //歌曲列表
+    MyToolButton *PlayListBtn;    //歌曲列表
     QLabel *MySongListLabel;
     QPushButton *addSongListBtn;
 
@@ -65,7 +66,7 @@ public:
 
     QListWidget *songListWidget;
 
-    QToolButton *newSongListBtn[20];   //包括我喜欢在内所有的歌单按钮
+    MyToolButton *newSongListBtn[20];   //包括我喜欢在内所有的歌单按钮
 
     QStackedWidget *rightChangeWid;  //进行界面切换      右部除标题栏和播放区域之外的部分
 
@@ -79,15 +80,10 @@ public:
 
 
     AllPupWindow *newSonglistPup;  //新建歌单弹出窗口
-
     AllPupWindow *renameSongListPup;  //重命名弹窗
-
     AllPupWindow *promptRenamePlayList;     //默认歌单重命名第二次弹窗
-
     AllPupWindow *promptSongListPup;  //  您确定删除歌单吗?
-
     AllPupWindow *promptRemovePlayList;  //默认歌单删除第二次弹窗
-
     AllPupWindow *promptExistListPup;  //歌单名已存在
 
     QMenu *menu;
@@ -110,6 +106,7 @@ public:
     int currentPlayIndex = -1;   //高亮相关
     // 判断删除歌单歌曲时跳过高亮
     bool skipPlaylistHighlight = false;
+    bool m_isHistoryPlaying = false;
 public:
 //    void songListBtncolor();         //歌单按钮(包括我喜欢)样式
 
@@ -130,7 +127,7 @@ public slots:
     void AlterPage();
 //    void AlterthisPage();
 
-    void on_musicListChangeWid_customContextMenuRequested(const QPoint &pos);
+    void on_musicListChangeWid_customContextMenuRequested(const QPoint &pos);     //歌单中的右键位置向上偏移120px
     void listPlayAct_slot();
     void listNextAct_slot();
     void addMusicToPlayList(QAction *listact);
@@ -141,7 +138,8 @@ public slots:
 //    void on_musicListChangeWid_doubleClicked(QListWidgetItem *item);
 //    void Music_playlist_stateChang(QMediaPlayer::State state);//播放状态改变
 
-
+signals:
+    void changePlaylist(int index);
 private:
     void initTopWidget();
 

@@ -15,18 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SLIDER_H
-#define SLIDER_H
-
-#include <QSlider>
-#include <QObject>
-#include <QDebug>
-class Slider : public QSlider
+#include "slider.h"
+#include <QPainter>
+Slider::Slider(QWidget *parent)
+    :QSlider(parent)
 {
-    Q_OBJECT
-public:
-    explicit Slider(QWidget *parent = 0);
-    ~Slider();
-};
+//    initUi(); //初始化样式
+}
+Slider::~Slider()
+{
 
-#endif // SLIDER_H
+}
+
+//void Slider::initUi()
+//{
+//}

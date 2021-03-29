@@ -22,13 +22,14 @@
 BeforePlayList::BeforePlayList(QWidget *parent):QWidget(parent)
 {
 
-    setGeometry(640,0,320,562);
+    setGeometry(640,0,320,572);
 //    setAttribute(Qt::WA_TranslucentBackground, true);
     setStyleSheet("background:#FFFFFF;");
 
     initAction(); //初始化连接
     initUi();   //初始化样式
     historyItemColor();
+    Music = nullptr;
 }
 
 void BeforePlayList::initUi()
@@ -93,10 +94,18 @@ void BeforePlayList::initUi()
 //    this->raise();
 }
 
+void BeforePlayList::initialQMediaPlayer()
+{
+    if(Music == nullptr)
+    {
+        Music = new QMediaPlayer(this) ;
+        m_isMusicInitialed = true;
+    }
+}
 void BeforePlayList::initAction()
 {
     PlayList = new QMediaPlaylist(this);
-    Music = new QMediaPlayer(this) ;
+    //Music = new QMediaPlayer(this) ;
     /* 初始化历史列表 */
     beforePlayList = new QListWidget(this);
     beforePlayList->setContentsMargins(16,0,16,0);

@@ -16,25 +16,24 @@
  */
 
 #include <QApplication>
+#include <QLibraryInfo>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QTextCodec>
 #include <QTime>
 #include <QTranslator>
-#include <QLibraryInfo>
-#include <QStringList>
-#include <QStandardPaths>
 #include <fcntl.h>
 #include <syslog.h>
-#include <QTextCodec>
 
-#include "mainwid.h"
-#include "connection.h"
-#include "xatom-helper.h"
+#include "mainwindow.h"
 #include "myapplication.h"
-#include "kylinmuisc.h"
+#include "xatom-helper.h"
 
-void msgHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+void msgHandler(
+    QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
-    static FILE *fp = NULL; // 使用静态变量，进行数据持久保持
-    static char logPath[255] = {0};
+    static FILE* fp = NULL; // 使用静态变量，进行数据持久保持
+    static char logPath[255] = { 0 };
     static int uid = -1;
 
     Q_UNUSED(context);
@@ -45,7 +44,7 @@ void msgHandler(QtMsgType type, const QMessageLogContext& context, const QString
         sprintf(logPath, "/tmp/%s.log", "kylin-music");
     }
 
-    if (access(logPath, F_OK|W_OK) == 0) {
+    if (access(logPath, F_OK | W_OK) == 0) {
         // log文件存在且可写
         if (fp == NULL) {
             // log文件未被打开过
@@ -62,7 +61,7 @@ void msgHandler(QtMsgType type, const QMessageLogContext& context, const QString
     QString timeStr = currentTime.toString("yy.MM.dd hh:mm:ss +zzz");
 
     // 获取用于控制命令行输出的环境变量
-    char *ctrlEnv = getenv("XXXX_DEBUG");
+    char* ctrlEnv = getenv("XXXX_DEBUG");
     QString env;
 
     // 格式化输出字符串，添加消息发生时间、消息等级
@@ -104,22 +103,18 @@ void msgHandler(QtMsgType type, const QMessageLogContext& context, const QString
         abort();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-
-    MyApplication a("kylin-music", argc, argv );
-//    QApplication a(argc, argv);
-//    if(!CreatConnection())
-//    {
-//        return 1;
-//    }
+    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+    //高清屏幕自适应
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    MyApplication a("kylin-music", argc, argv);
     a.setWindowIcon(QIcon(":/img/kylin-music.png"));
-
     // 国际化
     QString locale = QLocale::system().name();
     QTranslator trans_global, trans_menu;
-    if(locale == "zh_CN"){
+    if (locale == "zh_CN") {
         trans_global.load(":/translations/kylin-music_zh_CN.qm");
         trans_menu.load(":/translations/qt_zh_CN.qm");
         a.installTranslator(&trans_global);
@@ -128,29 +123,45 @@ int main(int argc, char *argv[])
 #ifndef QT_NO_TRANSLATION
     QString translatorFileName = QLatin1String("qt_");
     translatorFileName += QLocale::system().name();
-    QTranslator *translator = new QTranslator();
-    if (translator->load(translatorFileName, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+    QTranslator* translator = new QTranslator();
+    if (translator->load(translatorFileName,
+            QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         a.installTranslator(translator);
     else
         qDebug() << "Failed to load Chinese translation file.";
 #endif
-    qDebug() << "=================argc is " <<argc << argv[0] << argv[1];
-
+    // qDebug() << "=================argc is " <<argc << argv[0] << argv[1];
     QString str = "";
-    if (argc > 1)
-    {
-        str = argv[1];
+    str = argv[1];
+    if (str != "") {
+        if (str == "--help") //帮助
+        {
+            qDebug() << "\nkylin-music [cmd]\n"
+                        "-b -back  上一首\n"
+                        "-n -next  下一首\n"
+                        "-p -pause  暂停\n"
+                        "-s -start  播放\n";
+            return 0;
+        }
+        //如果参数不是命令也不是文件路径，则退出
+        if (!QFileInfo::exists(str) && str != "-b" && str != "-back"
+            && str != "-n" && str != "-next" && str != "-p" && str != "-pause"
+            && str != "-s" && str != "-start") {
+            qDebug() << "参数不合规，请使用--help参数获取帮助";
+            return -1;
+        }
     }
-    MainWid w(str);
+    qDebug() << " str " << str;
+    MainWindow w(str);
 
     // 添加窗管协议
     MotifWmHints hints;
-    hints.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
+    hints.flags = MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS;
     hints.functions = MWM_FUNC_ALL;
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(w.winId(), hints);
 
-//    w.processArgs(args);
+    //    w.processArgs(args);
     w.show();
 
     return a.exec();
