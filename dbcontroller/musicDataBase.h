@@ -29,6 +29,10 @@ enum DB_RETURN_STATUS{              //数据库操作结果返回表
     DEL_TABLE_FAILED    = (-13),    //数据库删表失败
     SONG_NOT_FOUND      = (-14),    //数据库中未找到该歌曲
     LIST_NOT_FOUND      = (-15),    //数据库中未找到该歌单
+    LIST_EXISTS         = (-16),    //数据库中已存在该名字歌单
+    LIST_RENAME_FAILED  = (-17),    //重命名歌单失败，正常退出
+    LIST_RENAME_ERR     = (-18),    //重命名歌单失败，创建了新名称歌单，但新建歌单的列表中名称未能重命名
+    LIST_REORDER_ERR    = (-19),    //歌单中歌曲更改顺序失败
 };
 
 typedef struct
@@ -58,6 +62,8 @@ public:
     int delPlayList(const QString& playListName);
     //查询当前已有歌单列表
     int getPlayList(QStringList& playListNameList);
+    //重命名歌单名title
+    int renamePlayList(const QString& oldPlayListName, const QString& newPlayListName);
 
 
     /**************************新建歌曲增删改查****************************/
@@ -69,6 +75,8 @@ public:
     int getSongInfoFromPlayList(musicDataStruct &fileData, const QString& filePath,const QString& playListName);
     //根据歌单名title值查询对应歌单列表
     int getSongInfoListFromPlayList(QList<musicDataStruct>& resList,const QString& playListName);
+    //更换新建歌单中某首歌曲的位置(从选中的位置更换到目的歌曲的位置的后面)
+    int changeSongOrderInPlayList(const QString& selectFilePath, const QString& destinationFilePath, const QString& playListName);
 
     /**************************本地歌曲增删改查****************************/
     //添加歌曲到本地歌单，使用musicDataStruct结构,输入数据必须有效，
@@ -79,6 +87,8 @@ public:
     int getSongInfoFromLocalMusic(const QString& filePath, musicDataStruct &fileData);
     //从数据库中获取本地歌单列表歌曲信息
     int getSongInfoListFromLocalMusic(QList<musicDataStruct>& resList);
+    //更换本地歌单中某首歌曲的位置(从选中的位置更换到目的歌曲的位置的后面)
+    int changeSongOrderInLocalMusic(const QString& selectFilePath, const QString& destinationFilePath);
 
     /**************************历史歌单增删改查****************************/
     //添加歌曲到历史歌单，使用歌曲的path值,输入数据必须有效，
@@ -114,7 +124,10 @@ private:
     int checkPlayListExist(const QString& playListName);
     //检查歌曲是否在歌单列表中存在
     int checkIfSongExistsInPlayList(const QString& filePath, const QString& playListName);
-
+    //获取歌曲在歌曲总表中的index
+    int getSongIndexFromLocalMusic(const QString& filePath, int &songIndex);
+    //获取歌曲在歌曲某歌单表中的index
+    int getSongIndexFromPlayList(const QString& filePath,const QString& playListName, int &songIndex);
 
     /**************************字符串转码接口*******************************/
     QString inPutStringHandle(const QString& input);
