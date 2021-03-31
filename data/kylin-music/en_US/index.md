@@ -1,6 +1,6 @@
 # Kylin Music
 ## Overview
-Kylin Music is a simple to use, user-friendly, support.mp3,.ape,.ogg,.wav,.wma,.spx and other music formats music player. While playing local music, you can also group music by custom playlists according to your preferences. In addition to the regular mode, Kirin Music also has a small window mode to meet the different needs of users.
+Kylin Music is a simple to use, user-friendly, support.mp3,.ogg,.wma,.spx,.flac and other music formats music player. While playing local music, you can also group music by custom playlists according to your preferences. In addition to the regular mode, Kirin Music also has a small window mode to meet the different needs of users.
 
 <br>
 
@@ -22,26 +22,6 @@ The song list page after adding the songs is shown in the Fig.below.
 
 <br>
 
-## Set the window
-
-<br>
-
-It is divided into general Settings, quick Settings and version information.
-
-<br>
-
-### Feature introduction
-
-<br>
-
-You can operate the shortcut key play module, add songs, etc.
-
-<br>
-
-![Fig.3 Settings-big](image/setting.png)
-
-<br>
-
 ## Right click on the song
 
 <br>
@@ -58,14 +38,14 @@ Select the right button to add to your favorite playlist, delete songs, view son
 
 <br>
 
-![Fig.4 right-click-big](image/right.png)
+![Fig.3 right-click-big](image/right.png)
 
 <br>
 
 ## Toggle mini mode
 You can switch the Mini window for better user experience.
 
-![Fig.5 Mini](image/mini.png)
+![Fig.4 Mini](image/mini.png)
 
 <br>
 
